@@ -1,7 +1,98 @@
 <!DOCTYPE html>
 <html>
-<body style="background:black;color:#00ff66;font-family:monospace;padding:20px;">
-<h1>Francis Terminal</h1>
-<div>Trading Dashboard Ready</div>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Francis Trading Terminal</title>
+
+<style>
+body{
+margin:0;
+background:#0a0a0a;
+font-family:Arial;
+color:white;
+padding:15px;
+}
+.header{
+font-size:28px;
+font-weight:bold;
+color:#00ff66;
+margin-bottom:15px;
+}
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+.card{
+background:#111;
+padding:15px;
+border-radius:14px;
+box-shadow:0 0 10px rgba(0,255,100,.15);
+}
+.label{
+font-size:13px;
+color:#aaa;
+}
+.value{
+font-size:24px;
+font-weight:bold;
+margin-top:8px;
+}
+.up{color:#00ff66;}
+.down{color:#ff4444;}
+.side{color:#ffaa00;}
+.footer{
+margin-top:20px;
+padding:15px;
+background:#111;
+border-radius:14px;
+text-align:center;
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Francis Trading Dashboard</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="label">BTC Price</div>
+<div class="value up">$67,245 ▲</div>
+</div>
+
+<div class="card">
+<div class="label">ETH Price</div>
+<div class="value up">$3,420 ▲</div>
+</div>
+
+<div class="card">
+<div class="label">Gold</div>
+<div class="value down">$2,315 ▼</div>
+</div>
+
+<div class="card">
+<div class="label">USDT Dominance</div>
+<div class="value side">5.82 ▬</div>
+</div>
+
+<div class="card">
+<div class="label">BTC Dominance</div>
+<div class="value up">54.7 ▲</div>
+</div>
+
+<div class="card">
+<div class="label">Market Sentiment</div>
+<div class="value up">BULLISH</div>
+</div>
+
+</div>
+
+<div class="footer">
+Signal: BUY BTC 🚀
+</div>
+
 </body>
 </html>
