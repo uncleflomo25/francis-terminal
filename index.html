@@ -2,120 +2,219 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Francis Flow Terminal</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Francis Flow Terminal LIVE</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#050505;color:#e8e8e8;padding:14px}
-h1{font-size:28px;color:#f59e0b;margin-bottom:14px}
-.sub{color:#888;font-size:13px;margin-bottom:18px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{
+background:#050505;
+color:#fff;
+padding:14px;
+}
+h1{
+color:#ff9f0b;
+font-size:28px;
+margin-bottom:6px;
+}
+.sub{
+color:#777;
+font-size:13px;
+margin-bottom:18px;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:12px;
+margin-bottom:18px;
+}
 .card{
 background:#111;
 border:1px solid #222;
 padding:14px;
-border-radius:12px;
-box-shadow:0 0 8px rgba(255,255,255,.04)
+border-radius:14px;
+box-shadow:0 0 10px rgba(255,255,255,.03);
 }
-.label{font-size:12px;color:#999;margin-bottom:8px}
-.value{font-size:24px;font-weight:700}
-.meta{margin-top:8px;font-size:13px;color:#bbb;line-height:1.5}
-.up{color:#22c55e}
-.down{color:#ef4444}
-.side{color:#facc15}
-.section{font-size:19px;margin:20px 0 12px;color:#f59e0b}
-.big{
+.label{
+font-size:12px;
+color:#888;
+margin-bottom:10px;
+}
+.value{
+font-size:34px;
+font-weight:700;
+margin-bottom:8px;
+}
+.green{color:#00ff66}
+.red{color:#ff4d4d}
+.yellow{color:#ffcc00}
+.small{
+font-size:14px;
+color:#bbb;
+line-height:1.6;
+}
+.signal{
 background:#111;
-border-left:4px solid #f59e0b;
+border-left:4px solid #ff9f0b;
 padding:16px;
-border-radius:10px;
-font-size:17px;
-line-height:1.6
+border-radius:12px;
+font-size:22px;
+line-height:1.6;
 }
-.small{font-size:12px;color:#888;margin-top:8px}
+.footer{
+margin-top:15px;
+font-size:12px;
+color:#666;
+}
 </style>
 </head>
-
 <body>
 
-<h1>Francis Flow Terminal</h1>
-<div class="sub">Macro + Order Flow Dashboard</div>
-
-<div class="section">Macro Drivers</div>
+<h1>Francis Flow Terminal LIVE</h1>
+<div class="sub">Real-time crypto dashboard • Auto refresh 10s</div>
 
 <div class="grid">
 
 <div class="card">
-<div class="label">BTC.D</div>
-<div class="value up">54.8% ▲</div>
-<div class="meta">Volume: 1.42B<br>Bias: BTC Strength</div>
-</div>
-
-<div class="card">
-<div class="label">USDT.D</div>
-<div class="value down">5.91% ▼</div>
-<div class="meta">Volume: 842M<br>Bias: Risk-On</div>
+<div class="label">BTC Price</div>
+<div class="value green" id="btc">$0</div>
+<div class="small" id="btcvol">Loading...</div>
 </div>
 
 <div class="card">
 <div class="label">ETHBTC</div>
-<div class="value up">0.052 ▲</div>
-<div class="meta">Volume: 615M<br>Bias: Alts Strength</div>
+<div class="value green" id="ethbtc">0</div>
+<div class="small">Live Pair Ratio</div>
 </div>
 
 <div class="card">
-<div class="label">TOTAL</div>
-<div class="value up">2.54T ▲</div>
-<div class="meta">Volume: 2.10B<br>Bias: Expansion</div>
+<div class="label">BTC Dominance</div>
+<div class="value green" id="btcd">0%</div>
+<div class="small">Market Share</div>
 </div>
 
 <div class="card">
-<div class="label">Gold</div>
-<div class="value side">2331 ➜</div>
-<div class="meta">Volume: 1.08B<br>Bias: Neutral</div>
+<div class="label">USDT Dominance</div>
+<div class="value yellow" id="usdtd">0%</div>
+<div class="small">Stablecoin Share</div>
 </div>
 
+<div class="card">
+<div class="label">TOTAL Market Cap</div>
+<div class="value green" id="total">$0T</div>
+<div class="small">Crypto Global</div>
 </div>
-
-<div class="section">BTC Flow Engine</div>
-
-<div class="grid">
 
 <div class="card">
 <div class="label">BTC Spot Volume</div>
-<div class="value up">1.26B ▲</div>
-<div class="meta">Delta: +248M</div>
+<div class="value green" id="spotvol">0</div>
+<div class="small">24H Binance</div>
 </div>
 
 <div class="card">
-<div class="label">BTC Perp Volume</div>
-<div class="value up">3.84B ▲</div>
-<div class="meta">Delta: +612M</div>
+<div class="label">BTC Direction</div>
+<div class="value" id="dir">↔</div>
+<div class="small">Trend Engine</div>
 </div>
 
 <div class="card">
-<div class="label">BTC Open Interest</div>
-<div class="value up">18.4B ▲</div>
-<div class="meta">Trend Participation Rising</div>
-</div>
-
-<div class="card">
-<div class="label">Market Pressure</div>
-<div class="value up">BUY ▲</div>
-<div class="meta">Spot + Perp + OI aligned</div>
+<div class="label">Signal</div>
+<div class="value" id="signal">WAIT</div>
+<div class="small" id="strength">Strength 0/10</div>
 </div>
 
 </div>
 
-<div class="section">Terminal Signal</div>
-
-<div class="big">
-BTC bullish structure active.<br>
-Spot demand strong, perp participation rising, positive delta confirms buyers.<br>
-USDT.D falling adds risk-on support.
-<div class="small">Signal Strength: 8.7 / 10</div>
+<div class="signal" id="summary">
+Loading live market data...
 </div>
 
+<div class="footer">Powered by public market APIs</div>
+
+<script>
+
+function fmt(n){
+if(n>=1e12)return (n/1e12).toFixed(2)+"T";
+if(n>=1e9)return (n/1e9).toFixed(2)+"B";
+if(n>=1e6)return (n/1e6).toFixed(2)+"M";
+return n.toFixed(2);
+}
+
+async function load(){
+
+try{
+
+// BTC ticker
+let a=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT");
+let btc=await a.json();
+
+let price=parseFloat(btc.lastPrice);
+let change=parseFloat(btc.priceChangePercent);
+let vol=parseFloat(btc.quoteVolume);
+
+document.getElementById("btc").innerHTML="$"+Math.round(price).toLocaleString();
+document.getElementById("btcvol").innerHTML="24H Vol: "+fmt(vol);
+
+document.getElementById("spotvol").innerHTML=fmt(vol);
+
+// ETHBTC
+let b=await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC");
+let eth=await b.json();
+document.getElementById("ethbtc").innerHTML=parseFloat(eth.price).toFixed(4);
+
+// Global cap
+let c=await fetch("https://api.coingecko.com/api/v3/global");
+let g=await c.json();
+
+let btcd=g.data.market_cap_percentage.btc;
+let usdt=g.data.market_cap_percentage.usdt;
+let total=g.data.total_market_cap.usd;
+
+document.getElementById("btcd").innerHTML=btcd.toFixed(1)+"%";
+document.getElementById("usdtd").innerHTML=usdt.toFixed(1)+"%";
+document.getElementById("total").innerHTML="$"+fmt(total);
+
+// direction
+let dir="↔";
+let dirClass="yellow";
+
+if(change>1){dir="▲";dirClass="green";}
+if(change<-1){dir="▼";dirClass="red";}
+
+document.getElementById("dir").innerHTML=dir;
+document.getElementById("dir").className="value "+dirClass;
+
+// signal
+let sig="WAIT";
+let score=5;
+let text="Neutral market structure.";
+
+if(change>1 && btcd>55){
+sig="BUY";
+score=8;
+text="BTC strength confirmed. Dominance rising with bullish momentum.";
+}
+
+if(change<-1 && usdt>5){
+sig="SELL";
+score=8;
+text="Risk-off pressure active. BTC weak while USDT dominance rises.";
+}
+
+document.getElementById("signal").innerHTML=sig;
+document.getElementById("signal").className="value "+(sig=="BUY"?"green":sig=="SELL"?"red":"yellow");
+document.getElementById("strength").innerHTML="Strength "+score+"/10";
+document.getElementById("summary").innerHTML=text;
+
+}catch(e){
+document.getElementById("summary").innerHTML="API loading error. Refresh soon.";
+}
+
+}
+
+load();
+setInterval(load,10000);
+
+</script>
 </body>
 </html>
