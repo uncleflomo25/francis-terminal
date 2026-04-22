@@ -1,97 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Francis Trading Terminal</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Francis Flow Terminal</title>
 
 <style>
-body{
-margin:0;
-background:#0a0a0a;
-font-family:Arial;
-color:white;
-padding:15px;
-}
-.header{
-font-size:28px;
-font-weight:bold;
-color:#00ff66;
-margin-bottom:15px;
-}
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{background:#050505;color:#e8e8e8;padding:14px}
+h1{font-size:28px;color:#f59e0b;margin-bottom:14px}
+.sub{color:#888;font-size:13px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 .card{
 background:#111;
-padding:15px;
-border-radius:14px;
-box-shadow:0 0 10px rgba(0,255,100,.15);
+border:1px solid #222;
+padding:14px;
+border-radius:12px;
+box-shadow:0 0 8px rgba(255,255,255,.04)
 }
-.label{
-font-size:13px;
-color:#aaa;
-}
-.value{
-font-size:24px;
-font-weight:bold;
-margin-top:8px;
-}
-.up{color:#00ff66;}
-.down{color:#ff4444;}
-.side{color:#ffaa00;}
-.footer{
-margin-top:20px;
-padding:15px;
+.label{font-size:12px;color:#999;margin-bottom:8px}
+.value{font-size:24px;font-weight:700}
+.meta{margin-top:8px;font-size:13px;color:#bbb;line-height:1.5}
+.up{color:#22c55e}
+.down{color:#ef4444}
+.side{color:#facc15}
+.section{font-size:19px;margin:20px 0 12px;color:#f59e0b}
+.big{
 background:#111;
-border-radius:14px;
-text-align:center;
-font-size:18px;
+border-left:4px solid #f59e0b;
+padding:16px;
+border-radius:10px;
+font-size:17px;
+line-height:1.6
 }
+.small{font-size:12px;color:#888;margin-top:8px}
 </style>
 </head>
 
 <body>
 
-<div class="header">Francis Trading Dashboard</div>
+<h1>Francis Flow Terminal</h1>
+<div class="sub">Macro + Order Flow Dashboard</div>
+
+<div class="section">Macro Drivers</div>
 
 <div class="grid">
 
 <div class="card">
-<div class="label">BTC Price</div>
-<div class="value up">$67,245 ▲</div>
+<div class="label">BTC.D</div>
+<div class="value up">54.8% ▲</div>
+<div class="meta">Volume: 1.42B<br>Bias: BTC Strength</div>
 </div>
 
 <div class="card">
-<div class="label">ETH Price</div>
-<div class="value up">$3,420 ▲</div>
+<div class="label">USDT.D</div>
+<div class="value down">5.91% ▼</div>
+<div class="meta">Volume: 842M<br>Bias: Risk-On</div>
+</div>
+
+<div class="card">
+<div class="label">ETHBTC</div>
+<div class="value up">0.052 ▲</div>
+<div class="meta">Volume: 615M<br>Bias: Alts Strength</div>
+</div>
+
+<div class="card">
+<div class="label">TOTAL</div>
+<div class="value up">2.54T ▲</div>
+<div class="meta">Volume: 2.10B<br>Bias: Expansion</div>
 </div>
 
 <div class="card">
 <div class="label">Gold</div>
-<div class="value down">$2,315 ▼</div>
+<div class="value side">2331 ➜</div>
+<div class="meta">Volume: 1.08B<br>Bias: Neutral</div>
+</div>
+
+</div>
+
+<div class="section">BTC Flow Engine</div>
+
+<div class="grid">
+
+<div class="card">
+<div class="label">BTC Spot Volume</div>
+<div class="value up">1.26B ▲</div>
+<div class="meta">Delta: +248M</div>
 </div>
 
 <div class="card">
-<div class="label">USDT Dominance</div>
-<div class="value side">5.82 ▬</div>
+<div class="label">BTC Perp Volume</div>
+<div class="value up">3.84B ▲</div>
+<div class="meta">Delta: +612M</div>
 </div>
 
 <div class="card">
-<div class="label">BTC Dominance</div>
-<div class="value up">54.7 ▲</div>
+<div class="label">BTC Open Interest</div>
+<div class="value up">18.4B ▲</div>
+<div class="meta">Trend Participation Rising</div>
 </div>
 
 <div class="card">
-<div class="label">Market Sentiment</div>
-<div class="value up">BULLISH</div>
+<div class="label">Market Pressure</div>
+<div class="value up">BUY ▲</div>
+<div class="meta">Spot + Perp + OI aligned</div>
 </div>
 
 </div>
 
-<div class="footer">
-Signal: BUY BTC 🚀
+<div class="section">Terminal Signal</div>
+
+<div class="big">
+BTC bullish structure active.<br>
+Spot demand strong, perp participation rising, positive delta confirms buyers.<br>
+USDT.D falling adds risk-on support.
+<div class="small">Signal Strength: 8.7 / 10</div>
 </div>
 
 </body>
