@@ -3,94 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Francis Terminal V8 Daily Engine</title>
+<title>Francis Terminal V9 GOD MODE</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:linear-gradient(180deg,#020611,#071321,#020611);color:#fff;padding:14px}
-h1{text-align:center;font-size:24px;color:#00ffd0;margin-bottom:6px}
-.sub{text-align:center;font-size:12px;color:#90a7c6;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+body{
+background:linear-gradient(180deg,#01040c,#071426,#01040c);
+color:#fff;
+padding:14px;
+}
+h1{
+text-align:center;
+font-size:24px;
+color:#00ffd0;
+margin-bottom:6px;
+}
+.sub{
+text-align:center;
+font-size:12px;
+color:#8fa8c9;
+margin-bottom:14px;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:12px;
+}
 .card{
-background:#0b1527;
-border:1px solid #173355;
+background:#081325;
+border:1px solid #17385e;
 border-radius:16px;
 padding:14px;
-box-shadow:0 0 18px rgba(0,255,200,.07)
+box-shadow:0 0 20px rgba(0,255,200,.07);
 }
-.title{font-size:13px;color:#8ea9cc;margin-bottom:8px;font-weight:bold}
-.value{font-size:30px;font-weight:700;margin-bottom:6px}
-.small{font-size:13px;line-height:1.5;color:#d8e4f3}
-.green{color:#00ff95}.red{color:#ff5a5a}.yellow{color:#ffd166}
-.table{width:100%;border-collapse:collapse;margin-top:8px}
-.table td{padding:7px 0;font-size:13px;border-bottom:1px solid #173355}
-.table td:last-child{text-align:right;font-weight:bold}
-.signal{
-margin-top:10px;
-padding:10px;
-border-radius:12px;
-font-size:18px;
+.title{
+font-size:13px;
+color:#8fa8c9;
+margin-bottom:8px;
 font-weight:bold;
-text-align:center
+}
+.value{
+font-size:30px;
+font-weight:700;
+margin-bottom:6px;
+}
+.green{color:#00ff95}
+.red{color:#ff5a5a}
+.yellow{color:#ffd166}
+.small{
+font-size:13px;
+line-height:1.5;
+color:#dbe6f5;
+}
+.signal{
+padding:12px;
+border-radius:14px;
+font-size:20px;
+font-weight:bold;
+text-align:center;
+margin-top:10px;
 }
 .long{background:#00361f;color:#00ff95}
-.short{background:#411212;color:#ff5a5a}
+.short{background:#451414;color:#ff5a5a}
 .wait{background:#4a3a00;color:#ffd166}
-.footer{text-align:center;font-size:12px;margin-top:16px;color:#73849d}
+.table{
+width:100%;
+border-collapse:collapse;
+margin-top:8px;
+}
+.table td{
+padding:7px 0;
+border-bottom:1px solid #163556;
+font-size:13px;
+}
+.table td:last-child{
+text-align:right;
+font-weight:bold;
+}
+iframe{
+width:100%;
+height:420px;
+border:none;
+border-radius:14px;
+margin-top:10px;
+}
+.footer{
+text-align:center;
+font-size:12px;
+margin-top:16px;
+color:#6f86a5;
+}
 </style>
 </head>
 
 <body>
 
-<h1>⚡ FRANCIS TERMINAL V8</h1>
-<div class="sub">DAILY TIMEFRAME ENGINE (1D CANDLE MODEL)</div>
+<h1>⚡ FRANCIS TERMINAL V9 GOD MODE</h1>
+<div class="sub">Live Daily Engine • Auto Refresh • Smart Bias</div>
 
 <div class="grid">
 
 <div class="card">
-<div class="title">BTC DAILY PRICE</div>
+<div class="title">BTC PRICE</div>
 <div class="value" id="btcPrice">$--</div>
-<div class="small" id="btcChange">Loading...</div>
+<div class="small" id="btc24">Loading...</div>
 </div>
 
 <div class="card">
-<div class="title">BTC.D (DAILY)</div>
+<div class="title">BTC.D</div>
 <div class="value" id="btcDom">--%</div>
-<div class="small">Daily Dominance Bias</div>
+<div class="small">Bitcoin Dominance</div>
 </div>
 
 <div class="card">
-<div class="title">USDT.D (DAILY)</div>
+<div class="title">USDT.D</div>
 <div class="value" id="usdtDom">--%</div>
-<div class="small">Daily Risk Meter</div>
+<div class="small">Stablecoin Risk Meter</div>
 </div>
 
 <div class="card">
-<div class="title">TOTAL (DAILY)</div>
+<div class="title">TOTAL MARKET CAP</div>
 <div class="value" id="totalCap">$--</div>
-<div class="small">Daily Market Cap</div>
+<div class="small">Crypto Global Cap</div>
 </div>
 
 <div class="card">
 <div class="title">DAILY ENGINE TABLE</div>
 <table class="table">
-<tr><td>BTC Candle</td><td id="trend">--</td></tr>
-<tr><td>Risk State</td><td id="risk">--</td></tr>
+<tr><td>BTC Trend</td><td id="trend">--</td></tr>
+<tr><td>Risk Mode</td><td id="risk">--</td></tr>
 <tr><td>Altcoins</td><td id="alts">--</td></tr>
-<tr><td>Last Update</td><td id="time">--</td></tr>
+<tr><td>Bias Score</td><td id="score">--</td></tr>
+<tr><td>Updated</td><td id="time">--</td></tr>
 </table>
 <div class="signal wait" id="signalBox">LOADING...</div>
+</div>
+
+<div class="card">
+<div class="title">LIVE BTC CHART</div>
+<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&interval=D&theme=dark"></iframe>
 </div>
 
 </div>
 
 <div class="footer">
-Signals use 24H daily candle changes • Refresh 15s
+V9 GOD MODE • Live API + TradingView
 </div>
 
 <script>
 async function loadData(){
 try{
+
 const globalRes = await fetch("https://api.coingecko.com/api/v3/global");
 const globalData = await globalRes.json();
 const g = globalData.data;
@@ -104,36 +167,46 @@ document.getElementById("usdtDom").innerHTML = usdtDom.toFixed(2)+"%";
 document.getElementById("totalCap").innerHTML = "$"+(total/1e12).toFixed(2)+"T";
 
 const btcRes = await fetch("https://api.coingecko.com/api/v3/coins/bitcoin");
-const btcData = await btcRes.json();
+const btc = await btcRes.json();
 
-const price = btcData.market_data.current_price.usd;
-const chg = btcData.market_data.price_change_percentage_24h;
+const price = btc.market_data.current_price.usd;
+const chg = btc.market_data.price_change_percentage_24h;
 
-document.getElementById("btcPrice").innerHTML = "$"+price.toLocaleString();
-document.getElementById("btcChange").innerHTML =
+document.getElementById("btcPrice").innerHTML="$"+price.toLocaleString();
+
+document.getElementById("btc24").innerHTML=
 (chg>=0?'<span class="green">':'<span class="red">')+
-"Daily Change "+chg.toFixed(2)+"%</span>";
+"24H "+chg.toFixed(2)+"%</span>";
 
-let trend = chg > 0 ? "▲ Bull Candle":"▼ Bear Candle";
-let risk = usdtDom < 6.5 ? "Risk-On":"Risk-Off";
-let alts = btcDom < 52 ? "Strong":"Weak";
+let trend = chg>0 ? "▲ Bull Candle":"▼ Bear Candle";
+let risk = usdtDom<6.5 ? "Risk-On":"Risk-Off";
+let alts = btcDom<52 ? "Strong":"Weak";
 
-document.getElementById("trend").innerHTML = trend;
-document.getElementById("risk").innerHTML = risk;
-document.getElementById("alts").innerHTML = alts;
-document.getElementById("time").innerHTML = new Date().toLocaleTimeString();
+let score = 50;
+if(chg>0) score +=15;
+if(chg>1) score +=10;
+if(usdtDom<6.5) score +=15;
+if(btcDom>54) score +=10;
 
-let signal = document.getElementById("signalBox");
+if(score>100) score=100;
 
-if(chg > 1 && usdtDom < 6.5){
+document.getElementById("trend").innerHTML=trend;
+document.getElementById("risk").innerHTML=risk;
+document.getElementById("alts").innerHTML=alts;
+document.getElementById("score").innerHTML=score+"/100";
+document.getElementById("time").innerHTML=new Date().toLocaleTimeString();
+
+let signal=document.getElementById("signalBox");
+
+if(score>=75){
 signal.className="signal long";
-signal.innerHTML="DAILY LONG MODE";
-}else if(chg < -1 && usdtDom > 7){
+signal.innerHTML="LONG BTC MODE";
+}else if(score<=40){
 signal.className="signal short";
-signal.innerHTML="DAILY SHORT MODE";
+signal.innerHTML="SHORT DEFENSE";
 }else{
 signal.className="signal wait";
-signal.innerHTML="WAIT DAILY CLOSE";
+signal.innerHTML="WAIT / NEUTRAL";
 }
 
 }catch(err){
