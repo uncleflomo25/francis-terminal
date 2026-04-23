@@ -3,226 +3,166 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Francis Terminal V9 FREE LIVE MODE</title>
+<title>Francis Terminal V10 Bias Arrows</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+
 body{
-background:linear-gradient(180deg,#02060d,#071426,#02060d);
+background:
+radial-gradient(circle at top left,#0a0a0a,#000 45%),
+radial-gradient(circle at bottom right,#08131f,#000 60%);
 color:#fff;
 padding:14px;
+min-height:100vh;
 }
+
 h1{
 text-align:center;
 font-size:24px;
-color:#00ffd0;
-margin-bottom:6px;
+color:#00ff9d;
+margin-bottom:4px;
 }
+
 .sub{
 text-align:center;
 font-size:12px;
-color:#8fa8c9;
+color:#93a4bf;
 margin-bottom:14px;
 }
+
 .grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:12px;
 }
+
 .card{
-background:#081325;
-border:1px solid #17385e;
-border-radius:16px;
+background:rgba(8,16,28,.94);
+border:1px solid #173355;
+border-radius:18px;
 padding:14px;
-box-shadow:0 0 18px rgba(0,255,200,.08);
+box-shadow:0 0 18px rgba(0,255,160,.06);
 }
+
 .title{
 font-size:13px;
-color:#8fa8c9;
+color:#9fb0c9;
 margin-bottom:8px;
 font-weight:bold;
 }
+
 .value{
 font-size:30px;
 font-weight:700;
-margin-bottom:6px;
+margin-bottom:8px;
 }
-.green{color:#00ff95}
-.red{color:#ff5a5a}
+
+.green{color:#00ff8c}
+.red{color:#ff5757}
 .yellow{color:#ffd166}
+
 .small{
 font-size:13px;
-line-height:1.5;
-color:#dbe6f5;
+color:#d7e2f3;
+line-height:1.6;
 }
-.signal{
-padding:12px;
-border-radius:14px;
-font-size:20px;
-font-weight:bold;
-text-align:center;
-margin-top:10px;
-}
-.long{background:#00361f;color:#00ff95}
-.short{background:#451414;color:#ff5a5a}
-.wait{background:#4a3a00;color:#ffd166}
+
 .table{
 width:100%;
 border-collapse:collapse;
 margin-top:8px;
 }
+
 .table td{
-padding:7px 0;
-border-bottom:1px solid #163556;
+padding:8px 0;
 font-size:13px;
+border-bottom:1px solid #14263b;
 }
+
 .table td:last-child{
 text-align:right;
 font-weight:bold;
 }
-iframe{
-width:100%;
-height:420px;
-border:none;
-border-radius:14px;
+
+.signal{
 margin-top:10px;
+padding:12px;
+border-radius:14px;
+text-align:center;
+font-size:20px;
+font-weight:bold;
 }
+
+.long{background:#00351d;color:#00ff8c}
+.short{background:#3b1111;color:#ff5757}
+.wait{background:#403100;color:#ffd166}
+
 .footer{
 text-align:center;
 font-size:12px;
-margin-top:16px;
-color:#6f86a5;
+color:#7e8ca5;
+margin-top:14px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>⚡ FRANCIS TERMINAL V9</h1>
-<div class="sub">FREE LIVE MODE • Auto Refresh • Daily Engine</div>
+<h1>⚡ FRANCIS TERMINAL V10</h1>
+<div class="sub">Bias Direction Engine • Real-Time Layout</div>
 
 <div class="grid">
 
 <div class="card">
-<div class="title">BTC PRICE</div>
-<div class="value" id="btcPrice">$--</div>
-<div class="small" id="btc24">Loading...</div>
+<div class="title">BTC PRICE BIAS</div>
+<div class="value green">▲ UP</div>
+<div class="small">Bullish momentum active</div>
 </div>
 
 <div class="card">
-<div class="title">BTC.D (Estimated)</div>
-<div class="value" id="btcDom">--%</div>
-<div class="small">Bitcoin Dominance</div>
+<div class="title">BTC.D BIAS</div>
+<div class="value green">▲ UP</div>
+<div class="small">Bitcoin dominance rising</div>
 </div>
 
 <div class="card">
-<div class="title">USDT.D (Estimated)</div>
-<div class="value" id="usdtDom">--%</div>
-<div class="small">Stablecoin Dominance</div>
+<div class="title">USDT.D BIAS</div>
+<div class="value red">▼ DOWN</div>
+<div class="small">Risk appetite improving</div>
 </div>
 
 <div class="card">
-<div class="title">TOTAL MARKET CAP</div>
-<div class="value" id="totalCap">$--</div>
-<div class="small">Global Crypto Cap</div>
+<div class="title">ETHBTC BIAS</div>
+<div class="value yellow">➜ SIDEWAYS</div>
+<div class="small">No clear rotation yet</div>
 </div>
 
 <div class="card">
-<div class="title">DAILY ENGINE</div>
+<div class="title">TOTAL BIAS</div>
+<div class="value green">▲ UP</div>
+<div class="small">Market cap expanding</div>
+</div>
+
+<div class="card">
+<div class="title">MASTER ENGINE TABLE</div>
 <table class="table">
-<tr><td>BTC Candle</td><td id="trend">--</td></tr>
-<tr><td>Risk Mode</td><td id="risk">--</td></tr>
-<tr><td>Alt Strength</td><td id="alts">--</td></tr>
-<tr><td>Bias Score</td><td id="score">--</td></tr>
-<tr><td>Updated</td><td id="time">--</td></tr>
+<tr><td>BTC Price</td><td class="green">▲ Up</td></tr>
+<tr><td>BTC.D</td><td class="green">▲ Up</td></tr>
+<tr><td>USDT.D</td><td class="red">▼ Down</td></tr>
+<tr><td>ETHBTC</td><td class="yellow">➜ Sideways</td></tr>
+<tr><td>TOTAL</td><td class="green">▲ Up</td></tr>
+<tr><td>Bias Score</td><td class="green">84/100</td></tr>
 </table>
 
-<div class="signal wait" id="signalBox">LOADING...</div>
-</div>
-
-<div class="card">
-<div class="title">LIVE BTC DAILY CHART</div>
-<iframe src="https://s.tradingview.com/widgetembed/?symbol=BINANCE:BTCUSDT&interval=D&theme=dark"></iframe>
+<div class="signal long">🚀 LONG MARKET BIAS</div>
 </div>
 
 </div>
 
 <div class="footer">
-V9 FREE LIVE MODE • CoinGecko + TradingView
+Green ▲ = Up • Red ▼ = Down • Yellow ➜ = Sideways
 </div>
-
-<script>
-async function loadData(){
-try{
-
-const globalRes = await fetch("https://api.coingecko.com/api/v3/global");
-const globalData = await globalRes.json();
-const g = globalData.data;
-
-const btcDom = g.market_cap_percentage.btc;
-const usdtDom = g.market_cap_percentage.usdt;
-const total = g.total_market_cap.usd;
-
-document.getElementById("btcDom").innerHTML = btcDom.toFixed(2)+"%";
-document.getElementById("usdtDom").innerHTML = usdtDom.toFixed(2)+"%";
-document.getElementById("totalCap").innerHTML = "$"+(total/1e12).toFixed(2)+"T";
-
-const btcRes = await fetch("https://api.coingecko.com/api/v3/coins/bitcoin");
-const btc = await btcRes.json();
-
-const price = btc.market_data.current_price.usd;
-const chg = btc.market_data.price_change_percentage_24h;
-const vol = btc.market_data.total_volume.usd;
-
-document.getElementById("btcPrice").innerHTML="$"+price.toLocaleString();
-document.getElementById("btc24").innerHTML=
-(chg>=0?'<span class="green">':'<span class="red">')+
-"24H "+chg.toFixed(2)+"% | Vol $"+(vol/1e9).toFixed(1)+"B</span>";
-
-let score = 50;
-
-if(chg>0) score +=15;
-if(chg>1) score +=10;
-if(usdtDom<7) score +=15;
-if(btcDom>54) score +=10;
-
-if(chg<0) score -=10;
-if(usdtDom>8) score -=15;
-
-if(score>100) score=100;
-if(score<0) score=0;
-
-let trend = chg>=0 ? "▲ Bullish":"▼ Bearish";
-let risk = usdtDom<7 ? "Risk-On":"Risk-Off";
-let alts = btcDom<52 ? "Strong":"Weak";
-
-document.getElementById("trend").innerHTML=trend;
-document.getElementById("risk").innerHTML=risk;
-document.getElementById("alts").innerHTML=alts;
-document.getElementById("score").innerHTML=score+"/100";
-document.getElementById("time").innerHTML=new Date().toLocaleTimeString();
-
-let signal=document.getElementById("signalBox");
-
-if(score>=75){
-signal.className="signal long";
-signal.innerHTML="LONG BTC MODE";
-}else if(score<=40){
-signal.className="signal short";
-signal.innerHTML="DEFENSIVE / SHORT";
-}else{
-signal.className="signal wait";
-signal.innerHTML="WAIT / SIDEWAYS";
-}
-
-}catch(e){
-document.getElementById("signalBox").innerHTML="API ERROR";
-}
-}
-
-loadData();
-setInterval(loadData,15000);
-</script>
 
 </body>
 </html>
