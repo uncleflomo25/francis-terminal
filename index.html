@@ -3,15 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Francis Terminal V11 Daily Volume Engine</title>
+<title>Francis Terminal V12 LIVE</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
 
 body{
 background:
-radial-gradient(circle at top left,#0b0b0b,#000 45%),
-radial-gradient(circle at bottom right,#07131f,#000 60%);
+radial-gradient(circle at top left,#0d0d0d,#000 45%),
+radial-gradient(circle at bottom right,#04131f,#000 55%);
 color:#fff;
 padding:14px;
 min-height:100vh;
@@ -20,52 +25,52 @@ min-height:100vh;
 h1{
 text-align:center;
 font-size:24px;
-color:#00ff9d;
+color:#00ff99;
 margin-bottom:4px;
 }
 
 .sub{
 text-align:center;
 font-size:12px;
-color:#8fa4bf;
+color:#8fa8c9;
 margin-bottom:14px;
 }
 
 .grid{
 display:grid;
-grid-template-columns:1fr;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:12px;
 }
 
 .card{
-background:#08111d;
+background:#07111d;
 border:1px solid #16324f;
 border-radius:18px;
 padding:14px;
-box-shadow:0 0 16px rgba(0,255,150,.05);
+box-shadow:0 0 14px rgba(0,255,160,.06);
 }
 
 .title{
 font-size:13px;
-color:#9fb0c9;
-font-weight:bold;
+color:#8fa8c9;
 margin-bottom:8px;
+font-weight:bold;
 }
 
 .value{
-font-size:30px;
+font-size:32px;
 font-weight:700;
-margin-bottom:6px;
+margin-bottom:8px;
 }
 
 .green{color:#00ff8c;}
-.red{color:#ff5757;}
-.yellow{color:#ffd166;}
+.red{color:#ff5555;}
+.gold{color:#d9a82e;}
 
 .small{
 font-size:13px;
+color:#dce7f7;
 line-height:1.6;
-color:#d7e2f3;
 }
 
 .table{
@@ -76,7 +81,7 @@ margin-top:8px;
 
 .table td{
 padding:8px 0;
-border-bottom:1px solid #13263c;
+border-bottom:1px solid #13253b;
 font-size:13px;
 }
 
@@ -86,88 +91,104 @@ font-weight:bold;
 }
 
 .signal{
-margin-top:12px;
+margin-top:10px;
 padding:12px;
 border-radius:14px;
 text-align:center;
 font-size:20px;
 font-weight:bold;
-background:#00351d;
+background:#00391f;
 color:#00ff8c;
 }
 
 .footer{
 text-align:center;
 font-size:12px;
-color:#7e8ca5;
-margin-top:14px;
-}
-
-@media(min-width:900px){
-.grid{grid-template-columns:repeat(2,1fr);}
+color:#7890aa;
+margin-top:16px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>⚡ FRANCIS TERMINAL V11</h1>
-<div class="sub">Daily Time Frame Only • Volume Visible • Direction Bias</div>
+<h1>⚡ FRANCIS TERMINAL V12 LIVE</h1>
+<div class="sub">Real-Time Crypto Engine • Auto Refresh 10s</div>
 
 <div class="grid">
 
 <div class="card">
-<div class="title">DAILY ENGINE TABLE (1D)</div>
+<div class="title">BTC PRICE</div>
+<div class="value" id="btcPrice">$0</div>
+<div class="small" id="btcDir">Loading...</div>
+</div>
+
+<div class="card">
+<div class="title">BTC.D</div>
+<div class="value" id="btcDom">0%</div>
+<div class="small" id="btcDomDir">Loading...</div>
+</div>
+
+<div class="card">
+<div class="title">USDT.D</div>
+<div class="value" id="usdtDom">0%</div>
+<div class="small" id="usdtDir">Loading...</div>
+</div>
+
+<div class="card">
+<div class="title">ETHBTC</div>
+<div class="value" id="ethbtc">0</div>
+<div class="small" id="ethbtcDir">Loading...</div>
+</div>
+
+<div class="card">
+<div class="title">TOTAL MARKET CAP</div>
+<div class="value" id="totalCap">$0</div>
+<div class="small" id="totalDir">Loading...</div>
+</div>
+
+<div class="card">
+<div class="title">MASTER ENGINE (DAILY)</div>
 <table class="table">
-<tr><td>BTC Price</td><td class="green">▲ Up</td></tr>
-<tr><td>BTC.D</td><td class="green">▲ Up</td></tr>
-<tr><td>USDT.D</td><td class="red">▼ Down</td></tr>
-<tr><td>ETHBTC</td><td class="yellow">➜ Sideways</td></tr>
-<tr><td>TOTAL</td><td class="green">▲ Up</td></tr>
-<tr><td>Bias Score</td><td class="green">86/100</td></tr>
+<tr><td>BTC.D</td><td id="row1">-</td></tr>
+<tr><td>USDT.D</td><td id="row2">-</td></tr>
+<tr><td>ETHBTC</td><td id="row3">-</td></tr>
+<tr><td>TOTAL</td><td id="row4">-</td></tr>
+<tr><td>Bias Score</td><td id="score">0/100</td></tr>
 </table>
-<div class="signal">🚀 LONG BTC DAILY BIAS</div>
-</div>
-
-<div class="card">
-<div class="title">USDT.D (1D)</div>
-<div class="value red">▼ DOWN</div>
-<div class="small">Volume: 132.8B<br>Liquidity leaving stablecoins</div>
-</div>
-
-<div class="card">
-<div class="title">BTC.D (1D)</div>
-<div class="value green">▲ UP</div>
-<div class="small">Volume: 95.4B<br>Capital rotating into BTC</div>
-</div>
-
-<div class="card">
-<div class="title">ETHBTC (1D)</div>
-<div class="value yellow">➜ SIDEWAYS</div>
-<div class="small">Volume: 21.7B<br>ETH waiting for breakout</div>
-</div>
-
-<div class="card">
-<div class="title">TOTAL MARKET CAP (1D)</div>
-<div class="value green">▲ UP</div>
-<div class="small">Volume: 188.3B<br>Expansion continues</div>
-</div>
-
-<div class="card">
-<div class="title">DAILY RULES</div>
-<table class="table">
-<tr><td>BTC.D ▲ + TOTAL ▲</td><td class="green">Bullish</td></tr>
-<tr><td>USDT.D ▼</td><td class="green">Risk-On</td></tr>
-<tr><td>ETHBTC ➜</td><td class="yellow">Neutral</td></tr>
-<tr><td>All Mixed</td><td class="yellow">Wait</td></tr>
-</table>
+<div class="signal" id="signal">WAIT</div>
 </div>
 
 </div>
 
-<div class="footer">
-Green ▲ Up • Red ▼ Down • Yellow ➜ Sideways • Daily Time Frame Only
-</div>
+<div class="footer">Live data powered by CoinGecko + Binance</div>
 
-</body>
-</html>
+<script>
+let oldBTC=0,oldDom=0,oldUsdt=0,oldEth=0,oldTotal=0;
+
+function arrow(newVal,oldVal){
+if(newVal>oldVal) return ['▲ UP','green'];
+if(newVal<oldVal) return ['▼ DOWN','red'];
+return ['➜ SIDEWAYS','gold'];
+}
+
+function formatCap(n){
+if(n>=1e12) return '$'+(n/1e12).toFixed(2)+'T';
+if(n>=1e9) return '$'+(n/1e9).toFixed(2)+'B';
+return '$'+n.toFixed(0);
+}
+
+async function loadData(){
+
+const cg=await fetch('https://api.coingecko.com/api/v3/global').then(r=>r.json());
+const bin=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC').then(r=>r.json());
+const btc=await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT').then(r=>r.json());
+
+let btcPrice=parseFloat(btc.price);
+let total=cg.data.total_market_cap.usd;
+let btcCap=cg.data.market_cap_percentage.btc;
+let usdtCap=cg.data.market_cap_percentage.usdt;
+let ethbtc=parseFloat(bin.price);
+
+document.getElementById('btcPrice').innerText='$'+btcPrice.toLocaleString();
+document
