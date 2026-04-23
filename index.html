@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Francis Terminal V10 Bias Arrows</title>
+<title>Francis Terminal V11 Daily Volume Engine</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
 
 body{
 background:
-radial-gradient(circle at top left,#0a0a0a,#000 45%),
-radial-gradient(circle at bottom right,#08131f,#000 60%);
+radial-gradient(circle at top left,#0b0b0b,#000 45%),
+radial-gradient(circle at bottom right,#07131f,#000 60%);
 color:#fff;
 padding:14px;
 min-height:100vh;
@@ -27,45 +27,45 @@ margin-bottom:4px;
 .sub{
 text-align:center;
 font-size:12px;
-color:#93a4bf;
+color:#8fa4bf;
 margin-bottom:14px;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+grid-template-columns:1fr;
 gap:12px;
 }
 
 .card{
-background:rgba(8,16,28,.94);
-border:1px solid #173355;
+background:#08111d;
+border:1px solid #16324f;
 border-radius:18px;
 padding:14px;
-box-shadow:0 0 18px rgba(0,255,160,.06);
+box-shadow:0 0 16px rgba(0,255,150,.05);
 }
 
 .title{
 font-size:13px;
 color:#9fb0c9;
-margin-bottom:8px;
 font-weight:bold;
+margin-bottom:8px;
 }
 
 .value{
 font-size:30px;
 font-weight:700;
-margin-bottom:8px;
+margin-bottom:6px;
 }
 
-.green{color:#00ff8c}
-.red{color:#ff5757}
-.yellow{color:#ffd166}
+.green{color:#00ff8c;}
+.red{color:#ff5757;}
+.yellow{color:#ffd166;}
 
 .small{
 font-size:13px;
-color:#d7e2f3;
 line-height:1.6;
+color:#d7e2f3;
 }
 
 .table{
@@ -76,8 +76,8 @@ margin-top:8px;
 
 .table td{
 padding:8px 0;
+border-bottom:1px solid #13263c;
 font-size:13px;
-border-bottom:1px solid #14263b;
 }
 
 .table td:last-child{
@@ -86,17 +86,15 @@ font-weight:bold;
 }
 
 .signal{
-margin-top:10px;
+margin-top:12px;
 padding:12px;
 border-radius:14px;
 text-align:center;
 font-size:20px;
 font-weight:bold;
+background:#00351d;
+color:#00ff8c;
 }
-
-.long{background:#00351d;color:#00ff8c}
-.short{background:#3b1111;color:#ff5757}
-.wait{background:#403100;color:#ffd166}
 
 .footer{
 text-align:center;
@@ -104,64 +102,71 @@ font-size:12px;
 color:#7e8ca5;
 margin-top:14px;
 }
+
+@media(min-width:900px){
+.grid{grid-template-columns:repeat(2,1fr);}
+}
 </style>
 </head>
 
 <body>
 
-<h1>⚡ FRANCIS TERMINAL V10</h1>
-<div class="sub">Bias Direction Engine • Real-Time Layout</div>
+<h1>⚡ FRANCIS TERMINAL V11</h1>
+<div class="sub">Daily Time Frame Only • Volume Visible • Direction Bias</div>
 
 <div class="grid">
 
 <div class="card">
-<div class="title">BTC PRICE BIAS</div>
-<div class="value green">▲ UP</div>
-<div class="small">Bullish momentum active</div>
-</div>
-
-<div class="card">
-<div class="title">BTC.D BIAS</div>
-<div class="value green">▲ UP</div>
-<div class="small">Bitcoin dominance rising</div>
-</div>
-
-<div class="card">
-<div class="title">USDT.D BIAS</div>
-<div class="value red">▼ DOWN</div>
-<div class="small">Risk appetite improving</div>
-</div>
-
-<div class="card">
-<div class="title">ETHBTC BIAS</div>
-<div class="value yellow">➜ SIDEWAYS</div>
-<div class="small">No clear rotation yet</div>
-</div>
-
-<div class="card">
-<div class="title">TOTAL BIAS</div>
-<div class="value green">▲ UP</div>
-<div class="small">Market cap expanding</div>
-</div>
-
-<div class="card">
-<div class="title">MASTER ENGINE TABLE</div>
+<div class="title">DAILY ENGINE TABLE (1D)</div>
 <table class="table">
 <tr><td>BTC Price</td><td class="green">▲ Up</td></tr>
 <tr><td>BTC.D</td><td class="green">▲ Up</td></tr>
 <tr><td>USDT.D</td><td class="red">▼ Down</td></tr>
 <tr><td>ETHBTC</td><td class="yellow">➜ Sideways</td></tr>
 <tr><td>TOTAL</td><td class="green">▲ Up</td></tr>
-<tr><td>Bias Score</td><td class="green">84/100</td></tr>
+<tr><td>Bias Score</td><td class="green">86/100</td></tr>
 </table>
+<div class="signal">🚀 LONG BTC DAILY BIAS</div>
+</div>
 
-<div class="signal long">🚀 LONG MARKET BIAS</div>
+<div class="card">
+<div class="title">USDT.D (1D)</div>
+<div class="value red">▼ DOWN</div>
+<div class="small">Volume: 132.8B<br>Liquidity leaving stablecoins</div>
+</div>
+
+<div class="card">
+<div class="title">BTC.D (1D)</div>
+<div class="value green">▲ UP</div>
+<div class="small">Volume: 95.4B<br>Capital rotating into BTC</div>
+</div>
+
+<div class="card">
+<div class="title">ETHBTC (1D)</div>
+<div class="value yellow">➜ SIDEWAYS</div>
+<div class="small">Volume: 21.7B<br>ETH waiting for breakout</div>
+</div>
+
+<div class="card">
+<div class="title">TOTAL MARKET CAP (1D)</div>
+<div class="value green">▲ UP</div>
+<div class="small">Volume: 188.3B<br>Expansion continues</div>
+</div>
+
+<div class="card">
+<div class="title">DAILY RULES</div>
+<table class="table">
+<tr><td>BTC.D ▲ + TOTAL ▲</td><td class="green">Bullish</td></tr>
+<tr><td>USDT.D ▼</td><td class="green">Risk-On</td></tr>
+<tr><td>ETHBTC ➜</td><td class="yellow">Neutral</td></tr>
+<tr><td>All Mixed</td><td class="yellow">Wait</td></tr>
+</table>
 </div>
 
 </div>
 
 <div class="footer">
-Green ▲ = Up • Red ▼ = Down • Yellow ➜ = Sideways
+Green ▲ Up • Red ▼ Down • Yellow ➜ Sideways • Daily Time Frame Only
 </div>
 
 </body>
