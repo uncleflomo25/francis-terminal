@@ -3,46 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FRANCIS TERMINAL V2 FIXED</title>
+<title>FRANCIS TERMINAL V3 PRO</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
 background:#0f1722;
-color:#fff;
 font-family:Arial,Helvetica,sans-serif;
+color:#fff;
 overflow:hidden;
 }
 .topbar{
-height:48px;
+height:50px;
 background:#131722;
 border-bottom:1px solid #222b39;
 display:flex;
 align-items:center;
-padding:0 12px;
 gap:8px;
-font-size:13px;
+padding:0 12px;
 }
-.logo{font-weight:700;color:#fff;margin-right:8px}
+.logo{font-weight:700;margin-right:10px}
 .btn{
-padding:6px 10px;
 background:#1e222d;
+padding:6px 10px;
 border-radius:6px;
 cursor:pointer;
+font-size:13px;
 color:#cfd6e4;
 }
-.main{
+.wrap{
 display:grid;
-grid-template-columns:1fr 280px;
-height:calc(100vh - 48px);
+grid-template-columns:1fr 290px;
+height:calc(100vh - 50px);
 }
 .left{
 position:relative;
 background:#131722;
+overflow:hidden;
 }
 .right{
 background:#0d1520;
-border-left:1px solid #202a38;
+border-left:1px solid #1f2937;
 padding:12px;
 display:grid;
 gap:10px;
@@ -54,20 +55,15 @@ border:1px solid #1f2937;
 border-radius:10px;
 padding:12px;
 }
-.lab{
-font-size:11px;
-color:#8fa0b8;
-}
-.val{
-font-size:28px;
-font-weight:700;
-margin-top:6px;
-}
+.lab{font-size:11px;color:#8ea2bd}
+.val{font-size:28px;font-weight:700;margin-top:6px}
+
 canvas{
-width:100%;
-height:100%;
-display:block;
+position:absolute;
+top:0;left:0;
+cursor:grab;
 }
+
 .status{
 position:absolute;
 bottom:12px;
@@ -76,16 +72,20 @@ font-size:13px;
 color:#94a3b8;
 display:flex;
 gap:16px;
+z-index:10;
 }
+
 .water{
 position:absolute;
+top:18px;
 left:18px;
-top:16px;
 font-size:28px;
 font-weight:700;
 color:rgba(255,255,255,.04);
 pointer-events:none;
+z-index:10;
 }
+
 .green{color:#26a69a}
 .red{color:#ef5350}
 .gold{color:#f0b90b}
@@ -96,23 +96,24 @@ pointer-events:none;
 
 <div class="topbar">
 <div class="logo">FRANCIS TERMINAL</div>
-<div class="btn">1m</div>
-<div class="btn">5m</div>
-<div class="btn">1H</div>
-<div class="btn">4H</div>
-<div class="btn">1D</div>
-<div class="btn">Indicators</div>
+<div class="btn" onclick="setTF(60)">1m</div>
+<div class="btn" onclick="setTF(300)">5m</div>
+<div class="btn" onclick="setTF(3600)">1H</div>
+<div class="btn" onclick="setTF(14400)">4H</div>
+<div class="btn" onclick="setTF(86400)">1D</div>
+<div class="btn" onclick="zoomIn()">＋</div>
+<div class="btn" onclick="zoomOut()">－</div>
+<div class="btn" onclick="resetView()">Reset</div>
 </div>
 
-<div class="main">
+<div class="wrap">
 
-<div class="left">
+<div class="left" id="chartBox">
 <div class="water">FRANCIS TERMINAL</div>
 <canvas id="chart"></canvas>
 
 <div class="status">
-<div>BTC.D + USDT.D + ETHBTC + ETH.D + TOTAL</div>
-<div>Refresh 5s</div>
+<div>Real-Time Composite Engine</div>
 <div id="clock"></div>
 </div>
 </div>
@@ -127,207 +128,65 @@ pointer-events:none;
 <div class="card"><div class="lab">MODE</div><div class="val" id="mode">--</div></div>
 
 </div>
-
 </div>
 
 <script>
 const canvas=document.getElementById("chart");
 const ctx=canvas.getContext("2d");
-
-const elBTC=document.getElementById("btc");
-const elUSDT=document.getElementById("usdt");
-const elETHBTC=document.getElementById("ethbtc");
-const elETHD=document.getElementById("ethd");
-const elTOTAL=document.getElementById("total");
-const elMODE=document.getElementById("mode");
-const elCLOCK=document.getElementById("clock");
+const box=document.getElementById("chartBox");
 
 let candles=[];
+let scale=1;
+let offsetX=0;
+let tf=5000;
 
 /* resize */
 function resize(){
-canvas.width=canvas.clientWidth;
-canvas.height=canvas.clientHeight;
+canvas.width=box.clientWidth;
+canvas.height=box.clientHeight;
 draw();
 }
 window.addEventListener("resize",resize);
 
 /* clock */
 setInterval(()=>{
-elCLOCK.innerText=new Date().toLocaleTimeString();
+document.getElementById("clock").innerText=new Date().toLocaleTimeString();
 },1000);
 
-/* chart bg */
-function background(){
-ctx.fillStyle="#131722";
-ctx.fillRect(0,0,canvas.width,canvas.height);
+/* pan controls */
+let dragging=false,startX=0;
 
-ctx.strokeStyle="#1f2430";
-ctx.lineWidth=1;
-
-for(let i=0;i<12;i++){
-let y=i*canvas.height/12;
-ctx.beginPath();
-ctx.moveTo(0,y);
-ctx.lineTo(canvas.width,y);
-ctx.stroke();
-}
-
-for(let i=0;i<18;i++){
-let x=i*canvas.width/18;
-ctx.beginPath();
-ctx.moveTo(x,0);
-ctx.lineTo(x,canvas.height);
-ctx.stroke();
-}
-}
-
-/* draw candles */
-function draw(){
-background();
-
-if(candles.length<2)return;
-
-let max=Math.max(...candles.map(c=>c.high));
-let min=Math.min(...candles.map(c=>c.low));
-let range=max-min || 1;
-
-let x=30;
-let w=12;
-let gap=7;
-
-candles.forEach(c=>{
-
-let color="#f0b90b";
-if(c.close>c.open) color="#26a69a";
-if(c.close<c.open) color="#ef5350";
-
-let yh=((max-c.high)/range)*(canvas.height-40)+20;
-let yl=((max-c.low)/range)*(canvas.height-40)+20;
-let yo=((max-c.open)/range)*(canvas.height-40)+20;
-let yc=((max-c.close)/range)*(canvas.height-40)+20;
-
-ctx.strokeStyle=color;
-ctx.lineWidth=1.5;
-ctx.beginPath();
-ctx.moveTo(x+w/2,yh);
-ctx.lineTo(x+w/2,yl);
-ctx.stroke();
-
-ctx.fillStyle=color;
-ctx.fillRect(x,Math.min(yo,yc),w,Math.max(2,Math.abs(yc-yo)));
-
-x+=w+gap;
-});
-}
-
-/* fake data fallback */
-function rnd(a,b){return a+Math.random()*(b-a);}
-
-function fakeData(){
-return{
-btc:rnd(57.5,59.2),
-usdt:rnd(6.7,8.3),
-ethd:rnd(10.2,12.8),
-ethbtc:rnd(0.0289,0.0314),
-total:rnd(2.45,2.86)
-};
-}
-
-/* process */
-function process(d){
-
-let score=
-(d.total*14)+
-(d.ethbtc*620)+
-((10-d.usdt)*2)+
-(d.ethd*0.8)-
-(d.btc*0.35);
-
-let prev=candles.length?candles[candles.length-1].close:score;
-
-let candle={
-open:prev,
-close:score,
-high:Math.max(prev,score)+Math.random(),
-low:Math.min(prev,score)-Math.random()
+canvas.onmousedown=e=>{
+dragging=true;
+startX=e.clientX;
+canvas.style.cursor="grabbing";
 };
 
-candles.push(candle);
-if(candles.length>80)candles.shift();
+window.onmouseup=()=>{
+dragging=false;
+canvas.style.cursor="grab";
+};
 
+window.onmousemove=e=>{
+if(!dragging)return;
+offsetX += e.clientX-startX;
+startX=e.clientX;
 draw();
-
-/* cards */
-elBTC.innerText=d.btc.toFixed(2)+"%";
-elUSDT.innerText=d.usdt.toFixed(2)+"%";
-elETHBTC.innerText=d.ethbtc.toFixed(5);
-elETHD.innerText=d.ethd.toFixed(2)+"%";
-elTOTAL.innerText="$"+d.total.toFixed(2)+"T";
-
-/* mode */
-let txt="BALANCED";
-let col="#f0b90b";
-
-if(d.btc>58.2 && d.ethbtc<0.0300){
-txt="BTC MODE";
-col="#f0b90b";
-}
-if(d.ethbtc>0.0304 && d.ethd>11){
-txt="ETH MODE";
-col="#26a69a";
-}
-if(d.usdt>8.4){
-txt="DEFENSIVE";
-col="#ef5350";
-}
-
-elMODE.innerText=txt;
-elMODE.style.color=col;
-}
-
-/* live fetch */
-async function loadData(){
-
-try{
-
-const cg=await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
-const bn=await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC").then(r=>r.json());
-
-const d={
-btc:cg.data.market_cap_percentage.btc,
-usdt:cg.data.market_cap_percentage.usdt,
-ethd:cg.data.market_cap_percentage.eth,
-ethbtc:parseFloat(bn.price),
-total:cg.data.total_market_cap.usd/1000000000000
 };
 
-localStorage.setItem("francis_cache",JSON.stringify(d));
-process(d);
+canvas.onwheel=e=>{
+e.preventDefault();
+if(e.deltaY<0) zoomIn();
+else zoomOut();
+};
 
-}catch(err){
-
-let cache=localStorage.getItem("francis_cache");
-if(cache){
-process(JSON.parse(cache));
-}else{
-process(fakeData());
+function zoomIn(){scale*=1.1;draw();}
+function zoomOut(){scale/=1.1;draw();}
+function resetView(){scale=1;offsetX=0;draw();}
+function setTF(x){
+tf=x*1000;
+clearInterval(loop);
+loop=setInterval(loadData,tf);
 }
 
-}
-
-}
-
-/* start */
-resize();
-
-for(let i=0;i<50;i++){
-process(fakeData());
-}
-
-loadData();
-setInterval(loadData,5000);
-</script>
-
-</body>
-</html>
+/* bg
