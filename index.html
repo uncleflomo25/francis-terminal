@@ -3,128 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>V5 AI Rotation Engine FAST</title>
+<title>V6 REAL DATA MOBILE ELITE</title>
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#071018;color:#dce8ff;font-family:Arial,sans-serif;overflow:hidden}
+body{
+background:#071018;color:#dce8ff;font-family:Arial,sans-serif;overflow:hidden
+}
 header{
 height:44px;background:#09121c;border-bottom:1px solid #17304a;
 display:flex;justify-content:space-between;align-items:center;
-padding:0 12px;font-weight:700;font-size:13px
+padding:0 10px;font-weight:700;font-size:12px
 }
 #grid{
 display:grid;
-grid-template-columns:1fr 1fr 300px;
-grid-template-rows:230px 230px 230px calc(100vh - 734px);
+grid-template-columns:1fr 1fr;
+grid-template-rows:220px 220px 220px calc(100vh - 704px);
 gap:8px;padding:8px;height:calc(100vh - 44px)
 }
-.panel{background:#0b1622;border:1px solid #17304a;border-radius:10px;overflow:hidden}
-.title{height:26px;padding:6px 8px;font-size:11px;color:#8fb8ea;border-bottom:1px solid #13283d}
+.panel{
+background:#0b1622;border:1px solid #17304a;border-radius:10px;overflow:hidden
+}
+.title{
+height:26px;padding:6px 8px;font-size:11px;color:#8fb8ea;border-bottom:1px solid #13283d
+}
 .chart{height:calc(100% - 26px)}
-#side{grid-row:1/span 4;grid-column:3;display:grid;grid-template-rows:220px 1fr;gap:8px;background:none;border:none}
 .box{padding:10px;font-size:12px}
-.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #13283d}
-.big{font-size:22px;font-weight:700;margin-bottom:8px}
+.row{
+display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #13283d
+}
+.big{font-size:20px;font-weight:700;margin-bottom:8px}
 .green{color:#32d583}.red{color:#ff5d73}.gold{color:#ffd166}
 table{width:100%;border-collapse:collapse;font-size:11px}
 td{padding:5px;border-bottom:1px solid #13283d}
+.small{font-size:11px;color:#8ea8c7}
 </style>
 </head>
 <body>
 
 <header>
-<span>V5 AI ROTATION ENGINE FAST</span>
-<span id="clock"></span>
+<span>V6 REAL DATA MOBILE ELITE</span>
+<span id="clock">--:--</span>
 </header>
 
 <div id="grid">
-<div class="panel"><div class="title">BTCUSDT</div><div id="c1" class="chart"></div></div>
-<div class="panel"><div class="title">ETHUSDT</div><div id="c2" class="chart"></div></div>
 
-<div class="panel"><div class="title">ETHBTC</div><div id="c3" class="chart"></div></div>
-<div class="panel"><div class="title">BTC.D</div><div id="c4" class="chart"></div></div>
+<div class="panel"><div class="title">BTCUSDT LIVE</div><div id="c1" class="chart"></div></div>
+<div class="panel"><div class="title">ETHUSDT LIVE</div><div id="c2" class="chart"></div></div>
 
-<div class="panel"><div class="title">USDT.D</div><div id="c5" class="chart"></div></div>
-<div class="panel"><div class="title">AI Score</div><div id="c6" class="chart"></div></div>
-
-<div class="panel"><div class="title">TOTAL Proxy</div><div id="c7" class="chart"></div></div>
-<div class="panel"><div class="title">ETH Strength</div><div id="c8" class="chart"></div></div>
-
-<div id="side">
+<div class="panel"><div class="title">ETHBTC LIVE</div><div id="c3" class="chart"></div></div>
 <div class="panel">
-<div class="title">Engine</div>
+<div class="title">AI Regime Engine</div>
 <div class="box">
-<div class="big" id="regime">BOOTING...</div>
+<div class="big" id="regime">CONNECTING...</div>
 <div class="row"><span>BTC Edge</span><span id="btcEdge">--</span></div>
 <div class="row"><span>ETH Edge</span><span id="ethEdge">--</span></div>
-<div class="row"><span>Alt %</span><span id="altProb">--</span></div>
+<div class="row"><span>Alt Prob</span><span id="altProb">--</span></div>
 <div class="row"><span>Signal</span><span id="signal">--</span></div>
+<div class="small" id="status">Waiting for live feed...</div>
 </div>
 </div>
 
 <div class="panel">
-<div class="title">Feed</div>
+<div class="title">BTC.D / USDT.D Proxy</div>
+<div id="c4" class="chart"></div>
+</div>
+
+<div class="panel">
+<div class="title">Live Feed</div>
 <table id="feed"></table>
 </div>
-</div>
+
 </div>
 
 <script>
 clock.innerText=new Date().toLocaleTimeString();
 setInterval(()=>clock.innerText=new Date().toLocaleTimeString(),1000);
 
-function chart(id,color){
-let c=LightweightCharts.createChart(document.getElementById(id),{
+function mkChart(id,color){
+let chart=LightweightCharts.createChart(document.getElementById(id),{
 layout:{background:{color:"#0b1622"},textColor:"#8fb8ea"},
 grid:{vertLines:{color:"#102236"},horzLines:{color:"#102236"}},
 rightPriceScale:{borderColor:"#17304a"},
 timeScale:{borderColor:"#17304a",timeVisible:true,secondsVisible:false}
 });
-let s=c.addLineSeries({color:color,lineWidth:2});
-return {c,s,d:[]};
+let line=chart.addLineSeries({color:color,lineWidth:2});
+return {chart,line,data:[]};
 }
 
 function add(o,v){
 let t=Math.floor(Date.now()/1000);
-o.d.push({time:t,value:v});
-if(o.d.length>120)o.d.shift();
-o.s.setData(o.d);
+o.data.push({time:t,value:v});
+if(o.data.length>160)o.data.shift();
+o.line.setData(o.data);
 }
 
-const A=chart("c1","#32d583");
-const B=chart("c2","#ff8fab");
-const C=chart("c3","#5fa8ff");
-const D=chart("c4","#ffd166");
-const E=chart("c5","#ff5d73");
-const F=chart("c6","#b388ff");
-const G=chart("c7","#00d1ff");
-const H=chart("c8","#9eff6b");
+const btcChart=mkChart("c1","#32d583");
+const ethChart=mkChart("c2","#ff8fab");
+const pairChart=mkChart("c3","#5fa8ff");
+const domChart=mkChart("c4","#ffd166");
 
-let btc=68000,eth=3400,pair=.0500;
+let btc=0,eth=0,pair=0;
+let ws;
 
-function tick(){
-btc += (Math.random()-0.5)*120;
-eth += (Math.random()-0.5)*12;
-pair = eth/btc;
+function connect(){
+status.innerText="Connecting to Binance WebSocket...";
+
+ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@miniTicker/ethusdt@miniTicker/ethbtc@miniTicker");
+
+ws.onopen=()=>{
+status.innerHTML="<span class='green'>LIVE CONNECTED</span>";
+};
+
+ws.onmessage=(msg)=>{
+let data=JSON.parse(msg.data);
+let s=data.data.s;
+let p=parseFloat(data.data.c);
+
+if(s==="BTCUSDT") btc=p;
+if(s==="ETHUSDT") eth=p;
+if(s==="ETHBTC") pair=p;
+
+if(btc>0 && eth>0 && pair>0){
+updateAll();
+}
+};
+
+ws.onerror=()=>{
+status.innerHTML="<span class='red'>Connection Error</span>";
+};
+
+ws.onclose=()=>{
+status.innerHTML="<span class='gold'>Reconnecting...</span>";
+setTimeout(connect,3000);
+};
+}
+
+function updateAll(){
+
+add(btcChart,btc);
+add(ethChart,eth);
+add(pairChart,pair);
 
 let btcd=(btc/(btc+eth*15))*100;
-let usdt=100-btcd+((Math.random()-0.5)*1.5);
-let total=(btc*21 + eth*120)/1000;
-let ethStr=pair*100000;
+let usdt=100-btcd;
+add(domChart,btcd);
 
-add(A,btc);
-add(B,eth);
-add(C,pair);
-add(D,btcd);
-add(E,usdt);
-add(F,(ethStr-btcd));
-add(G,total);
-add(H,ethStr);
-
-let bm=A.d.length>8 ? btc-A.d[A.d.length-8].value : 0;
-let em=B.d.length>8 ? eth-B.d[B.d.length-8].value : 0;
-let pm=C.d.length>8 ? pair-C.d[C.d.length-8].value : 0;
+let bm=btcChart.data.length>8 ? btc-btcChart.data[btcChart.data.length-8].value : 0;
+let em=ethChart.data.length>8 ? eth-ethChart.data[ethChart.data.length-8].value : 0;
+let pm=pairChart.data.length>8 ? pair-pairChart.data[pairChart.data.length-8].value : 0;
 
 let regime="NEUTRAL";
 let sig="WAIT";
@@ -144,17 +171,16 @@ sig="BUY DIPS";
 }
 
 document.getElementById("regime").innerText=regime;
-btcEdge.innerHTML="<span class='green'>"+(50+bm/15).toFixed(1)+"%</span>";
-ethEdge.innerHTML="<span class='gold'>"+(50+em/1.2).toFixed(1)+"%</span>";
-altProb.innerHTML="<span class='red'>"+(50+pm*10000).toFixed(1)+"%</span>";
+btcEdge.innerHTML="<span class='green'>"+(50+bm/20).toFixed(1)+"%</span>";
+ethEdge.innerHTML="<span class='gold'>"+(50+em/2).toFixed(1)+"%</span>";
+altProb.innerHTML="<span class='red'>"+(50+pm*9000).toFixed(1)+"%</span>";
 signal.innerText=sig;
 
 feed.innerHTML="<tr><td>"+new Date().toLocaleTimeString()+"</td><td>"+regime+"</td><td>"+sig+"</td></tr>"+feed.innerHTML;
-if(feed.rows.length>20)feed.deleteRow(20);
+if(feed.rows.length>18)feed.deleteRow(18);
 }
 
-for(let i=0;i<60;i++)tick();
-setInterval(tick,1000);
+connect();
 </script>
 </body>
 </html>
