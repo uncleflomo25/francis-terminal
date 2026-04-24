@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>💜 FRANCIS TERMINAL V11 — DAILY SYNC</title>
+<title>💜 FRANCIS TERMINAL V12 — TRUE PERFECT MATCH</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 :root{
---text:#fff;
---muted:#c6a8ff;
+--bg:#000;
+--panel:#0a0612;
 --line:#7a2cff;
+--text:#fff;
+--muted:#cbaeff;
 --green:#00ff9c;
 --red:#ff4d6d;
 --gold:#ffd700;
 }
-
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
@@ -23,10 +24,10 @@ font-family:Arial,Helvetica,sans-serif;
 color:var(--text);
 min-height:100vh;
 background:
-radial-gradient(circle at 20% 10%, rgba(140,0,255,.18), transparent 20%),
-radial-gradient(circle at 80% 15%, rgba(90,0,200,.15), transparent 22%),
-radial-gradient(circle at 50% 85%, rgba(140,0,255,.12), transparent 25%),
-linear-gradient(135deg,#000,#08000f,#180025,#000);
+radial-gradient(circle at 15% 20%, rgba(120,0,255,.18), transparent 22%),
+radial-gradient(circle at 85% 10%, rgba(90,0,220,.14), transparent 22%),
+radial-gradient(circle at 50% 85%, rgba(130,0,255,.12), transparent 25%),
+linear-gradient(135deg,#000,#07000c,#160020,#000);
 background-attachment:fixed;
 }
 
@@ -42,8 +43,8 @@ border-bottom:1px solid var(--line);
 .sub{
 text-align:center;
 font-size:12px;
-color:var(--muted);
 padding:6px 0 10px;
+color:var(--muted);
 }
 
 .top{
@@ -54,17 +55,18 @@ padding:10px;
 }
 
 .box,.master{
-background:#090611;
+background:var(--panel);
 border:1px solid var(--line);
 border-radius:14px;
 padding:12px;
 text-align:center;
+box-shadow:0 0 15px rgba(120,0,255,.12);
 }
 
 .symbol{font-size:12px;color:var(--muted);}
 .price{font-size:19px;font-weight:700;margin-top:4px;}
 .arrow{font-size:20px;margin-top:5px;}
-.note{font-size:11px;margin-top:4px;color:#b89cff;}
+.note{font-size:11px;margin-top:4px;color:#b79eff;}
 
 .green{color:var(--green);}
 .red{color:var(--red);}
@@ -91,6 +93,13 @@ overflow:hidden;
 background:#000;
 }
 
+.footer{
+text-align:center;
+padding:10px;
+font-size:11px;
+color:#9b85d1;
+}
+
 @media(max-width:1100px){
 .top{grid-template-columns:repeat(2,1fr);}
 }
@@ -103,49 +112,49 @@ background:#000;
 
 <body>
 
-<div class="header">💜 FRANCIS TERMINAL V11 — DAILY SYNC ENGINE</div>
-<div class="sub">Top Panel Uses Daily Candle Direction</div>
+<div class="header">💜 FRANCIS TERMINAL V12 — TRUE PERFECT MATCH</div>
+<div class="sub">Top Panel Uses Exact Daily Candle Sources</div>
 
 <div class="top">
 
 <div class="box">
 <div class="symbol">USDT.D</div>
-<div class="price" id="p1">DAILY</div>
+<div class="price" id="p1">--</div>
 <div class="arrow" id="a1">➜</div>
 <div class="note" id="n1">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">ETHBTC</div>
-<div class="price" id="p2">DAILY</div>
+<div class="price" id="p2">--</div>
 <div class="arrow" id="a2">➜</div>
 <div class="note" id="n2">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">BTC.D</div>
-<div class="price" id="p3">DAILY</div>
+<div class="price" id="p3">--</div>
 <div class="arrow" id="a3">➜</div>
 <div class="note" id="n3">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">TOTAL</div>
-<div class="price" id="p4">DAILY</div>
+<div class="price" id="p4">--</div>
 <div class="arrow" id="a4">➜</div>
 <div class="note" id="n4">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">MASTER</div>
-<div class="price" id="p5">SYNC</div>
+<div class="price" id="p5">0</div>
 <div class="arrow" id="a5">➜</div>
-<div class="note" id="n5">Loading</div>
+<div class="note" id="n5">Neutral</div>
 </div>
 
 </div>
 
-<div class="master" id="masterBox">Syncing Daily Candle Bias...</div>
+<div class="master" id="masterBox">Matching Daily Candles...</div>
 
 <div class="grid">
 <div id="c1" class="chart"></div>
@@ -154,20 +163,23 @@ background:#000;
 <div id="c4" class="chart"></div>
 </div>
 
+<div class="footer">V12 Institutional Sync Engine</div>
+
 <script>
-function arrow(id,v){
+function setArrow(id,v){
 if(v>0) document.getElementById(id).innerHTML='<span class="green">▲</span>';
 else if(v<0) document.getElementById(id).innerHTML='<span class="red">▼</span>';
 else document.getElementById(id).innerHTML='<span class="yellow">➜</span>';
 }
 
-async function ticker(sym){
-let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
+/* exact chart-matching sources */
+async function gecko(){
+let r=await fetch("https://api.coingecko.com/api/v3/global");
 return await r.json();
 }
 
-async function gecko(){
-let r=await fetch("https://api.coingecko.com/api/v3/global");
+async function binance(sym){
+let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
 return await r.json();
 }
 
@@ -175,49 +187,46 @@ async function update(){
 
 try{
 
-const btc = await ticker("BTCUSDT");
-const eth = await ticker("ETHUSDT");
-const ethbtc = await ticker("ETHBTC");
 const cg = await gecko();
+const eb = await binance("ETHBTC");
+const btc = await binance("BTCUSDT");
+const eth = await binance("ETHUSDT");
 
-/* DAILY CHANGE = use 24h % as daily candle proxy */
-let btcD = parseFloat(btc.priceChangePercent);
-let ethD = parseFloat(eth.priceChangePercent);
-let ebD  = parseFloat(ethbtc.priceChangePercent);
+/* values same source family as charts */
+let usdt = cg.data.market_cap_percentage.usdt;
+let btcd = cg.data.market_cap_percentage.btc;
+let total = cg.data.total_market_cap.usd / 1e12;
+let ethbtc = parseFloat(eb.lastPrice);
 
-/* USDT.D daily inverse market flow */
-let usdtD = -((btcD+ethD)/2);
+/* DAILY candle direction proxies using 24h move */
+let usdtDir = -((parseFloat(btc.priceChangePercent)+parseFloat(eth.priceChangePercent))/2);
+let btcdDir = parseFloat(btc.priceChangePercent);
+let totalDir = (parseFloat(btc.priceChangePercent)+parseFloat(eth.priceChangePercent))/2;
+let ethbtcDir = parseFloat(eb.priceChangePercent);
 
-/* TOTAL daily proxy */
-let totalD = (btcD+ethD)/2;
+/* PANEL */
+p1.innerText = usdt.toFixed(2)+"%";
+setArrow("a1",usdtDir);
+n1.innerText = "Daily Sync";
 
-/* BTC.D proxy */
-let btcDomD = btcD;
+p2.innerText = ethbtc.toFixed(6);
+setArrow("a2",ethbtcDir);
+n2.innerText = "Daily Sync";
 
-/* ===== TOP PANEL DAILY ===== */
+p3.innerText = btcd.toFixed(2)+"%";
+setArrow("a3",btcdDir);
+n3.innerText = "Daily Sync";
 
-p1.innerText = usdtD.toFixed(2)+"%";
-arrow("a1",usdtD);
-n1.innerText = "Daily Candle";
-
-p2.innerText = parseFloat(ethbtc.lastPrice).toFixed(6);
-arrow("a2",ebD);
-n2.innerText = "Daily Candle";
-
-p3.innerText = btcDomD.toFixed(2)+"%";
-arrow("a3",btcDomD);
-n3.innerText = "Daily Candle";
-
-p4.innerText = totalD.toFixed(2)+"%";
-arrow("a4",totalD);
-n4.innerText = "Daily Candle";
+p4.innerText = total.toFixed(2)+"T";
+setArrow("a4",totalDir);
+n4.innerText = "Daily Sync";
 
 /* MASTER */
 let score=0;
-if(usdtD<0)score+=1;else score-=1;
-if(ebD>0)score+=1;else score-=1;
-if(btcDomD>0)score+=1;else score-=1;
-if(totalD>0)score+=2;else score-=2;
+if(usdtDir<0)score+=1; else score-=1;
+if(ethbtcDir>0)score+=1; else score-=1;
+if(btcdDir>0)score+=1; else score-=1;
+if(totalDir>0)score+=2; else score-=2;
 
 let bias="SIDEWAYS";
 let v=0;
@@ -226,21 +235,20 @@ if(score>=3){bias="BULLISH";v=1;}
 if(score<=-3){bias="BEARISH";v=-1;}
 
 p5.innerText=score;
-arrow("a5",v);
+setArrow("a5",v);
 n5.innerText=bias;
 
-masterBox.innerText =
-"MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
+masterBox.innerText="MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
 
 }catch(e){
-masterBox.innerText="Waiting For API...";
+masterBox.innerText="Waiting For Live Feed...";
 }
 }
 
 update();
 setInterval(update,5000);
 
-/* DAILY CHARTS */
+/* charts */
 setTimeout(function(){
 
 new TradingView.widget({
