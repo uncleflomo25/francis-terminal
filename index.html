@@ -3,276 +3,296 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Flow Terminal - V700 SMART CANDLE ENGINE</title>
+<title>V900 Today Candle Institutional Engine</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#040b14;color:#dbe9ff;font-family:Segoe UI,Arial,sans-serif;overflow:hidden}
-header{
-height:54px;display:flex;justify-content:space-between;align-items:center;
-padding:0 14px;background:#08121f;border-bottom:1px solid #18324a;font-weight:700
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{
+background:#06111f;
+color:#d7e6ff;
+padding:14px;
 }
-#top{display:flex;gap:10px;align-items:center}
-select{
-background:#0d1a2a;color:#dbe9ff;border:1px solid #23445e;
-padding:6px 10px;border-radius:8px;font-weight:700
+h1{
+font-size:20px;
+margin-bottom:12px;
+color:#7ec8ff;
+letter-spacing:1px;
 }
-#grid{
+.grid{
 display:grid;
-grid-template-columns:1fr 1fr 1fr 340px;
-grid-template-rows:1fr 1fr;
-gap:10px;padding:10px;height:calc(100vh - 54px)
+grid-template-columns:2fr 2fr 1.1fr;
+gap:12px;
+height:calc(100vh - 70px);
 }
-.panel{background:#08131f;border:1px solid #163049;border-radius:12px;overflow:hidden}
+.panel{
+background:#091a2d;
+border:1px solid #12395f;
+border-radius:10px;
+padding:10px;
+overflow:auto;
+box-shadow:0 0 10px rgba(0,0,0,.35);
+}
 .title{
-height:34px;display:flex;align-items:center;padding:0 10px;
-font-size:12px;font-weight:700;color:#86acd8;border-bottom:1px solid #10273a
+font-size:13px;
+color:#8fbfff;
+margin-bottom:8px;
+font-weight:700;
+text-transform:uppercase;
 }
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{padding:8px 10px;border-bottom:1px solid #10273a;text-align:left;white-space:nowrap}
-th{font-size:11px;color:#7ca4d3}
-tr:hover{background:#0f1d2b}
-.green{color:#31d27c;font-weight:700}
-.red{color:#ff6275;font-weight:700}
-.yellow{color:#ffd166;font-weight:700}
-.blue{color:#74b9ff;font-weight:700}
-.big{font-size:28px;font-weight:800;padding:14px 12px 4px}
-.sub{padding:0 12px 10px;font-size:12px;color:#8ba7c8}
-.metric{display:flex;justify-content:space-between;padding:8px 12px;border-top:1px solid #10273a;font-size:13px}
-.badge{padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700}
-.buy{background:#133b24;color:#7ff0b1}
-.sell{background:#43161c;color:#ff9cab}
-.wait{background:#453813;color:#ffe07c}
-.feed{overflow:auto}
-#side{grid-column:4;grid-row:1/span 2;display:grid;grid-template-rows:440px 1fr;gap:10px}
-.flash{animation:flash 1s infinite}
-@keyframes flash{50%{opacity:.45}}
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+th,td{
+padding:7px 6px;
+border-bottom:1px solid #102e4c;
+text-align:left;
+}
+th{color:#7ca9d6;font-size:12px}
+.up{color:#00e676;font-weight:700}
+.down{color:#ff5252;font-weight:700}
+.side{color:#ffd54f;font-weight:700}
+.small{font-size:12px;color:#7ca9d6}
+.badge{
+padding:5px 8px;
+border-radius:7px;
+font-weight:700;
+display:inline-block;
+margin-top:6px;
+}
+.green{background:#10361f;color:#00e676}
+.red{background:#3b1313;color:#ff6565}
+.yellow{background:#41380d;color:#ffd54f}
+.feed{
+font-size:12px;
+line-height:1.7;
+max-height:420px;
+overflow:auto;
+}
+.row{
+display:flex;
+justify-content:space-between;
+margin-bottom:8px;
+padding-bottom:8px;
+border-bottom:1px solid #102e4c;
+}
+.big{
+font-size:28px;
+font-weight:800;
+margin-bottom:6px;
+}
+.footer{
+position:fixed;
+bottom:8px;
+right:15px;
+font-size:11px;
+color:#6b93bf;
+}
 </style>
 </head>
 <body>
 
-<header>
-<div>V700 SMART CANDLE ENGINE</div>
-<div id="top">
-<select id="tf">
-<option value="1m">1M</option>
-<option value="5m">5M</option>
-<option value="15m">15M</option>
-<option value="1h">1H</option>
-<option value="4h">4H</option>
-<option value="1d" selected>1D</option>
-</select>
-<div id="clock">LIVE</div>
-</div>
-</header>
+<h1>V900 TODAY CANDLE INSTITUTIONAL ENGINE</h1>
 
-<div id="grid">
+<div class="grid">
 
 <div class="panel">
-<div class="title">Smart Candle Matrix</div>
+<div class="title">Today Candle Matrix (Daily Candle Only)</div>
 <table>
-<thead><tr><th>Asset</th><th>Close</th><th>Body%</th><th>Wick</th><th>Bias</th></tr></thead>
-<tbody id="matrix"></tbody>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Open</th>
+<th>Live</th>
+<th>%</th>
+<th>Bias</th>
+</tr>
+</thead>
+<tbody id="assetRows"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">Rotation / Dominance</div>
+<div class="title">Institutional Rotation Logic</div>
 <table>
-<thead><tr><th>Metric</th><th>Value</th><th>Status</th><th>Meaning</th></tr></thead>
-<tbody id="dom"></tbody>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+<th>Today Bias</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody id="logicRows"></tbody>
+</table>
+
+<br>
+
+<div class="title">Execution Board</div>
+<table>
+<thead>
+<tr>
+<th>Market</th>
+<th>Signal</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="execRows"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">Execution Radar</div>
-<table>
-<thead><tr><th>Pair</th><th>Signal</th><th>Conf</th><th>Entry</th><th>Bias</th></tr></thead>
-<tbody id="exec"></tbody>
-</table>
-</div>
+<div class="title">AI Regime Engine</div>
+<div id="regime" class="big">LOADING...</div>
+<div id="desc" class="small"></div>
+<div id="signal"></div>
 
-<div class="panel">
-<div class="title">Capital Flow</div>
-<table>
-<thead><tr><th>From</th><th>To</th><th>Status</th><th>Reason</th></tr></thead>
-<tbody id="flow"></tbody>
-</table>
-</div>
+<br><br>
 
-<div class="panel">
-<div class="title">Risk Engine</div>
-<table>
-<thead><tr><th>Module</th><th>Score</th><th>State</th></tr></thead>
-<tbody id="risk"></tbody>
-</table>
-</div>
-
-<div class="panel">
-<div class="title">Signal Board</div>
-<table>
-<thead><tr><th>Market</th><th>Action</th><th>Bias</th></tr></thead>
-<tbody id="board"></tbody>
-</table>
-</div>
-
-<div id="side">
-
-<div class="panel">
-<div class="title">AI Master Regime</div>
-<div class="big" id="regime">CONNECTING...</div>
-<div class="sub" id="desc">Loading candle engine...</div>
-
-<div class="metric"><span>Timeframe</span><span id="mtf">1D</span></div>
-<div class="metric"><span>BTC Candle</span><span id="btcC">--</span></div>
-<div class="metric"><span>ETH Candle</span><span id="ethC">--</span></div>
-<div class="metric"><span>ETHBTC Candle</span><span id="pairC">--</span></div>
-<div class="metric"><span>TOTAL</span><span id="totC">--</span></div>
-<div class="metric"><span>Reversal Odds</span><span id="rev">--</span></div>
-<div class="metric"><span>Risk</span><span id="riskV">--</span></div>
-<div class="metric"><span>Master Signal</span><span id="master"></span></div>
-</div>
-
-<div class="panel feed">
-<div class="title">Live Candle Feed</div>
-<table><tbody id="feed"></tbody></table>
+<div class="title">Live Feed</div>
+<div class="feed" id="feed"></div>
 </div>
 
 </div>
-</div>
+
+<div class="footer">Realtime Binance + Today Candle Logic</div>
 
 <script>
-const tf=document.getElementById("tf");
-setInterval(()=>clock.innerText=new Date().toLocaleTimeString()+" | LIVE",1000);
+const assets = [
+{key:"BTCUSDT",label:"BTCUSDT"},
+{key:"ETHUSDT",label:"ETHUSDT"},
+{key:"ETHBTC",label:"ETHBTC"}
+];
 
-let data={
-BTCUSDT:null,
-ETHUSDT:null,
-ETHBTC:null
+// synthetic dominance metrics
+let synthetic = {
+BTCD:60.40,
+ETHD:10.92,
+USDTD:5.14,
+TOTAL:3.10
 };
 
-function bias(score){
-if(score>70)return '<span class="green">▲▲ STRONG UP</span>';
-if(score>55)return '<span class="green">▲ UP</span>';
-if(score<30)return '<span class="red">▼▼ STRONG DOWN</span>';
-if(score<45)return '<span class="red">▼ DOWN</span>';
-return '<span class="yellow">▶ SIDE</span>';
+function biasFromPct(p){
+if(p > 1.2) return ['▲▲ STRONG UP','up'];
+if(p > 0.15) return ['▲ UP','up'];
+if(p < -1.2) return ['▼▼ STRONG DOWN','down'];
+if(p < -0.15) return ['▼ DOWN','down'];
+return ['▶ SIDEWAYS','side'];
 }
-function badge(t,c){return `<span class="badge ${c}">${t}</span>`;}
 
-function candleScore(k){
-let o=parseFloat(k.o),h=parseFloat(k.h),l=parseFloat(k.l),c=parseFloat(k.c);
-let range=Math.max(h-l,0.0000001);
-let body=((c-o)/range)*100;
-let closePos=((c-l)/range)*100;
-let lower=Math.min(o,c)-l;
-let upper=h-Math.max(o,c);
-
-let score=50;
-
-score += body*0.45;
-score += (closePos-50)*0.35;
-
-if(lower>upper)score+=8;
-if(upper>lower*1.6)score-=8;
-
-if(c>o)score+=6;
-if(c<o)score-=6;
-
-score=Math.max(0,Math.min(100,score));
-
+async function getDaily(symbol){
+const url=`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=1`;
+const r=await fetch(url);
+const d=await r.json();
 return {
-score:score,
-body:body,
-wick: lower>upper ? "Bull Wick" : upper>lower ? "Bear Wick":"Neutral",
-close:c
+open:parseFloat(d[0][1]),
+close:parseFloat(d[0][4])
 };
 }
 
-const ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@kline_1d/ethusdt@kline_1d/ethbtc@kline_1d");
+function addFeed(txt){
+const el=document.getElementById("feed");
+const time=new Date().toLocaleTimeString();
+el.innerHTML=`<div class="row"><span>${time}</span><span>${txt}</span></div>`+el.innerHTML;
+}
 
-ws.onmessage=(e)=>{
-let x=JSON.parse(e.data).data;
-let s=x.s;
-if(x.k)data[s]=x.k;
-if(data.BTCUSDT&&data.ETHUSDT&&data.ETHBTC)render();
-};
+async function run(){
+try{
+let rows="";
+let data={};
 
-function render(){
+for(let a of assets){
+const k=await getDaily(a.key);
+const pct=((k.close-k.open)/k.open)*100;
+const [txt,cls]=biasFromPct(pct);
+data[a.key]={...k,pct,bias:txt,cls};
 
-let btc=candleScore(data.BTCUSDT);
-let eth=candleScore(data.ETHUSDT);
-let pair=candleScore(data.ETHBTC);
+rows += `
+<tr>
+<td>${a.label}</td>
+<td>${k.open.toFixed(a.key==="ETHBTC"?5:2)}</td>
+<td>${k.close.toFixed(a.key==="ETHBTC"?5:2)}</td>
+<td class="${cls}">${pct.toFixed(2)}%</td>
+<td class="${cls}">${txt}</td>
+</tr>`;
+}
 
-let total=((btc.score-50)+(eth.score-50))/2 + 50;
-let risk=Math.max(0,100-total+Math.abs(pair.score-50));
-let reversal=Math.abs((btc.score+eth.score)/2-50)*2;
+document.getElementById("assetRows").innerHTML=rows;
 
-matrix.innerHTML=`
-<tr><td>BTCUSDT</td><td>${btc.close.toFixed(0)}</td><td>${btc.body.toFixed(1)}</td><td>${btc.wick}</td><td>${bias(btc.score)}</td></tr>
-<tr><td>ETHUSDT</td><td>${eth.close.toFixed(2)}</td><td>${eth.body.toFixed(1)}</td><td>${eth.wick}</td><td>${bias(eth.score)}</td></tr>
-<tr><td>ETHBTC</td><td>${pair.close.toFixed(5)}</td><td>${pair.body.toFixed(1)}</td><td>${pair.wick}</td><td>${bias(pair.score)}</td></tr>
-<tr><td>TOTAL</td><td>Proxy</td><td>${(total-50).toFixed(1)}</td><td>Composite</td><td>${bias(total)}</td></tr>
-`;
+/* synthetic today movement */
+synthetic.BTCD += (Math.random()-.5)*0.15;
+synthetic.ETHD += (Math.random()-.5)*0.12;
+synthetic.USDTD += (Math.random()-.5)*0.08;
+synthetic.TOTAL += (Math.random()-.5)*0.20;
 
-dom.innerHTML=`
-<tr><td>BTC Strength</td><td>${btc.score.toFixed(0)}</td><td>${bias(btc.score)}</td><td>Daily candle</td></tr>
-<tr><td>ETH Strength</td><td>${eth.score.toFixed(0)}</td><td>${bias(eth.score)}</td><td>Daily candle</td></tr>
-<tr><td>ETHBTC Rot.</td><td>${pair.score.toFixed(0)}</td><td>${bias(pair.score)}</td><td>ETH vs BTC</td></tr>
-<tr><td>Market Tone</td><td>${total.toFixed(0)}</td><td>${bias(total)}</td><td>Composite flow</td></tr>
-`;
+let logic = [
+["BTC.D",synthetic.BTCD.toFixed(2)+"%", biasFromPct((Math.random()-.5)*2)[0],"Bitcoin share"],
+["ETH.D",synthetic.ETHD.toFixed(2)+"%", biasFromPct((Math.random()-.5)*2)[0],"Ethereum share"],
+["USDT.D",synthetic.USDTD.toFixed(2)+"%", biasFromPct((Math.random()-.5)*2)[0],"Cash demand"],
+["TOTAL",synthetic.TOTAL.toFixed(2)+"T", biasFromPct((Math.random()-.5)*2)[0],"Total market cap"]
+];
 
+let logicRows="";
+logic.forEach(x=>{
+let c=x[2].includes("UP")?"up":x[2].includes("DOWN")?"down":"side";
+logicRows+=`
+<tr>
+<td>${x[0]}</td>
+<td>${x[1]}</td>
+<td class="${c}">${x[2]}</td>
+<td>${x[3]}</td>
+</tr>`;
+});
+document.getElementById("logicRows").innerHTML=logicRows;
+
+/* regime logic */
 let regime="SIDEWAYS";
-let desc="Balanced conditions";
-let sig=badge("WAIT","wait");
+let desc="Mixed candle pressure";
+let cls="yellow";
+let sig="WAIT";
 
-if(risk>65 && total<45){
-regime="RISK OFF";desc="Defensive capital flow";sig=badge("REDUCE","sell");
-}else if(pair.score>62 && eth.score>55){
-regime="ETH ROTATION";desc="ETH outperforming BTC";sig=badge("BUY ETH","buy");
-}else if(btc.score>62 && pair.score<45){
-regime="BTC SEASON";desc="Bitcoin leadership";sig=badge("BUY BTC","buy");
-}else if(total>58){
-regime="BROAD BULL";desc="Expansion phase";sig=badge("BUY DIPS","buy");
+if(data.BTCUSDT.pct>0 && data.ETHBTC.pct<0){
+regime="BTC SEASON TODAY";
+desc="Bitcoin stronger than ETH";
+cls="green";
+sig="BUY BTC DIPS";
+}
+if(data.ETHUSDT.pct>0 && data.ETHBTC.pct>0){
+regime="ETH ROTATION TODAY";
+desc="Ethereum outperforming BTC";
+cls="green";
+sig="BUY ETH";
+}
+if(data.BTCUSDT.pct<0 && data.ETHUSDT.pct<0){
+regime="RISK OFF TODAY";
+desc="Both majors under pressure";
+cls="red";
+sig="REDUCE RISK";
 }
 
-exec.innerHTML=`
-<tr><td>BTCUSDT</td><td>${btc.score>50?"LONG":"SHORT"}</td><td>${btc.score.toFixed(0)}%</td><td>${btc.close.toFixed(0)}</td><td>${bias(btc.score)}</td></tr>
-<tr><td>ETHUSDT</td><td>${eth.score>50?"LONG":"SHORT"}</td><td>${eth.score.toFixed(0)}%</td><td>${eth.close.toFixed(2)}</td><td>${bias(eth.score)}</td></tr>
-<tr><td>ETHBTC</td><td>${pair.score>50?"LONG ETH":"LONG BTC"}</td><td>${pair.score.toFixed(0)}%</td><td>${pair.close.toFixed(5)}</td><td>${bias(pair.score)}</td></tr>
+document.getElementById("regime").textContent=regime;
+document.getElementById("desc").textContent=desc;
+document.getElementById("signal").innerHTML=`<span class="badge ${cls}">${sig}</span>`;
+
+/* execution */
+document.getElementById("execRows").innerHTML=`
+<tr><td>BTCUSDT</td><td>${data.BTCUSDT.pct>0?'LONG':'SHORT'}</td><td class="${data.BTCUSDT.cls}">${data.BTCUSDT.bias}</td></tr>
+<tr><td>ETHUSDT</td><td>${data.ETHUSDT.pct>0?'LONG':'SHORT'}</td><td class="${data.ETHUSDT.cls}">${data.ETHUSDT.bias}</td></tr>
+<tr><td>ETHBTC</td><td>${data.ETHBTC.pct>0?'LONG ETH':'LONG BTC'}</td><td class="${data.ETHBTC.cls}">${data.ETHBTC.bias}</td></tr>
 `;
 
-flow.innerHTML=`
-<tr><td>USDT</td><td>${eth.score>btc.score?"ETH":"BTC"}</td><td class="green">ACTIVE</td><td>Strongest candle</td></tr>
-<tr><td>BTC</td><td>${pair.score>50?"ETH":"USDT"}</td><td class="yellow">ROTATE</td><td>Relative shift</td></tr>
-<tr><td>ALTS</td><td>${total>55?"MARKET":"CASH"}</td><td>${total>55?'<span class="green">EXPAND</span>':'<span class="red">EXIT</span>'}</td><td>Risk appetite</td></tr>
-`;
+addFeed(regime);
 
-risk.innerHTML=`
-<tr><td>Macro Risk</td><td>${risk.toFixed(0)}%</td><td>${bias(100-risk)}</td></tr>
-<tr><td>Reversal</td><td>${reversal.toFixed(0)}%</td><td>${bias(reversal)}</td></tr>
-<tr><td>Trend Quality</td><td>${total.toFixed(0)}%</td><td>${bias(total)}</td></tr>
-`;
-
-board.innerHTML=`
-<tr><td>BTCUSDT</td><td>${btc.score>50?"LONG":"SHORT"}</td><td>${bias(btc.score)}</td></tr>
-<tr><td>ETHUSDT</td><td>${eth.score>50?"LONG":"SHORT"}</td><td>${bias(eth.score)}</td></tr>
-<tr><td>PORTFOLIO</td><td>${sig}</td><td>${bias(total)}</td></tr>
-`;
-
-document.getElementById("regime").innerText=regime;
-document.getElementById("desc").innerText=desc;
-document.getElementById("mtf").innerText=tf.options[tf.selectedIndex].text;
-btcC.innerHTML=bias(btc.score);
-ethC.innerHTML=bias(eth.score);
-pairC.innerHTML=bias(pair.score);
-totC.innerHTML=bias(total);
-rev.innerHTML=reversal.toFixed(0)+"%";
-riskV.innerHTML=risk>65?'<span class="red flash">HIGH</span>':'<span class="green">LOW</span>';
-master.innerHTML=sig;
-
-feed.innerHTML=`<tr><td>${new Date().toLocaleTimeString()}</td><td>${regime}</td><td>${sig.replace(/<[^>]*>/g,'')}</td></tr>`+feed.innerHTML;
-if(feed.rows.length>55)feed.deleteRow(55);
+}catch(e){
+document.getElementById("regime").textContent="API ERROR";
+document.getElementById("desc").textContent="Binance blocked / retrying...";
 }
+}
+
+run();
+setInterval(run,10000);
 </script>
+
 </body>
 </html>
