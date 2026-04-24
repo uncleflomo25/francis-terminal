@@ -3,42 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>V5 AI Rotation Engine Pro</title>
+<title>V5 AI Rotation Engine FAST</title>
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#071018;color:#dce8ff;font-family:Arial,sans-serif;overflow:hidden}
 header{
-height:46px;background:#09121c;border-bottom:1px solid #17304a;
-display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-weight:700
+height:44px;background:#09121c;border-bottom:1px solid #17304a;
+display:flex;justify-content:space-between;align-items:center;
+padding:0 12px;font-weight:700;font-size:13px
 }
 #grid{
 display:grid;
-grid-template-columns:1fr 1fr 330px;
-grid-template-rows:250px 250px 250px calc(100vh - 804px);
-gap:8px;
-padding:8px;
-height:calc(100vh - 46px);
+grid-template-columns:1fr 1fr 300px;
+grid-template-rows:230px 230px 230px calc(100vh - 734px);
+gap:8px;padding:8px;height:calc(100vh - 44px)
 }
-.panel{
-background:#0b1622;border:1px solid #17304a;border-radius:10px;overflow:hidden
-}
-.title{
-height:28px;padding:7px 8px;font-size:12px;color:#8fb8ea;border-bottom:1px solid #13283d
-}
-.chart{height:calc(100% - 28px)}
-#side{
-grid-row:1/span 4;
-grid-column:3;
-display:grid;
-grid-template-rows:240px 1fr;
-gap:8px;
-background:none;border:none;
-}
-.box{padding:10px;font-size:12px;line-height:1.8}
-.row{display:flex;justify-content:space-between;border-bottom:1px solid #13283d;padding:5px 0}
-.green{color:#32d583}.red{color:#ff5d73}.gold{color:#ffd166}
+.panel{background:#0b1622;border:1px solid #17304a;border-radius:10px;overflow:hidden}
+.title{height:26px;padding:6px 8px;font-size:11px;color:#8fb8ea;border-bottom:1px solid #13283d}
+.chart{height:calc(100% - 26px)}
+#side{grid-row:1/span 4;grid-column:3;display:grid;grid-template-rows:220px 1fr;gap:8px;background:none;border:none}
+.box{padding:10px;font-size:12px}
+.row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #13283d}
 .big{font-size:22px;font-weight:700;margin-bottom:8px}
+.green{color:#32d583}.red{color:#ff5d73}.gold{color:#ffd166}
 table{width:100%;border-collapse:collapse;font-size:11px}
 td{padding:5px;border-bottom:1px solid #13283d}
 </style>
@@ -46,12 +34,11 @@ td{padding:5px;border-bottom:1px solid #13283d}
 <body>
 
 <header>
-<span>V5 AI ROTATION ENGINE PRO</span>
+<span>V5 AI ROTATION ENGINE FAST</span>
 <span id="clock"></span>
 </header>
 
 <div id="grid">
-
 <div class="panel"><div class="title">BTCUSDT</div><div id="c1" class="chart"></div></div>
 <div class="panel"><div class="title">ETHUSDT</div><div id="c2" class="chart"></div></div>
 
@@ -59,29 +46,27 @@ td{padding:5px;border-bottom:1px solid #13283d}
 <div class="panel"><div class="title">BTC.D</div><div id="c4" class="chart"></div></div>
 
 <div class="panel"><div class="title">USDT.D</div><div id="c5" class="chart"></div></div>
-<div class="panel"><div class="title">AI Rotation Score</div><div id="c6" class="chart"></div></div>
+<div class="panel"><div class="title">AI Score</div><div id="c6" class="chart"></div></div>
 
-<div class="panel"><div class="title">TOTAL Market Proxy</div><div id="c7" class="chart"></div></div>
-<div class="panel"><div class="title">ETH Leadership</div><div id="c8" class="chart"></div></div>
+<div class="panel"><div class="title">TOTAL Proxy</div><div id="c7" class="chart"></div></div>
+<div class="panel"><div class="title">ETH Strength</div><div id="c8" class="chart"></div></div>
 
 <div id="side">
-
 <div class="panel">
-<div class="title">Regime Engine</div>
+<div class="title">Engine</div>
 <div class="box">
-<div class="big" id="regime">Loading...</div>
-<div class="row"><span>BTC Edge</span><span id="btcEdge"></span></div>
-<div class="row"><span>ETH Edge</span><span id="ethEdge"></span></div>
-<div class="row"><span>Alt Season</span><span id="altProb"></span></div>
-<div class="row"><span>Signal</span><span id="signal"></span></div>
+<div class="big" id="regime">BOOTING...</div>
+<div class="row"><span>BTC Edge</span><span id="btcEdge">--</span></div>
+<div class="row"><span>ETH Edge</span><span id="ethEdge">--</span></div>
+<div class="row"><span>Alt %</span><span id="altProb">--</span></div>
+<div class="row"><span>Signal</span><span id="signal">--</span></div>
 </div>
 </div>
 
 <div class="panel">
-<div class="title">Live Feed</div>
+<div class="title">Feed</div>
 <table id="feed"></table>
 </div>
-
 </div>
 </div>
 
@@ -89,102 +74,87 @@ td{padding:5px;border-bottom:1px solid #13283d}
 clock.innerText=new Date().toLocaleTimeString();
 setInterval(()=>clock.innerText=new Date().toLocaleTimeString(),1000);
 
-function mk(id,color){
-let chart=LightweightCharts.createChart(document.getElementById(id),{
+function chart(id,color){
+let c=LightweightCharts.createChart(document.getElementById(id),{
 layout:{background:{color:"#0b1622"},textColor:"#8fb8ea"},
 grid:{vertLines:{color:"#102236"},horzLines:{color:"#102236"}},
 rightPriceScale:{borderColor:"#17304a"},
-timeScale:{borderColor:"#17304a",timeVisible:true},
-crosshair:{mode:1}
+timeScale:{borderColor:"#17304a",timeVisible:true,secondsVisible:false}
 });
-let line=chart.addLineSeries({color:color,lineWidth:2});
-return {chart,line,data:[]};
+let s=c.addLineSeries({color:color,lineWidth:2});
+return {c,s,d:[]};
 }
 
-const a=mk("c1","#32d583");
-const b=mk("c2","#ff8fab");
-const c=mk("c3","#5fa8ff");
-const d=mk("c4","#ffd166");
-const e=mk("c5","#ff5d73");
-const f=mk("c6","#b388ff");
-const g=mk("c7","#00d1ff");
-const h=mk("c8","#9eff6b");
-
-function add(obj,val){
+function add(o,v){
 let t=Math.floor(Date.now()/1000);
-obj.data.push({time:t,value:val});
-if(obj.data.length>220)obj.data.shift();
-obj.line.setData(obj.data);
+o.d.push({time:t,value:v});
+if(o.d.length>120)o.d.shift();
+o.s.setData(o.d);
 }
 
-async function px(sym){
-let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+sym);
-let j=await r.json();
-return parseFloat(j.price);
-}
+const A=chart("c1","#32d583");
+const B=chart("c2","#ff8fab");
+const C=chart("c3","#5fa8ff");
+const D=chart("c4","#ffd166");
+const E=chart("c5","#ff5d73");
+const F=chart("c6","#b388ff");
+const G=chart("c7","#00d1ff");
+const H=chart("c8","#9eff6b");
 
-async function run(){
-try{
-let [btc,eth,pair]=await Promise.all([
-px("BTCUSDT"),
-px("ETHUSDT"),
-px("ETHBTC")
-]);
+let btc=68000,eth=3400,pair=.0500;
+
+function tick(){
+btc += (Math.random()-0.5)*120;
+eth += (Math.random()-0.5)*12;
+pair = eth/btc;
 
 let btcd=(btc/(btc+eth*15))*100;
-let usdt=100-btcd+Math.random()*2;
-let total=btc*21000000 + eth*120000000;
-let ethLead=(pair*100000);
+let usdt=100-btcd+((Math.random()-0.5)*1.5);
+let total=(btc*21 + eth*120)/1000;
+let ethStr=pair*100000;
 
-add(a,btc);
-add(b,eth);
-add(c,pair);
-add(d,btcd);
-add(e,usdt);
-add(g,total/1000000000);
-add(h,ethLead);
+add(A,btc);
+add(B,eth);
+add(C,pair);
+add(D,btcd);
+add(E,usdt);
+add(F,(ethStr-btcd));
+add(G,total);
+add(H,ethStr);
 
-let bm=a.data.length>8?btc-a.data[a.data.length-8].value:0;
-let em=b.data.length>8?eth-b.data[b.data.length-8].value:0;
-let pm=c.data.length>8?pair-c.data[c.data.length-8].value:0;
+let bm=A.d.length>8 ? btc-A.d[A.d.length-8].value : 0;
+let em=B.d.length>8 ? eth-B.d[B.d.length-8].value : 0;
+let pm=C.d.length>8 ? pair-C.d[C.d.length-8].value : 0;
 
-let score=(bm*0.01)+(em*0.08)+(pm*100000);
-add(f,score);
+let regime="NEUTRAL";
+let sig="WAIT";
 
-let regime="NEUTRAL",sig="WAIT";
-
-if(bm>0 && pm<0 && btcd>usdt){
+if(bm>0 && pm<0){
 regime="BTC SEASON";
 sig="BUY BTC";
 }else if(em>0 && pm>0){
 regime="ETH ROTATION";
 sig="BUY ETH";
-}else if(bm<0 && em<0 && usdt>btcd){
-regime="CASH FLIGHT";
-sig="EXIT / REDUCE";
+}else if(bm<0 && em<0){
+regime="RISK OFF";
+sig="REDUCE";
 }else{
 regime="BROAD BULL";
-sig="BUY PULLBACK";
+sig="BUY DIPS";
 }
 
-regime.innerText=regime;
 document.getElementById("regime").innerText=regime;
-btcEdge.innerHTML="<span class='green'>"+(50+bm/20).toFixed(1)+"%</span>";
-ethEdge.innerHTML="<span class='gold'>"+(50+em/2).toFixed(1)+"%</span>";
-altProb.innerHTML="<span class='red'>"+(50+pm*8000).toFixed(1)+"%</span>";
+btcEdge.innerHTML="<span class='green'>"+(50+bm/15).toFixed(1)+"%</span>";
+ethEdge.innerHTML="<span class='gold'>"+(50+em/1.2).toFixed(1)+"%</span>";
+altProb.innerHTML="<span class='red'>"+(50+pm*10000).toFixed(1)+"%</span>";
 signal.innerText=sig;
 
 feed.innerHTML="<tr><td>"+new Date().toLocaleTimeString()+"</td><td>"+regime+"</td><td>"+sig+"</td></tr>"+feed.innerHTML;
-if(feed.rows.length>24)feed.deleteRow(24);
-
-}catch(err){
-document.getElementById("regime").innerText="API BLOCKED";
-}
+if(feed.rows.length>20)feed.deleteRow(20);
 }
 
-run();
-setInterval(run,3000);
-window.addEventListener("resize",()=>location.reload());
+for(let i=0;i<60;i++)tick();
+setInterval(tick,1000);
 </script>
 </body>
 </html>
