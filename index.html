@@ -1,88 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Francis Terminal One Candle Engine</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+background:#0b0f14;
+font-family:Arial,Helvetica,sans-serif;
+color:#fff;
+padding:20px;
+}
+h1{
+font-size:26px;
+margin-bottom:6px;
+}
+.sub{
+color:#8fa1b5;
+margin-bottom:18px;
+}
+.wrap{
+display:grid;
+grid-template-columns:1fr 320px;
+gap:20px;
+}
+.panel{
+background:#111821;
+border:1px solid #1f2a36;
+border-radius:16px;
+padding:18px;
+}
+.right{
+display:grid;
+gap:14px;
+}
+.stat{
+background:#0f151d;
+padding:14px;
+border-radius:12px;
+}
+.lab{
+font-size:13px;
+color:#8fa1b5;
+}
+.val{
+font-size:26px;
+font-weight:700;
+margin-top:6px;
+}
+canvas{
+width:100%;
+height:520px;
+background:#0c1219;
+border-radius:12px;
+}
+.bias{
+font-size:32px;
+font-weight:700;
+margin-top:12px;
+}
+@media(max-width:900px){
+.wrap{grid-template-columns:1fr}
+canvas{height:420px}
+}
+</style>
+</head>
+
+<body>
+
+<h1>FRANCIS TERMINAL</h1>
+<div class="sub">1 Single Composite Candle Chart • Daily Engine</div>
+
+<div class="wrap">
+
+<div class="panel">
+<canvas id="chart" width="900" height="520"></canvas>
+<div class="bias" id="biasText">Loading...</div>
+</div>
+
+<div class="right">
+
+<div class="stat">
+<div class="lab">BTC.D</div>
+<div class="val" id="btcdom">--</div>
+</div>
+
+<div class="stat">
+<div class="lab">USDT.D</div>
+<div class="val" id="usdt">--</div>
+</div>
+
+<div class="stat">
+<div class="lab">ETHBTC</div>
+<div class="val" id="ethbtc">--</div>
+</div>
+
+<div class="stat">
+<div class="lab">ETH.D</div>
+<div class="val" id="ethd">--</div>
+</div>
+
+<div class="stat">
+<div class="lab">TOTAL</div>
+<div class="val" id="total">--</div>
+</div>
+
+</div>
+</div>
+
 <script>
-const ids = ["btcdom","usdtdom","ethdom","ethbtc","total"];
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
 
-function setLoading(){
-ids.forEach(id=>{
-document.getElementById(id).innerText="Loading...";
+let candles=[];
+
+function drawGrid(){
+ctx.strokeStyle="#17212c";
+ctx.lineWidth=1;
+
+for(let i=0;i<8;i++){
+let y=i*(canvas.height/8);
+ctx.beginPath();
+ctx.moveTo(0,y);
+ctx.lineTo(canvas.width,y);
+ctx.stroke();
+}
+}
+
+function drawCandles(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+drawGrid();
+
+const w = 34;
+const gap = 18;
+let x = 40;
+
+candles.forEach(c=>{
+
+let color="#f0b90b";
+if(c.close > c.open) color="#16c784";
+if(c.close < c.open) color="#ea3943";
+
+let high = 500-(c.high*4);
+let low  = 500-(c.low*4);
+let open = 500-(c.open*4);
+let close= 500-(c.close*4);
+
+ctx.strokeStyle=color;
+ctx.lineWidth=2;
+
+ctx.beginPath();
+ctx.moveTo(x+w/2,high);
+ctx.lineTo(x+w/2,low);
+ctx.stroke();
+
+ctx.fillStyle=color;
+ctx.fillRect(
+x,
+Math.min(open,close),
+w,
+Math.abs(close-open)+2
+);
+
+x += w + gap;
 });
+
 }
 
-function setError(){
-ids.forEach(id=>{
-document.getElementById(id).innerText="N/A";
-});
-document.getElementById("biasText").innerText="▶ DATA DELAY";
-document.getElementById("biasText").style.color="gold";
-}
+function addCandle(price){
 
-function cacheSave(key,val){
-localStorage.setItem(key,JSON.stringify(val));
-}
+let prev = candles.length ? candles[candles.length-1].close : 50;
 
-function cacheLoad(key){
-try{return JSON.parse(localStorage.getItem(key));}
-catch(e){return null;}
-}
+let open = prev;
+let close = price;
+let high = Math.max(open,close)+(Math.random()*2);
+let low = Math.min(open,close)-(Math.random()*2);
 
-async function getJSON(url,ms=5000){
-const ctrl = new AbortController();
-setTimeout(()=>ctrl.abort(),ms);
-const r = await fetch(url,{signal:ctrl.signal});
-return await r.json();
+candles.push({open,high,low,close});
+
+if(candles.length>18) candles.shift();
+
+drawCandles();
 }
 
 async function loadEngine(){
 
-setLoading();
-
 try{
 
-const cg = await getJSON("https://api.coingecko.com/api/v3/global");
+const cg = await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
+const pair = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC").then(r=>r.json());
 
-const btcDom = cg.data.market_cap_percentage.btc;
-const usdtDom = cg.data.market_cap_percentage.usdt;
-const ethDom = cg.data.market_cap_percentage.eth;
-const total = cg.data.total_market_cap.usd;
+let btc = cg.data.market_cap_percentage.btc;
+let usdt = cg.data.market_cap_percentage.usdt;
+let eth = cg.data.market_cap_percentage.eth;
+let total = cg.data.total_market_cap.usd;
+let eb = parseFloat(pair.lastPrice);
+
+document.getElementById("btcdom").innerText=btc.toFixed(2)+"%";
+document.getElementById("usdt").innerText=usdt.toFixed(2)+"%";
+document.getElementById("ethd").innerText=eth.toFixed(2)+"%";
+document.getElementById("ethbtc").innerText=eb.toFixed(5);
+document.getElementById("total").innerText="$"+(total/1e12).toFixed(2)+"T";
+
+/* ===========================
+   COMPOSITE CANDLE FORMULA
+===========================
+
+BTC.D bullish = + weight
+USDT.D bearish = - weight
+ETHBTC bullish = + weight
+ETH.D bullish = + weight
+TOTAL bullish = + weight
+
+*/
+
+let score =
+(btc*0.8) +
+((10-usdt)*1.2) +
+(eb*800) +
+(eth*0.5) +
+((total/1e12)*2);
+
+let price = score;
+
+addCandle(price);
 
 let bias="▶ SIDEWAYS";
 let color="gold";
 
-if(btcDom>57 && usdtDom<8){
-bias="▲ BULLISH";
-color="#16c784";
-}
-if(usdtDom>9){
-bias="▼ BEARISH";
-color="#ea3943";
-}
-
-document.getElementById("btcdom").innerText=btcDom.toFixed(2)+"%";
-document.getElementById("usdtdom").innerText=usdtDom.toFixed(2)+"%";
-document.getElementById("ethdom").innerText=ethDom.toFixed(2)+"%";
-document.getElementById("ethbtc").innerText=(ethDom/btcDom).toFixed(4);
-document.getElementById("total").innerText="$"+(total/1e12).toFixed(2)+"T";
+if(price > 72){bias="▲ BULLISH";color="#16c784";}
+if(price < 60){bias="▼ BEARISH";color="#ea3943";}
 
 document.getElementById("biasText").innerText=bias;
 document.getElementById("biasText").style.color=color;
 
-cacheSave("marketData",{btcDom,usdtDom,ethDom,total,bias,color});
-
 }catch(e){
-
-let c = cacheLoad("marketData");
-
-if(c){
-document.getElementById("btcdom").innerText=c.btcDom.toFixed(2)+"%";
-document.getElementById("usdtdom").innerText=c.usdtDom.toFixed(2)+"%";
-document.getElementById("ethdom").innerText=c.ethDom.toFixed(2)+"%";
-document.getElementById("ethbtc").innerText=(c.ethDom/c.btcDom).toFixed(4);
-document.getElementById("total").innerText="$"+(c.total/1e12).toFixed(2)+"T";
-document.getElementById("biasText").innerText=c.bias+" (Cached)";
-document.getElementById("biasText").style.color=c.color;
-}else{
-setError();
-}
-
+document.getElementById("biasText").innerText="DATA DELAY";
+document.getElementById("biasText").style.color="gold";
 }
 
 }
@@ -90,3 +247,6 @@ setError();
 loadEngine();
 setInterval(loadEngine,30000);
 </script>
+
+</body>
+</html>
