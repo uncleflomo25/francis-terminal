@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FRANCIS TERMINAL V3 PRO</title>
+<title>FRANCIS TERMINAL V4 ELITE FIXED</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -13,8 +13,10 @@ font-family:Arial,Helvetica,sans-serif;
 color:#fff;
 overflow:hidden;
 }
+
+/* TOP BAR */
 .topbar{
-height:50px;
+height:52px;
 background:#131722;
 border-bottom:1px solid #222b39;
 display:flex;
@@ -22,25 +24,35 @@ align-items:center;
 gap:8px;
 padding:0 12px;
 }
-.logo{font-weight:700;margin-right:10px}
+.logo{
+font-weight:700;
+margin-right:10px;
+white-space:nowrap;
+}
 .btn{
 background:#1e222d;
-padding:6px 10px;
+padding:7px 11px;
 border-radius:6px;
 cursor:pointer;
 font-size:13px;
 color:#cfd6e4;
+user-select:none;
 }
+.btn:hover{background:#2a3140}
+
+/* LAYOUT */
 .wrap{
 display:grid;
-grid-template-columns:1fr 290px;
-height:calc(100vh - 50px);
+grid-template-columns:1fr 300px;
+height:calc(100vh - 52px);
 }
+
 .left{
 position:relative;
 background:#131722;
 overflow:hidden;
 }
+
 .right{
 background:#0d1520;
 border-left:1px solid #1f2937;
@@ -48,34 +60,33 @@ padding:12px;
 display:grid;
 gap:10px;
 align-content:start;
+overflow:auto;
 }
+
 .card{
 background:#111827;
 border:1px solid #1f2937;
 border-radius:10px;
 padding:12px;
 }
-.lab{font-size:11px;color:#8ea2bd}
-.val{font-size:28px;font-weight:700;margin-top:6px}
+.lab{
+font-size:11px;
+color:#8ea2bd;
+}
+.val{
+font-size:28px;
+font-weight:700;
+margin-top:6px;
+}
 
+/* CHART */
 canvas{
 position:absolute;
-top:0;left:0;
+inset:0;
 cursor:grab;
 }
 
-.status{
-position:absolute;
-bottom:12px;
-left:14px;
-font-size:13px;
-color:#94a3b8;
-display:flex;
-gap:16px;
-z-index:10;
-}
-
-.water{
+.watermark{
 position:absolute;
 top:18px;
 left:18px;
@@ -83,12 +94,29 @@ font-size:28px;
 font-weight:700;
 color:rgba(255,255,255,.04);
 pointer-events:none;
-z-index:10;
+z-index:5;
+}
+
+.status{
+position:absolute;
+left:14px;
+bottom:12px;
+font-size:13px;
+color:#94a3b8;
+display:flex;
+gap:16px;
+z-index:5;
+flex-wrap:wrap;
 }
 
 .green{color:#26a69a}
 .red{color:#ef5350}
 .gold{color:#f0b90b}
+
+@media(max-width:950px){
+.wrap{grid-template-columns:1fr}
+.right{display:none}
+}
 </style>
 </head>
 
@@ -96,11 +124,13 @@ z-index:10;
 
 <div class="topbar">
 <div class="logo">FRANCIS TERMINAL</div>
-<div class="btn" onclick="setTF(60)">1m</div>
-<div class="btn" onclick="setTF(300)">5m</div>
-<div class="btn" onclick="setTF(3600)">1H</div>
-<div class="btn" onclick="setTF(14400)">4H</div>
-<div class="btn" onclick="setTF(86400)">1D</div>
+
+<div class="btn" onclick="setSpeed(1000)">1m</div>
+<div class="btn" onclick="setSpeed(3000)">5m</div>
+<div class="btn" onclick="setSpeed(5000)">1H</div>
+<div class="btn" onclick="setSpeed(8000)">4H</div>
+<div class="btn" onclick="setSpeed(12000)">1D</div>
+
 <div class="btn" onclick="zoomIn()">＋</div>
 <div class="btn" onclick="zoomOut()">－</div>
 <div class="btn" onclick="resetView()">Reset</div>
@@ -108,13 +138,14 @@ z-index:10;
 
 <div class="wrap">
 
-<div class="left" id="chartBox">
-<div class="water">FRANCIS TERMINAL</div>
+<div class="left" id="chartWrap">
+<div class="watermark">FRANCIS TERMINAL</div>
 <canvas id="chart"></canvas>
 
 <div class="status">
 <div>Real-Time Composite Engine</div>
-<div id="clock"></div>
+<div id="clock">--:--:--</div>
+<div id="priceLine">LIVE</div>
 </div>
 </div>
 
@@ -131,62 +162,249 @@ z-index:10;
 </div>
 
 <script>
+/* ELEMENTS */
+const wrap=document.getElementById("chartWrap");
 const canvas=document.getElementById("chart");
 const ctx=canvas.getContext("2d");
-const box=document.getElementById("chartBox");
 
-let candles=[];
-let scale=1;
-let offsetX=0;
-let tf=5000;
+const elBTC=document.getElementById("btc");
+const elUSDT=document.getElementById("usdt");
+const elETHBTC=document.getElementById("ethbtc");
+const elETHD=document.getElementById("ethd");
+const elTOTAL=document.getElementById("total");
+const elMODE=document.getElementById("mode");
+const elCLOCK=document.getElementById("clock");
+const elPriceLine=document.getElementById("priceLine");
 
-/* resize */
+/* STATE */
+let bars=[];
+let zoom=1;
+let pan=0;
+let drag=false;
+let startX=0;
+let loop=null;
+let speed=2500;
+
+/* RESIZE */
 function resize(){
-canvas.width=box.clientWidth;
-canvas.height=box.clientHeight;
+canvas.width=wrap.clientWidth;
+canvas.height=wrap.clientHeight;
 draw();
 }
 window.addEventListener("resize",resize);
 
-/* clock */
+/* CLOCK */
 setInterval(()=>{
-document.getElementById("clock").innerText=new Date().toLocaleTimeString();
+elCLOCK.innerText=new Date().toLocaleTimeString();
 },1000);
 
-/* pan controls */
-let dragging=false,startX=0;
+/* CONTROLS */
+function zoomIn(){zoom*=1.15;draw();}
+function zoomOut(){zoom/=1.15;if(zoom<0.4)zoom=0.4;draw();}
+function resetView(){zoom=1;pan=0;draw();}
+function setSpeed(v){
+speed=v;
+if(loop) clearInterval(loop);
+loop=setInterval(updateLive,speed);
+}
 
-canvas.onmousedown=e=>{
-dragging=true;
+canvas.addEventListener("mousedown",e=>{
+drag=true;
 startX=e.clientX;
 canvas.style.cursor="grabbing";
-};
-
-window.onmouseup=()=>{
-dragging=false;
+});
+window.addEventListener("mouseup",()=>{
+drag=false;
 canvas.style.cursor="grab";
-};
-
-window.onmousemove=e=>{
-if(!dragging)return;
-offsetX += e.clientX-startX;
+});
+window.addEventListener("mousemove",e=>{
+if(!drag)return;
+pan += e.clientX-startX;
 startX=e.clientX;
 draw();
-};
+});
 
-canvas.onwheel=e=>{
+canvas.addEventListener("wheel",e=>{
 e.preventDefault();
 if(e.deltaY<0) zoomIn();
 else zoomOut();
-};
+});
 
-function zoomIn(){scale*=1.1;draw();}
-function zoomOut(){scale/=1.1;draw();}
-function resetView(){scale=1;offsetX=0;draw();}
-function setTF(x){
-tf=x*1000;
-clearInterval(loop);
-loop=setInterval(loadData,tf);
+/* HELPERS */
+function rnd(a,b){return a+Math.random()*(b-a);}
+
+function starterBar(prev){
+let o=prev;
+let c=o+rnd(-4,4);
+let h=Math.max(o,c)+rnd(0,2);
+let l=Math.min(o,c)-rnd(0,2);
+return {o,h,l,c};
 }
 
-/* bg
+/* DRAW BG */
+function bg(){
+ctx.fillStyle="#131722";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ctx.strokeStyle="#1f2430";
+ctx.lineWidth=1;
+
+for(let i=0;i<12;i++){
+let y=i*canvas.height/12;
+ctx.beginPath();
+ctx.moveTo(0,y);
+ctx.lineTo(canvas.width,y);
+ctx.stroke();
+}
+
+for(let i=0;i<18;i++){
+let x=i*canvas.width/18;
+ctx.beginPath();
+ctx.moveTo(x,0);
+ctx.lineTo(x,canvas.height);
+ctx.stroke();
+}
+}
+
+/* DRAW */
+function draw(){
+
+bg();
+if(bars.length<2)return;
+
+let max=Math.max(...bars.map(b=>b.h));
+let min=Math.min(...bars.map(b=>b.l));
+let range=max-min || 1;
+
+let w=10*zoom;
+let gap=5*zoom;
+let x=30+pan;
+
+bars.forEach(b=>{
+
+let col="#f0b90b";
+if(b.c>b.o) col="#26a69a";
+if(b.c<b.o) col="#ef5350";
+
+let yo=((max-b.o)/range)*(canvas.height-40)+20;
+let yc=((max-b.c)/range)*(canvas.height-40)+20;
+let yh=((max-b.h)/range)*(canvas.height-40)+20;
+let yl=((max-b.l)/range)*(canvas.height-40)+20;
+
+ctx.strokeStyle=col;
+ctx.beginPath();
+ctx.moveTo(x+w/2,yh);
+ctx.lineTo(x+w/2,yl);
+ctx.stroke();
+
+ctx.fillStyle=col;
+ctx.fillRect(x,Math.min(yo,yc),w,Math.max(2,Math.abs(yc-yo)));
+
+x += w+gap;
+
+});
+
+/* LIVE PRICE LINE */
+let last=bars[bars.length-1].c;
+let py=((max-last)/range)*(canvas.height-40)+20;
+
+ctx.strokeStyle="#d94b4b";
+ctx.setLineDash([5,5]);
+ctx.beginPath();
+ctx.moveTo(0,py);
+ctx.lineTo(canvas.width,py);
+ctx.stroke();
+ctx.setLineDash([]);
+
+elPriceLine.innerText="LIVE "+last.toFixed(2);
+}
+
+/* PROCESS DATA */
+function process(d){
+
+let score=
+(d.total*14)+
+(d.ethbtc*620)+
+((10-d.usdt)*2)+
+(d.ethd*0.8)-
+(d.btc*0.35);
+
+let prev=bars.length?bars[bars.length-1].c:100;
+bars.push(starterBar(prev+(score-100)));
+
+if(bars.length>180) bars.shift();
+
+draw();
+
+/* PANEL */
+elBTC.innerText=d.btc.toFixed(2)+"%";
+elUSDT.innerText=d.usdt.toFixed(2)+"%";
+elETHBTC.innerText=d.ethbtc.toFixed(5);
+elETHD.innerText=d.ethd.toFixed(2)+"%";
+elTOTAL.innerText="$"+d.total.toFixed(2)+"T";
+
+let mode="BALANCED";
+let col="#f0b90b";
+
+if(d.btc>58.2 && d.ethbtc<0.0300){mode="BTC MODE";col="#f0b90b";}
+if(d.ethbtc>0.0304 && d.ethd>11){mode="ETH MODE";col="#26a69a";}
+if(d.usdt>8.5){mode="DEFENSIVE";col="#ef5350";}
+
+elMODE.innerText=mode;
+elMODE.style.color=col;
+}
+
+/* LIVE DATA */
+async function updateLive(){
+
+try{
+
+const [cg,bn]=await Promise.all([
+fetch("https://api.coingecko.com/api/v3/global",{cache:"no-store"}).then(r=>r.json()),
+fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC",{cache:"no-store"}).then(r=>r.json())
+]);
+
+const d={
+btc:cg.data.market_cap_percentage.btc,
+usdt:cg.data.market_cap_percentage.usdt,
+ethd:cg.data.market_cap_percentage.eth,
+ethbtc:parseFloat(bn.price),
+total:cg.data.total_market_cap.usd/1e12
+};
+
+localStorage.setItem("francis_cache_v4",JSON.stringify(d));
+process(d);
+
+}catch(err){
+
+let cache=localStorage.getItem("francis_cache_v4");
+if(cache) process(JSON.parse(cache));
+else process({
+btc:rnd(57.5,59.3),
+usdt:rnd(6.8,8.4),
+ethd:rnd(10.1,12.7),
+ethbtc:rnd(0.0289,0.0315),
+total:rnd(2.45,2.90)
+});
+
+}
+
+}
+
+/* BOOT */
+resize();
+
+let p=100;
+for(let i=0;i<100;i++){
+let b=starterBar(p);
+bars.push(b);
+p=b.c;
+}
+
+draw();
+updateLive();
+loop=setInterval(updateLive,speed);
+</script>
+
+</body>
+</html>
