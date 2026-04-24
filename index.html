@@ -3,39 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Flow Terminal - V1000 TRUE SYNC</title>
+<title>FLOW TERMINAL - V1100 DOMINANCE SYNC</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
 background:#06111f;
-color:#d7e7ff;
+color:#dcecff;
 font-family:Segoe UI,Arial,sans-serif;
 height:100vh;
 overflow:hidden;
 }
 header{
-height:44px;
+height:46px;
 display:flex;
-align-items:center;
 justify-content:space-between;
+align-items:center;
 padding:0 14px;
-border-bottom:1px solid #12304f;
 background:#071827;
+border-bottom:1px solid #12304f;
 font-weight:700;
-letter-spacing:.5px;
+letter-spacing:.4px;
 }
-.wrap{
+.grid{
 display:grid;
-grid-template-columns: 2fr 2fr 1.2fr;
-grid-template-rows: 1fr 1fr;
+grid-template-columns:2fr 2fr 1.1fr;
+grid-template-rows:1fr 1fr;
 gap:10px;
 padding:10px;
-height:calc(100vh - 44px);
+height:calc(100vh - 46px);
 }
 .panel{
-border:1px solid #12304f;
 background:#081829;
+border:1px solid #12304f;
 border-radius:8px;
 padding:10px;
 overflow:auto;
@@ -43,8 +43,8 @@ overflow:auto;
 .title{
 font-size:13px;
 font-weight:700;
-margin-bottom:10px;
 color:#8fc7ff;
+margin-bottom:10px;
 }
 table{
 width:100%;
@@ -57,7 +57,7 @@ border-bottom:1px solid #102b47;
 text-align:left;
 white-space:nowrap;
 }
-th{color:#7faed8;font-size:12px}
+th{font-size:12px;color:#7faed8}
 .up{color:#18d27d;font-weight:700}
 .down{color:#ff5a6e;font-weight:700}
 .side{color:#ffd45b;font-weight:700}
@@ -66,51 +66,43 @@ font-size:34px;
 font-weight:800;
 margin-top:6px;
 }
-.small{font-size:12px;color:#88a7c9}
-.feed{
-font-size:12px;
-line-height:1.6;
-}
+.small{font-size:12px;color:#8aa9c8}
 .feed div{
 padding:4px 0;
+font-size:12px;
 border-bottom:1px solid #102b47;
 }
-.right{
-display:flex;
-flex-direction:column;
-gap:10px;
-}
 .badge{
+display:inline-block;
 padding:5px 8px;
 border-radius:5px;
 font-size:11px;
 font-weight:700;
-display:inline-block;
 margin-top:8px;
 }
-.green{background:#103824;color:#3cff9a}
-.red{background:#3a1016;color:#ff7d8b}
+.green{background:#103824;color:#42ff9f}
+.red{background:#3a1016;color:#ff8a95}
 .yellow{background:#40370f;color:#ffd95c}
 .footer{
 position:fixed;
-bottom:6px;
 right:12px;
+bottom:6px;
 font-size:11px;
-color:#7ea1c9;
+color:#7fa4cb;
 }
 </style>
 </head>
 <body>
 
 <header>
-<div>FLOW TERMINAL - V1000 TRUE SYNC</div>
+<div>FLOW TERMINAL - V1100 DOMINANCE SYNC</div>
 <div id="clock">--:--:--</div>
 </header>
 
-<div class="wrap">
+<div class="grid">
 
 <div class="panel">
-<div class="title">TRUE DAILY CANDLE MATRIX (UTC 1D)</div>
+<div class="title">TRUE DAILY ASSET MATRIX (UTC 1D)</div>
 <table>
 <thead>
 <tr>
@@ -121,39 +113,34 @@ color:#7ea1c9;
 <th>Bias</th>
 </tr>
 </thead>
-<tbody id="rows"></tbody>
+<tbody id="assetRows"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">DOMINANCE / ROTATION CORE</div>
+<div class="title">DOMINANCE TRUE INDEX ENGINE</div>
 <table>
 <thead>
 <tr>
 <th>Metric</th>
-<th>Value</th>
-<th>Status</th>
-<th>Meaning</th>
+<th>Open</th>
+<th>Live</th>
+<th>%</th>
+<th>Bias</th>
 </tr>
 </thead>
-<tbody id="dom"></tbody>
+<tbody id="domRows"></tbody>
 </table>
 </div>
 
-<div class="right">
-
 <div class="panel">
 <div class="title">AI REGIME ENGINE</div>
-<div class="big" id="regime">LOADING...</div>
-<div class="small" id="desc">Waiting for sync...</div>
-<div id="signalBox"></div>
-</div>
+<div class="big" id="regime">SYNCING...</div>
+<div class="small" id="desc">Loading market state</div>
+<div id="badge"></div>
 
-<div class="panel">
-<div class="title">LIVE FEED</div>
+<div class="title" style="margin-top:14px">LIVE FEED</div>
 <div class="feed" id="feed"></div>
-</div>
-
 </div>
 
 <div class="panel">
@@ -163,11 +150,11 @@ color:#7ea1c9;
 <tr>
 <th>Pair</th>
 <th>Signal</th>
-<th>Confidence</th>
+<th>Conf</th>
 <th>Status</th>
 </tr>
 </thead>
-<tbody id="exec"></tbody>
+<tbody id="execRows"></tbody>
 </table>
 </div>
 
@@ -182,168 +169,185 @@ color:#7ea1c9;
 <th>Reason</th>
 </tr>
 </thead>
-<tbody id="flow"></tbody>
+<tbody id="flowRows"></tbody>
+</table>
+</div>
+
+<div class="panel">
+<div class="title">SYNC STATUS</div>
+<table>
+<tbody>
+<tr><td>BTC.D Source</td><td>CoinGecko Derived</td></tr>
+<tr><td>ETH.D Source</td><td>CoinGecko Derived</td></tr>
+<tr><td>USDT.D Source</td><td>Estimated Stable Share</td></tr>
+<tr><td>Daily Reset</td><td>UTC 00:00</td></tr>
+<tr><td>Refresh</td><td>5 Seconds</td></tr>
+</tbody>
 </table>
 </div>
 
 </div>
 
-<div class="footer">Binance Spot + CoinGecko + UTC Daily Sync</div>
+<div class="footer">V1100 | Binance + CoinGecko + UTC Candle Sync</div>
 
 <script>
-const rows = document.getElementById("rows");
-const dom = document.getElementById("dom");
-const exec = document.getElementById("exec");
-const flow = document.getElementById("flow");
-const feed = document.getElementById("feed");
+const $ = id => document.getElementById(id);
 
 function fmt(n,d=2){
 if(!isFinite(n)) return "-";
 return Number(n).toLocaleString(undefined,{maximumFractionDigits:d});
 }
-
-function cls(v){
-if(v>0)return["▲ UP","up"];
-if(v<0)return["▼ DOWN","down"];
-return["▶ SIDE","side"];
+function bias(v){
+if(v>0) return ["▲ UP","up"];
+if(v<0) return ["▼ DOWN","down"];
+return ["▶ SIDE","side"];
 }
-
-function addFeed(t){
+function pushFeed(t){
 const div=document.createElement("div");
 div.textContent=t;
-feed.prepend(div);
-while(feed.children.length>20)feed.removeChild(feed.lastChild);
+$("feed").prepend(div);
+while($("feed").children.length>18){
+$("feed").removeChild($("feed").lastChild);
 }
-
+}
 async function binance(symbol){
-const k = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+symbol).then(r=>r.json());
+const r = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+symbol).then(x=>x.json());
 return {
-live: parseFloat(k.lastPrice),
-open: parseFloat(k.openPrice)
+open: parseFloat(r.openPrice),
+live: parseFloat(r.lastPrice)
 };
 }
-
-async function cgGlobal(){
-const g = await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
-return g.data;
+async function cg(){
+const r = await fetch("https://api.coingecko.com/api/v3/global").then(x=>x.json());
+return r.data;
 }
 
+let domOpen = null;
+
 async function load(){
-
 try{
-
-const [btc,eth,ethbtc,global] = await Promise.all([
+const [btc,eth,ethbtc,g] = await Promise.all([
 binance("BTCUSDT"),
 binance("ETHUSDT"),
 binance("ETHBTC"),
-cgGlobal()
+cg()
 ]);
 
-const btcDom = global.market_cap_percentage.btc;
-const ethDom = global.market_cap_percentage.eth;
-const total = global.total_market_cap.usd/1e12;
+const btcD = g.market_cap_percentage.btc;
+const ethD = g.market_cap_percentage.eth;
+const usdtD = Math.max(0,100-btcD-ethD-8);
+const total = g.total_market_cap.usd/1e12;
 
-const usdtDom = Math.max(0,100-btcDom-ethDom-8).toFixed(2); // proxy stable share
+if(!domOpen){
+domOpen = {
+btcD: btcD,
+ethD: ethD,
+usdtD: usdtD,
+total: total
+};
+}
 
 const assets = [
 ["BTCUSDT",btc.open,btc.live],
 ["ETHUSDT",eth.open,eth.live],
 ["ETHBTC",ethbtc.open,ethbtc.live],
-["TOTAL",total*1.01,total]
+["TOTAL",domOpen.total,total]
 ];
 
-rows.innerHTML="";
+$("assetRows").innerHTML="";
 let score=0;
 
-assets.forEach(a=>{
-const pct=((a[2]-a[1])/a[1])*100;
-const c=cls(pct);
+assets.forEach(r=>{
+const pct=((r[2]-r[1])/r[1])*100;
+const b=bias(pct);
 if(pct>0)score++; else if(pct<0)score--;
-rows.innerHTML+=`
+$("assetRows").innerHTML += `
 <tr>
-<td>${a[0]}</td>
-<td>${fmt(a[1],4)}</td>
-<td>${fmt(a[2],4)}</td>
-<td class="${c[1]}">${pct.toFixed(2)}%</td>
-<td class="${c[1]}">${c[0]}</td>
+<td>${r[0]}</td>
+<td>${fmt(r[1],4)}</td>
+<td>${fmt(r[2],4)}</td>
+<td class="${b[1]}">${pct.toFixed(2)}%</td>
+<td class="${b[1]}">${b[0]}</td>
 </tr>`;
 });
 
-dom.innerHTML="";
-[
-["BTC.D",btcDom,"%","Bitcoin share"],
-["ETH.D",ethDom,"%","Ethereum share"],
-["USDT.D",usdtDom,"%","Cash demand"],
-["TOTAL",total,"T","Total market cap"]
-].forEach(x=>{
-const val=parseFloat(x[1]);
-const c=cls(val>50?1:val<30?-1:0);
-dom.innerHTML+=`
+const doms = [
+["BTC.D",domOpen.btcD,btcD],
+["ETH.D",domOpen.ethD,ethD],
+["USDT.D",domOpen.usdtD,usdtD],
+["TOTAL",domOpen.total,total]
+];
+
+$("domRows").innerHTML="";
+
+doms.forEach(d=>{
+const pct=((d[2]-d[1])/d[1])*100;
+const b=bias(pct);
+$("domRows").innerHTML += `
 <tr>
-<td>${x[0]}</td>
-<td>${fmt(x[1])}${x[2]}</td>
-<td class="${c[1]}">${c[0]}</td>
-<td>${x[3]}</td>
+<td>${d[0]}</td>
+<td>${fmt(d[1])}</td>
+<td>${fmt(d[2])}</td>
+<td class="${b[1]}">${pct.toFixed(2)}%</td>
+<td class="${b[1]}">${b[0]}</td>
 </tr>`;
 });
 
 let regime="SIDEWAYS";
-let desc="Mixed market";
-let badge="yellow";
+let desc="Mixed tape";
+let color="yellow";
 
-if(score>=2 && btcDom<61){
-regime="BROAD BULL";
-desc="Capital entering crypto";
-badge="green";
-}
-if(score<=-2 && btcDom>60){
+if(score<=-2 && btcD>60){
 regime="RISK OFF";
-desc="Defensive pressure";
-badge="red";
+desc="BTC share up / market weak";
+color="red";
 }
-if(ethbtc.live>ethbtc.open && score>=0){
+else if(score>=2 && usdtD<25){
+regime="BROAD BULL";
+desc="Capital entering market";
+color="green";
+}
+else if(ethbtc.live>ethbtc.open && ethD>=domOpen.ethD){
 regime="ALT ROTATION";
-desc="ETH strength vs BTC";
-badge="green";
+desc="ETH leadership active";
+color="green";
 }
 
-document.getElementById("regime").textContent=regime;
-document.getElementById("desc").textContent=desc;
-document.getElementById("signalBox").innerHTML=
-`<span class="badge ${badge}">${regime}</span>`;
+$("regime").textContent=regime;
+$("desc").textContent=desc;
+$("badge").innerHTML=`<span class="badge ${color}">${regime}</span>`;
 
-exec.innerHTML="";
+$("execRows").innerHTML="";
 [
-["BTCUSDT",score>0?"LONG":"SHORT",Math.abs(score*20)+"%",cls((btc.live-btc.open))[0]],
-["ETHUSDT",score>0?"LONG":"SHORT",Math.abs(score*18)+"%",cls((eth.live-eth.open))[0]],
-["ETHBTC",ethbtc.live>ethbtc.open?"LONG ETH":"LONG BTC","62%",cls((ethbtc.live-ethbtc.open))[0]]
+["BTCUSDT",score>0?"LONG":"SHORT",Math.abs(score*22)+"%",bias((btc.live-btc.open))[0]],
+["ETHUSDT",score>0?"LONG":"SHORT",Math.abs(score*18)+"%",bias((eth.live-eth.open))[0]],
+["ETHBTC",ethbtc.live>ethbtc.open?"LONG ETH":"LONG BTC","63%",bias((ethbtc.live-ethbtc.open))[0]]
 ].forEach(x=>{
-const cc = x[3].includes("UP")?"up":x[3].includes("DOWN")?"down":"side";
-exec.innerHTML+=`
+const c=x[3].includes("UP")?"up":x[3].includes("DOWN")?"down":"side";
+$("execRows").innerHTML += `
 <tr>
 <td>${x[0]}</td>
 <td>${x[1]}</td>
 <td>${x[2]}</td>
-<td class="${cc}">${x[3]}</td>
+<td class="${c}">${x[3]}</td>
 </tr>`;
 });
 
-flow.innerHTML=`
+$("flowRows").innerHTML = `
 <tr><td>USDT</td><td>${ethbtc.live>ethbtc.open?"ETH":"BTC"}</td><td class="up">ACTIVE</td><td>Relative strength</td></tr>
-<tr><td>BTC</td><td>${ethbtc.live>ethbtc.open?"ETH":"CASH"}</td><td class="side">ROTATE</td><td>Leadership shift</td></tr>
-<tr><td>ALTS</td><td>${score<0?"CASH":"ETH"}</td><td class="${score<0?"down":"up"}">${score<0?"EXIT":"BUY"}</td><td>Momentum filter</td></tr>
+<tr><td>BTC</td><td>${btcD>domOpen.btcD?"BTC":"ETH"}</td><td class="side">ROTATE</td><td>Dominance shift</td></tr>
+<tr><td>ALTS</td><td>${usdtD>domOpen.usdtD?"CASH":"ETH"}</td><td class="${usdtD>domOpen.usdtD?"down":"up"}">${usdtD>domOpen.usdtD?"EXIT":"BUY"}</td><td>Stablecoin pressure</td></tr>
 `;
 
-addFeed(new Date().toLocaleTimeString()+" | "+regime);
+pushFeed(new Date().toLocaleTimeString()+" | "+regime);
 
-}catch(e){
-addFeed("Feed error / retrying...");
+}catch(err){
+pushFeed("Feed error / retrying...");
 }
-
 }
 
 setInterval(()=>{
-document.getElementById("clock").textContent=new Date().toLocaleTimeString();
+$("clock").textContent=new Date().toLocaleTimeString();
 },1000);
 
 load();
