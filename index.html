@@ -3,83 +3,81 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>V30 Daily Institutional Rotation Matrix TOTAL Edition</title>
+<title>V100 Institutional Rotation OS</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#050d16;
-color:#dce8ff;
+background:#050b14;
+color:#d9e7ff;
 font-family:Arial,Helvetica,sans-serif;
 overflow:hidden;
 }
 header{
-height:56px;
+height:54px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 padding:0 16px;
 background:#08111b;
-border-bottom:1px solid #17304a;
-font-size:14px;
+border-bottom:1px solid #16324c;
 font-weight:700;
+font-size:14px;
 }
-#grid{
+#wrap{
 display:grid;
-grid-template-columns:1.35fr 1.35fr 360px;
+grid-template-columns:1.2fr 1.2fr 1.2fr 340px;
 grid-template-rows:1fr 1fr;
 gap:10px;
 padding:10px;
-height:calc(100vh - 56px);
+height:calc(100vh - 54px);
 }
 .panel{
 background:#0a1522;
-border:1px solid #17304a;
+border:1px solid #16324c;
 border-radius:12px;
 overflow:hidden;
 }
 .title{
-height:36px;
+height:34px;
 display:flex;
 align-items:center;
 padding:0 12px;
 font-size:12px;
 font-weight:700;
-color:#8fb8ea;
-border-bottom:1px solid #13283d;
+color:#8eb6e6;
+border-bottom:1px solid #12293e;
 }
 table{
 width:100%;
 border-collapse:collapse;
-font-size:13px;
+font-size:12px;
 }
 th,td{
-padding:9px 12px;
-border-bottom:1px solid #13283d;
+padding:8px 10px;
+border-bottom:1px solid #11263a;
 text-align:left;
 white-space:nowrap;
 }
-th{font-size:11px;color:#7ea8d7}
+th{color:#7ea8d7;font-size:11px}
 tr:hover{background:#102030}
-
-.green{color:#32d583;font-weight:700}
-.red{color:#ff5d73;font-weight:700}
+.green{color:#2fd37b;font-weight:700}
+.red{color:#ff6278;font-weight:700}
 .yellow{color:#ffd166;font-weight:700}
-
 .big{
 font-size:28px;
-font-weight:700;
+font-weight:800;
 padding:14px 12px 6px;
 }
 .sub{
-padding:0 12px 12px;
+padding:0 12px 10px;
 font-size:12px;
-color:#8ea8c7;
+color:#8aa7c7;
 }
 .metric{
 display:flex;
 justify-content:space-between;
-padding:10px 12px;
-border-top:1px solid #13283d;
+padding:9px 12px;
+border-top:1px solid #11263a;
 font-size:13px;
 }
 .badge{
@@ -88,61 +86,44 @@ border-radius:6px;
 font-size:11px;
 font-weight:700;
 }
-.buy{background:#103824;color:#5ef0a0}
-.sell{background:#3a1318;color:#ff8897}
-.wait{background:#3b3312;color:#ffd95a}
-
+.buy{background:#123922;color:#6df2a9}
+.sell{background:#3d1218;color:#ff93a1}
+.wait{background:#3d3312;color:#ffd96d}
+.feed{overflow:auto}
 #side{
-grid-column:3;
+grid-column:4;
 grid-row:1/span 2;
 display:grid;
-grid-template-rows:350px 1fr;
+grid-template-rows:360px 1fr;
 gap:10px;
 }
-.feed{overflow:auto}
-.arrow{
-font-size:15px;
-font-weight:900;
-margin-right:5px;
-}
+.arrow{font-size:14px;font-weight:900;margin-right:4px}
 </style>
 </head>
 <body>
 
 <header>
-<span>V30 DAILY INSTITUTIONAL ROTATION MATRIX</span>
+<span>V100 INSTITUTIONAL ROTATION OS</span>
 <span id="clock">LIVE</span>
 </header>
 
-<div id="grid">
+<div id="wrap">
 
 <div class="panel">
-<div class="title">Daily Bias Matrix</div>
+<div class="title">Live Asset Matrix</div>
 <table>
 <thead>
-<tr>
-<th>Asset</th>
-<th>Last</th>
-<th>1D</th>
-<th>3D</th>
-<th>7D</th>
-<th>30D</th>
-</tr>
+<tr><th>Asset</th><th>Last</th><th>1D</th><th>Bias</th><th>Strength</th></tr>
 </thead>
-<tbody id="matrixBody"></tbody>
+<tbody id="assetBody"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">TOTAL / Dominance Metrics</div>
+<div class="title">Dominance / Market Cap</div>
 <table>
 <thead>
-<tr>
-<th>Metric</th>
-<th>Value</th>
-<th>Bias</th>
-<th>Meaning</th>
-</tr>
+<tr><th>Metric</th><th>Value</th><th>Bias</th><th>Meaning</th></tr>
 </thead>
 <tbody id="domBody"></tbody>
 </table>
@@ -152,47 +133,55 @@ margin-right:5px;
 <div class="title">Execution Radar</div>
 <table>
 <thead>
-<tr>
-<th>Pair</th>
-<th>Bias</th>
-<th>Action</th>
-<th>Conf.</th>
-<th>Pressure</th>
-</tr>
+<tr><th>Pair</th><th>Action</th><th>Confidence</th><th>Pressure</th><th>Status</th></tr>
 </thead>
 <tbody id="tradeBody"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">Capital Flow Summary</div>
+<div class="title">Flow Transfers</div>
 <table>
 <thead>
-<tr>
-<th>From</th>
-<th>To</th>
-<th>Status</th>
-<th>Reason</th>
-</tr>
+<tr><th>From</th><th>To</th><th>Status</th><th>Reason</th></tr>
 </thead>
 <tbody id="flowBody"></tbody>
+</table>
+</div>
+
+<div class="panel">
+<div class="title">Risk Matrix</div>
+<table>
+<thead>
+<tr><th>Module</th><th>Score</th><th>State</th></tr>
+</thead>
+<tbody id="riskBody"></tbody>
+</table>
+</div>
+
+<div class="panel">
+<div class="title">Signal Board</div>
+<table>
+<thead>
+<tr><th>Market</th><th>Signal</th><th>Bias</th></tr>
+</thead>
+<tbody id="signalBody"></tbody>
 </table>
 </div>
 
 <div id="side">
 
 <div class="panel">
-<div class="title">Institutional AI Regime</div>
+<div class="title">AI Regime Engine</div>
 <div class="big" id="regime">CONNECTING...</div>
-<div class="sub" id="flowText">Receiving real-time data...</div>
+<div class="sub" id="summary">Waiting data...</div>
 
-<div class="metric"><span>TOTAL</span><span id="totalEdge">--</span></div>
-<div class="metric"><span>BTC Edge</span><span id="btcEdge">--</span></div>
-<div class="metric"><span>ETH Edge</span><span id="ethEdge">--</span></div>
-<div class="metric"><span>ETH.D</span><span id="ethdEdge">--</span></div>
-<div class="metric"><span>Alt Season</span><span id="altEdge">--</span></div>
-<div class="metric"><span>Risk Score</span><span id="riskEdge">--</span></div>
-<div class="metric"><span>Signal</span><span id="signal"></span></div>
+<div class="metric"><span>TOTAL</span><span id="mTotal">--</span></div>
+<div class="metric"><span>BTC Edge</span><span id="mBtc">--</span></div>
+<div class="metric"><span>ETH Edge</span><span id="mEth">--</span></div>
+<div class="metric"><span>ETHBTC</span><span id="mPair">--</span></div>
+<div class="metric"><span>Risk Score</span><span id="mRisk">--</span></div>
+<div class="metric"><span>Signal</span><span id="mSignal">--</span></div>
 </div>
 
 <div class="panel feed">
@@ -204,38 +193,30 @@ margin-right:5px;
 </div>
 
 <script>
-function clockRun(){
-clock.innerText=new Date().toLocaleTimeString()+" | LIVE";
-}
-setInterval(clockRun,1000); clockRun();
+function now(){clock.innerText=new Date().toLocaleTimeString()+" | LIVE";}
+setInterval(now,1000); now();
 
-let btc=0,eth=0,pair=0;
-let ob=0,oe=0,op=0;
+let btc=0,eth=0,pair=0,ob=0,oe=0,op=0;
 
-function arrow(v){
-if(v>0.25)return '<span class="green"><span class="arrow">▲</span>UP</span>';
-if(v<-0.25)return '<span class="red"><span class="arrow">▼</span>DOWN</span>';
+function dir(v){
+if(v>0.35)return '<span class="green"><span class="arrow">▲</span>UP</span>';
+if(v<-0.35)return '<span class="red"><span class="arrow">▼</span>DOWN</span>';
 return '<span class="yellow"><span class="arrow">▶</span>SIDE</span>';
 }
-
+function num(v){return Math.abs(v).toFixed(2)+'%';}
 function badge(t,c){return `<span class="badge ${c}">${t}</span>`;}
 
 const ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker/ethbtc@ticker");
 
-ws.onmessage=(m)=>{
-let d=JSON.parse(m.data).data;
-
+ws.onmessage=(msg)=>{
+let d=JSON.parse(msg.data).data;
 if(d.s==="BTCUSDT"){btc=parseFloat(d.c);ob=parseFloat(d.o);}
 if(d.s==="ETHUSDT"){eth=parseFloat(d.c);oe=parseFloat(d.o);}
 if(d.s==="ETHBTC"){pair=parseFloat(d.c);op=parseFloat(d.o);}
-
 if(btc&&eth&&pair) render();
 };
 
-ws.onclose=()=>{
-regime.innerText="RECONNECTING...";
-setTimeout(()=>location.reload(),3000);
-};
+ws.onclose=()=>{regime.innerText="RECONNECTING...";setTimeout(()=>location.reload(),3000);};
 
 function render(){
 
@@ -243,85 +224,69 @@ let b=((btc-ob)/ob)*100;
 let e=((eth-oe)/oe)*100;
 let p=((pair-op)/op)*100;
 
-let totalMove=b+e;
-
-let btcd=(btc/(btc+eth*15))*100;
-let ethd=(eth*15/(btc+eth*15))*100;
-let usdt=100-btcd;
-
 let total=((btc*21)+(eth*120))/1000;
-let total2=(eth*120)/1000;
-let total3=(eth*80)/1000;
+let totalMove=b+e;
+let btcd=(btc/(btc+eth*15))*100;
+let ethd=100-btcd;
+let risk=Math.max(0,50-totalMove*2+Math.abs(p));
 
-matrixBody.innerHTML=`
-<tr><td>BTCUSDT</td><td>${btc.toFixed(0)}</td><td>${arrow(b)}</td><td>${arrow(b*1.1)}</td><td>${arrow(b*1.2)}</td><td>${arrow(b*1.4)}</td></tr>
-
-<tr><td>ETHUSDT</td><td>${eth.toFixed(2)}</td><td>${arrow(e)}</td><td>${arrow(e*1.1)}</td><td>${arrow(e*1.2)}</td><td>${arrow(e*1.4)}</td></tr>
-
-<tr><td>ETHBTC</td><td>${pair.toFixed(5)}</td><td>${arrow(p)}</td><td>${arrow(p*1.1)}</td><td>${arrow(p*1.2)}</td><td>${arrow(p*1.4)}</td></tr>
-
-<tr><td>TOTAL</td><td>${total.toFixed(2)}T</td><td>${arrow(totalMove)}</td><td>${arrow(totalMove*1.1)}</td><td>${arrow(totalMove*1.2)}</td><td>${arrow(totalMove*1.4)}</td></tr>
+assetBody.innerHTML=`
+<tr><td>BTCUSDT</td><td>${btc.toFixed(0)}</td><td>${num(b)}</td><td>${dir(b)}</td><td>${(50+b*8).toFixed(0)}</td></tr>
+<tr><td>ETHUSDT</td><td>${eth.toFixed(2)}</td><td>${num(e)}</td><td>${dir(e)}</td><td>${(50+e*8).toFixed(0)}</td></tr>
+<tr><td>ETHBTC</td><td>${pair.toFixed(5)}</td><td>${num(p)}</td><td>${dir(p)}</td><td>${(50+p*8).toFixed(0)}</td></tr>
+<tr><td>TOTAL</td><td>${total.toFixed(2)}T</td><td>${num(totalMove)}</td><td>${dir(totalMove)}</td><td>${(50+totalMove*8).toFixed(0)}</td></tr>
 `;
 
 domBody.innerHTML=`
-<tr><td>TOTAL</td><td>${total.toFixed(2)}T</td><td>${arrow(totalMove)}</td><td>Total crypto market cap</td></tr>
-<tr><td>BTC.D</td><td>${btcd.toFixed(2)}%</td><td>${arrow(b)}</td><td>Bitcoin market share</td></tr>
-<tr><td>ETH.D</td><td>${ethd.toFixed(2)}%</td><td>${arrow(e)}</td><td>Ethereum market share</td></tr>
-<tr><td>USDT.D</td><td>${usdt.toFixed(2)}%</td><td>${arrow(-totalMove)}</td><td>Cash defensive demand</td></tr>
-<tr><td>TOTAL2</td><td>${total2.toFixed(2)}T</td><td>${arrow(e)}</td><td>Alt market ex BTC</td></tr>
-<tr><td>TOTAL3</td><td>${total3.toFixed(2)}T</td><td>${arrow(p)}</td><td>Small cap flow</td></tr>
+<tr><td>TOTAL</td><td>${total.toFixed(2)}T</td><td>${dir(totalMove)}</td><td>Total market cap</td></tr>
+<tr><td>BTC.D</td><td>${btcd.toFixed(2)}%</td><td>${dir(b)}</td><td>Bitcoin share</td></tr>
+<tr><td>ETH.D</td><td>${ethd.toFixed(2)}%</td><td>${dir(e)}</td><td>Ethereum share</td></tr>
+<tr><td>USDT.D</td><td>${(100-btcd).toFixed(2)}%</td><td>${dir(-totalMove)}</td><td>Cash demand</td></tr>
 `;
 
 let reg="BROAD BULL";
-let txt="Capital entering market";
+let sum="Capital rotating into crypto.";
 let sig=badge("BUY DIPS","buy");
 
-if(b>1&&p<0){
-reg="BTC SEASON";
-txt="Money rotating to Bitcoin";
-sig=badge("BUY BTC","buy");
-}
-else if(e>1&&p>0){
-reg="ETH / ALT ROTATION";
-txt="Ethereum leadership";
-sig=badge("BUY ETH","buy");
-}
-else if(b<0&&e<0){
-reg="RISK OFF";
-txt="Defensive capital flow";
-sig=badge("REDUCE","sell");
-}
-
-regime.innerText=reg;
-flowText.innerText=txt;
-
-totalEdge.innerHTML=arrow(totalMove);
-btcEdge.innerHTML=arrow(b);
-ethEdge.innerHTML=arrow(e);
-ethdEdge.innerHTML=ethd.toFixed(2)+"%";
-altEdge.innerHTML=arrow(p);
-
-let risk=Math.max(0,50-totalMove*2);
-riskEdge.innerHTML=(risk>50?'<span class="red">':'<span class="green">')+risk.toFixed(0)+'%</span>';
-signal.innerHTML=sig;
+if(b>1&&p<0){reg="BTC SEASON";sum="Bitcoin leading capital flows.";sig=badge("BUY BTC","buy");}
+else if(e>1&&p>0){reg="ETH ROTATION";sum="Ethereum gaining leadership.";sig=badge("BUY ETH","buy");}
+else if(b<0&&e<0){reg="RISK OFF";sum="Capital exiting risk assets.";sig=badge("REDUCE","sell");}
 
 tradeBody.innerHTML=`
-<tr><td>BTCUSDT</td><td>${arrow(b)}</td><td>${b>=0?"LONG":"SHORT"}</td><td>${Math.abs(b).toFixed(1)}%</td><td>${(50+b*5).toFixed(0)}%</td></tr>
-
-<tr><td>ETHUSDT</td><td>${arrow(e)}</td><td>${e>=0?"LONG":"SHORT"}</td><td>${Math.abs(e).toFixed(1)}%</td><td>${(50+e*5).toFixed(0)}%</td></tr>
-
-<tr><td>ETHBTC</td><td>${arrow(p)}</td><td>${p>=0?"LONG ETH":"LONG BTC"}</td><td>${Math.abs(p).toFixed(1)}%</td><td>${(50+p*5).toFixed(0)}%</td></tr>
+<tr><td>BTCUSDT</td><td>${b>=0?"LONG":"SHORT"}</td><td>${(55+Math.abs(b)*10).toFixed(0)}%</td><td>${(50+b*5).toFixed(0)}%</td><td>${dir(b)}</td></tr>
+<tr><td>ETHUSDT</td><td>${e>=0?"LONG":"SHORT"}</td><td>${(55+Math.abs(e)*10).toFixed(0)}%</td><td>${(50+e*5).toFixed(0)}%</td><td>${dir(e)}</td></tr>
+<tr><td>ETHBTC</td><td>${p>=0?"LONG ETH":"LONG BTC"}</td><td>${(55+Math.abs(p)*10).toFixed(0)}%</td><td>${(50+p*5).toFixed(0)}%</td><td>${dir(p)}</td></tr>
 `;
 
 flowBody.innerHTML=`
-<tr><td>USDT</td><td>${b>e?"BTC":"ETH"}</td><td class="green">ACTIVE</td><td>Best momentum</td></tr>
-<tr><td>BTC</td><td>${p>0?"ETH":"USDT"}</td><td class="yellow">ROTATING</td><td>Relative strength shift</td></tr>
-<tr><td>Alts</td><td>${totalMove>0?"MARKET":"CASH"}</td><td>${totalMove>0?'<span class="green">EXPAND</span>':'<span class="red">EXIT</span>'}</td><td>Risk appetite</td></tr>
+<tr><td>USDT</td><td>${b>e?"BTC":"ETH"}</td><td class="green">ACTIVE</td><td>Momentum target</td></tr>
+<tr><td>BTC</td><td>${p>0?"ETH":"USDT"}</td><td class="yellow">ROTATING</td><td>Relative shift</td></tr>
+<tr><td>ALTS</td><td>${totalMove>0?"MARKET":"CASH"}</td><td>${totalMove>0?'<span class="green">EXPAND</span>':'<span class="red">EXIT</span>'}</td><td>Risk appetite</td></tr>
 `;
 
-feed.innerHTML=`<tr><td>${new Date().toLocaleTimeString()}</td><td>${reg}</td><td>${sig.replace(/<[^>]+>/g,'')}</td></tr>`+feed.innerHTML;
+riskBody.innerHTML=`
+<tr><td>Trend Risk</td><td>${risk.toFixed(0)}%</td><td>${dir(-risk+50)}</td></tr>
+<tr><td>Volatility</td><td>${(Math.abs(b-e)*10).toFixed(0)}%</td><td>${dir(-(Math.abs(b-e)))}</td></tr>
+<tr><td>Rotation</td><td>${(50+Math.abs(p)*20).toFixed(0)}%</td><td>${dir(p)}</td></tr>
+`;
 
-if(feed.rows.length>25)feed.deleteRow(25);
+signalBody.innerHTML=`
+<tr><td>BTCUSDT</td><td>${b>0?"LONG":"SHORT"}</td><td>${dir(b)}</td></tr>
+<tr><td>ETHUSDT</td><td>${e>0?"LONG":"SHORT"}</td><td>${dir(e)}</td></tr>
+<tr><td>Portfolio</td><td>${sig}</td><td>${dir(totalMove)}</td></tr>
+`;
+
+regime.innerText=reg;
+summary.innerText=sum;
+mTotal.innerHTML=dir(totalMove);
+mBtc.innerHTML=dir(b);
+mEth.innerHTML=dir(e);
+mPair.innerHTML=dir(p);
+mRisk.innerHTML=(risk>55?'<span class="red">HIGH</span>':'<span class="green">LOW</span>');
+mSignal.innerHTML=sig;
+
+feed.innerHTML=`<tr><td>${new Date().toLocaleTimeString()}</td><td>${reg}</td><td>${sig.replace(/<[^>]*>/g,'')}</td></tr>`+feed.innerHTML;
+if(feed.rows.length>35)feed.deleteRow(35);
 }
 </script>
 </body>
