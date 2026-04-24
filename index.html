@@ -3,51 +3,101 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>⚡ FRANCIS TERMINAL V8 FIXED</title>
+<title>💜 FRANCIS TERMINAL V9 PRO STABLE</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#020814;
-color:#fff;
+:root{
+--text:#ffffff;
+--muted:#bfa8ff;
+--panel:#090611;
+--line:#5a2ea6;
+--green:#00ff9c;
+--red:#ff4d6d;
+--gold:#ffd700;
 }
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+color:var(--text);
+min-height:100vh;
+
+/* BEAUTIFUL BLACK + DARK PURPLE BACKGROUND */
+background:
+radial-gradient(circle at 15% 20%, rgba(120,0,255,0.20) 0%, transparent 22%),
+radial-gradient(circle at 85% 15%, rgba(180,0,255,0.14) 0%, transparent 20%),
+radial-gradient(circle at 50% 80%, rgba(90,0,180,0.16) 0%, transparent 25%),
+radial-gradient(circle at 20% 90%, rgba(70,0,140,0.10) 0%, transparent 18%),
+linear-gradient(135deg,#000000 0%, #050008 25%, #110018 55%, #1a0028 78%, #000000 100%);
+
+background-attachment:fixed;
+}
+
 .header{
 text-align:center;
 padding:14px;
 font-size:22px;
 font-weight:700;
-background:#050a18;
-border-bottom:1px solid #20355d;
+background:rgba(0,0,0,.55);
+backdrop-filter:blur(8px);
+border-bottom:1px solid var(--line);
+letter-spacing:.5px;
 }
+
 .sub{
 text-align:center;
 font-size:12px;
-color:#8fa4d6;
-padding:4px 0 10px;
+padding:6px 0 10px;
+color:var(--muted);
 }
+
 .top{
 display:grid;
 grid-template-columns:repeat(5,1fr);
 gap:10px;
 padding:10px;
 }
+
 .box,.master{
-background:#071224;
-border:1px solid #1d3357;
-border-radius:10px;
+background:linear-gradient(180deg,#0d0818,#09040f);
+border:1px solid var(--line);
+border-radius:14px;
 padding:12px;
 text-align:center;
+box-shadow:0 0 18px rgba(140,0,255,.15);
 }
-.symbol{font-size:12px;color:#8fa4d6;}
-.price{font-size:18px;font-weight:700;margin-top:4px;}
-.arrow{font-size:20px;margin-top:5px;}
-.note{font-size:11px;color:#7a88a8;margin-top:4px;}
 
-.green{color:#00ff9c;}
-.red{color:#ff4d4d;}
-.yellow{color:#ffd700;}
+.symbol{
+font-size:12px;
+color:var(--muted);
+}
+
+.price{
+font-size:19px;
+font-weight:700;
+margin-top:4px;
+}
+
+.arrow{
+font-size:20px;
+margin-top:5px;
+}
+
+.note{
+font-size:11px;
+margin-top:4px;
+color:#a892df;
+}
+
+.green{color:var(--green);}
+.red{color:var(--red);}
+.yellow{color:var(--gold);}
 
 .master{
 margin:0 10px 10px;
@@ -64,25 +114,41 @@ padding:10px;
 
 .chart{
 height:360px;
-border:1px solid #13203a;
-border-radius:10px;
+border:1px solid var(--line);
+border-radius:14px;
 overflow:hidden;
 background:#000;
+box-shadow:0 0 18px rgba(140,0,255,.12);
 }
 
-@media(max-width:1000px){
-.top{grid-template-columns:1fr 1fr;}
+.footer{
+text-align:center;
+font-size:11px;
+padding:10px;
+color:#9b85d1;
 }
+
+@media(max-width:1100px){
+.top{
+grid-template-columns:repeat(2,1fr);
+}
+}
+
 @media(max-width:700px){
-.top,.grid{grid-template-columns:1fr;}
+.top,.grid{
+grid-template-columns:1fr;
+}
+.chart{
+height:320px;
+}
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">⚡ FRANCIS TERMINAL V8 — FIXED LIVE ENGINE</div>
-<div class="sub">Binance + CoinGecko + TradingView</div>
+<div class="header">💜 FRANCIS TERMINAL V9 — PRO STABLE</div>
+<div class="sub">Beautiful Black + Dark Purple Theme</div>
 
 <div class="top">
 
@@ -123,7 +189,7 @@ background:#000;
 
 </div>
 
-<div class="master" id="masterBox">Loading Live Data...</div>
+<div class="master" id="masterBox">Loading Pro Engine...</div>
 
 <div class="grid">
 <div id="c1" class="chart"></div>
@@ -131,6 +197,8 @@ background:#000;
 <div id="c3" class="chart"></div>
 <div id="c4" class="chart"></div>
 </div>
+
+<div class="footer">Daily Bias Engine • Stable Mobile Mode • Live Feed</div>
 
 <script>
 function setArrow(id,v){
@@ -152,7 +220,6 @@ return await r.json();
 
 async function update(){
 try{
-
 const btc=await ticker("BTCUSDT");
 const eth=await ticker("ETHUSDT");
 const ethbtc=await ticker("ETHBTC");
@@ -166,52 +233,48 @@ let totalCap=cg.data.total_market_cap.usd;
 let btcDom=cg.data.market_cap_percentage.btc;
 let usdtDom=cg.data.market_cap_percentage.usdt;
 
-/* USDT */
-document.getElementById("p1").innerText=usdtDom.toFixed(2)+"%";
-setArrow("a1",usdtDom-4);
-document.getElementById("n1").innerText=usdtDom>4?"Fear":"Risk On";
+p1.innerText=usdtDom.toFixed(2)+"%";
+setArrow("a1",4-usdtDom);
+n1.innerText=usdtDom>4?"Cash Rising":"Risk On";
 
-/* ETHBTC */
-document.getElementById("p2").innerText=parseFloat(ethbtc.lastPrice).toFixed(6);
+p2.innerText=parseFloat(ethbtc.lastPrice).toFixed(6);
 setArrow("a2",ebCh);
-document.getElementById("n2").innerText=ebCh>0?"ETH Leads":"BTC Leads";
+n2.innerText=ebCh>0?"ETH Leads":"BTC Leads";
 
-/* BTC.D */
-document.getElementById("p3").innerText=btcDom.toFixed(2)+"%";
+p3.innerText=btcDom.toFixed(2)+"%";
 setArrow("a3",btcCh);
-document.getElementById("n3").innerText=btcCh>0?"BTC Strong":"BTC Weak";
+n3.innerText=btcCh>0?"BTC Strong":"BTC Weak";
 
-/* TOTAL */
-document.getElementById("p4").innerText=(totalCap/1e12).toFixed(2)+"T";
-setArrow("a4",(btcCh+ethCh)/2);
-document.getElementById("n4").innerText=(btcCh+ethCh)>0?"Expansion":"Contraction";
+p4.innerText=(totalCap/1e12).toFixed(2)+"T";
+setArrow("a4",btcCh+ethCh);
+n4.innerText=(btcCh+ethCh)>0?"Expansion":"Contraction";
 
-/* MASTER */
 let score=0;
 if(usdtDom<4)score+=2;else score-=2;
 if(ebCh>0)score+=1;else score-=1;
 if(btcCh>0)score+=1;else score-=1;
 if((btcCh+ethCh)>0)score+=2;else score-=2;
 
-let bias="SIDEWAYS",val=0;
+let bias="SIDEWAYS";
+let val=0;
+
 if(score>=3){bias="BULLISH";val=1;}
 if(score<=-3){bias="BEARISH";val=-1;}
 
-document.getElementById("p5").innerText=score;
+p5.innerText=score;
 setArrow("a5",val);
-document.getElementById("n5").innerText=bias;
-document.getElementById("masterBox").innerText=
-"MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
+n5.innerText=bias;
+
+masterBox.innerText="MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
 
 }catch(e){
-document.getElementById("masterBox").innerText="API Loading...";
+masterBox.innerText="Waiting For Live Feed...";
 }
 }
 
 update();
 setInterval(update,5000);
 
-/* DELAYED WIDGET LOAD FIX */
 setTimeout(function(){
 
 new TradingView.widget({
