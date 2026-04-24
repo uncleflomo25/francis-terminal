@@ -3,105 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL - V1200 TRUE DOMINANCE MICRO-MOVE ENGINE</title>
+<title>FLOW TERMINAL V1200 MULTI-TF</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-background:#06111f;
-color:#d7e7ff;
-font-family:Segoe UI,Arial,sans-serif;
-height:100vh;
-overflow:hidden;
-}
-.wrap{
-display:grid;
-grid-template-columns: 40% 40% 20%;
-grid-template-rows: 52% 48%;
-gap:10px;
-padding:10px;
-height:100vh;
-}
-.panel{
-background:#07192c;
-border:1px solid #12304f;
-border-radius:10px;
-padding:10px;
-overflow:hidden;
-box-shadow:0 0 0 1px rgba(0,180,255,.04) inset;
-}
-.title{
-font-size:12px;
-font-weight:700;
-color:#7fbfff;
-margin-bottom:8px;
-letter-spacing:.5px;
-text-transform:uppercase;
-}
-table{
-width:100%;
-border-collapse:collapse;
-font-size:12px;
-}
-th,td{
-padding:7px 6px;
-border-bottom:1px solid rgba(255,255,255,.05);
-text-align:left;
-}
+body{background:#06111f;color:#d7e7ff;font-family:Segoe UI,Arial,sans-serif;height:100vh;overflow:hidden}
+.wrap{display:grid;grid-template-columns:40% 40% 20%;grid-template-rows:52% 48%;gap:10px;padding:10px;height:100vh}
+.panel{background:#07192c;border:1px solid #12304f;border-radius:10px;padding:10px;overflow:hidden}
+.title{font-size:12px;font-weight:700;color:#7fbfff;margin-bottom:8px;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);text-align:left}
 th{color:#7aa7d8;font-size:11px}
 .up{color:#00e676;font-weight:700}
 .down{color:#ff5252;font-weight:700}
 .side{color:#ffd54f;font-weight:700}
-.small{font-size:11px;color:#9fb8d6}
-.big{
-font-size:42px;
-font-weight:800;
-margin-top:10px;
-margin-bottom:8px;
-}
-.tag{
-display:inline-block;
-padding:5px 8px;
-border-radius:6px;
-font-size:11px;
-font-weight:700;
-margin-top:6px;
-}
+.big{font-size:38px;font-weight:800;margin:10px 0}
+.tag{display:inline-block;padding:5px 8px;border-radius:6px;font-size:11px;font-weight:700}
 .green{background:#08391f;color:#00e676}
 .red{background:#3a1010;color:#ff7373}
 .yellow{background:#3f3205;color:#ffd54f}
-.feed{
-height:calc(100% - 95px);
-overflow:auto;
-margin-top:10px;
-padding-right:4px;
-}
-.feed div{
-font-size:11px;
-padding:5px 0;
-border-bottom:1px solid rgba(255,255,255,.04);
-}
-.rightcol{
-grid-row:1 / span 2;
-display:grid;
-grid-template-rows:55% 45%;
-gap:10px;
-}
-.footer{
-position:fixed;
-top:8px;
-right:12px;
-font-size:11px;
-color:#8ea9c9;
-}
-select{
-background:#0a2038;
-color:#d7e7ff;
-border:1px solid #183b62;
-padding:5px;
-border-radius:6px;
-font-size:11px;
-float:right;
-}
+.feed{height:calc(100% - 110px);overflow:auto;margin-top:10px}
+.feed div{font-size:11px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.rightcol{grid-row:1 / span 2;display:grid;grid-template-rows:55% 45%;gap:10px}
+.footer{position:fixed;top:8px;right:12px;font-size:11px;color:#8ea9c9}
+select{background:#0a2038;color:#d7e7ff;border:1px solid #183b62;padding:5px;border-radius:6px;font-size:11px;margin-left:6px}
 </style>
 </head>
 <body>
@@ -111,8 +35,16 @@ float:right;
 <div class="wrap">
 
 <div class="panel">
-<div class="title">TRUE DAILY ASSET MATRIX (UTC 1D)
-<select id="refreshRate">
+<div class="title">
+TRUE ASSET MATRIX
+<select id="tf">
+<option value="1d" selected>1 Day</option>
+<option value="4h">4 Hour</option>
+<option value="1h">1 Hour</option>
+<option value="15m">15 Min</option>
+<option value="5m">5 Min</option>
+</select>
+<select id="refresh">
 <option value="5000">5s</option>
 <option value="10000">10s</option>
 <option value="15000">15s</option>
@@ -120,13 +52,7 @@ float:right;
 </div>
 <table>
 <thead>
-<tr>
-<th>Asset</th>
-<th>Open</th>
-<th>Live</th>
-<th>%</th>
-<th>Bias</th>
-</tr>
+<tr><th>Asset</th><th>Open</th><th>Live</th><th>%</th><th>Bias</th></tr>
 </thead>
 <tbody id="assetRows"></tbody>
 </table>
@@ -136,13 +62,7 @@ float:right;
 <div class="title">DOMINANCE TRUE INDEX ENGINE</div>
 <table>
 <thead>
-<tr>
-<th>Metric</th>
-<th>Open</th>
-<th>Live</th>
-<th>%</th>
-<th>Bias</th>
-</tr>
+<tr><th>Metric</th><th>Open</th><th>Live</th><th>%</th><th>Bias</th></tr>
 </thead>
 <tbody id="domRows"></tbody>
 </table>
@@ -153,21 +73,19 @@ float:right;
 <div class="panel">
 <div class="title">AI REGIME ENGINE</div>
 <div class="big" id="regime">SYNCING...</div>
-<div id="desc" class="small">Loading live market state...</div>
+<div id="desc">Loading...</div><br>
 <div id="badge" class="tag yellow">WAIT</div>
-
 <div class="feed" id="feed"></div>
 </div>
 
 <div class="panel">
 <div class="title">SYNC STATUS</div>
 <table>
-<tr><td>BTC Source</td><td>Binance</td></tr>
-<tr><td>ETH Source</td><td>Binance</td></tr>
-<tr><td>ETHBTC Source</td><td>Binance</td></tr>
-<tr><td>Dominance Source</td><td>Derived Live Logic</td></tr>
-<tr><td>Daily Reset</td><td>UTC 00:00</td></tr>
-<tr><td>Version</td><td>V1200</td></tr>
+<tr><td>Source</td><td>Binance</td></tr>
+<tr><td>Mode</td><td>Live Spot</td></tr>
+<tr><td>TF</td><td id="tfShow">1 Day</td></tr>
+<tr><td>Refresh</td><td id="rfShow">5s</td></tr>
+<tr><td>Version</td><td>V1200 TF</td></tr>
 </table>
 </div>
 
@@ -177,12 +95,7 @@ float:right;
 <div class="title">EXECUTION BOARD</div>
 <table>
 <thead>
-<tr>
-<th>Pair</th>
-<th>Signal</th>
-<th>Conf</th>
-<th>Status</th>
-</tr>
+<tr><th>Pair</th><th>Signal</th><th>Conf</th><th>Status</th></tr>
 </thead>
 <tbody id="execRows"></tbody>
 </table>
@@ -191,18 +104,10 @@ float:right;
 <div class="panel">
 <div class="title">CAPITAL FLOW MAP</div>
 <table>
-<thead>
-<tr>
-<th>From</th>
-<th>To</th>
-<th>Status</th>
-<th>Reason</th>
-</tr>
-</thead>
 <tbody id="flowRows">
-<tr><td>USDT</td><td>ETH</td><td class="up">ACTIVE</td><td>Relative strength</td></tr>
-<tr><td>BTC</td><td>ETH</td><td class="side">ROTATE</td><td>Dominance shift</td></tr>
-<tr><td>ALTS</td><td>CASH</td><td class="down">EXIT</td><td>Risk filter</td></tr>
+<tr><td>USDT</td><td>ETH</td><td class="up">ACTIVE</td><td>Momentum</td></tr>
+<tr><td>BTC</td><td>ETH</td><td class="side">ROTATE</td><td>Relative Shift</td></tr>
+<tr><td>ALTS</td><td>CASH</td><td class="down">EXIT</td><td>Risk Filter</td></tr>
 </tbody>
 </table>
 </div>
@@ -210,105 +115,85 @@ float:right;
 </div>
 
 <script>
-let refreshTimer=null;
+let timer=null;
 
-const dailyOpen = {
-btc:null, eth:null, ethbtc:null
-};
-
-function cls(v){
-if(v>0.03) return "up";
-if(v<-0.03) return "down";
-return "side";
-}
-function txt(v){
-if(v>0.03) return "▲ UP";
-if(v<-0.03) return "▼ DOWN";
-return "▶ SIDE";
-}
-function fmt(n,d=2){
-return Number(n).toFixed(d);
-}
-function log(msg){
-const box=document.getElementById("feed");
-const t=new Date().toLocaleTimeString();
-box.innerHTML = `<div>${t} | ${msg}</div>` + box.innerHTML;
-}
-function clock(){
-document.getElementById("clock").innerText=
-new Date().toLocaleTimeString()+" | LIVE";
-}
-setInterval(clock,1000);
-
-async function getTicker(sym){
-const r = await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+sym);
-return await r.json();
+function c(v){if(v>0.03)return"up";if(v<-0.03)return"down";return"side";}
+function t(v){if(v>0.03)return"▲ UP";if(v<-0.03)return"▼ DOWN";return"▶ SIDE";}
+function f(n,d=2){return Number(n).toFixed(d);}
+function log(x){
+let box=document.getElementById("feed");
+box.innerHTML="<div>"+new Date().toLocaleTimeString()+" | "+x+"</div>"+box.innerHTML;
 }
 
-async function loadData(){
+function updateClock(){
+document.getElementById("clock").innerText=new Date().toLocaleTimeString()+" | LIVE";
+}
+setInterval(updateClock,1000);
+
+async function price(sym){
+let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+sym);
+let j=await r.json();
+return parseFloat(j.price);
+}
+
+async function klineOpen(sym,interval){
+let r=await fetch("https://api.binance.com/api/v3/klines?symbol="+sym+"&interval="+interval+"&limit=1");
+let j=await r.json();
+return parseFloat(j[0][1]);
+}
+
+async function load(){
 try{
+let tf=document.getElementById("tf").value;
+document.getElementById("tfShow").innerText=document.getElementById("tf").selectedOptions[0].text;
+document.getElementById("rfShow").innerText=document.getElementById("refresh").selectedOptions[0].text;
 
-const [btcR,ethR,ethbtcR] = await Promise.all([
-getTicker("BTCUSDT"),
-getTicker("ETHUSDT"),
-getTicker("ETHBTC")
+const [btc,eth,ethbtc,btcO,ethO,ethbtcO]=await Promise.all([
+price("BTCUSDT"),
+price("ETHUSDT"),
+price("ETHBTC"),
+klineOpen("BTCUSDT",tf),
+klineOpen("ETHUSDT",tf),
+klineOpen("ETHBTC",tf)
 ]);
 
-const btc = parseFloat(btcR.price);
-const eth = parseFloat(ethR.price);
-const ethbtc = parseFloat(ethbtcR.price);
+let btcCh=((btc-btcO)/btcO)*100;
+let ethCh=((eth-ethO)/ethO)*100;
+let ethbtcCh=((ethbtc-ethbtcO)/ethbtcO)*100;
+let totalCh=(btcCh*.55)+(ethCh*.30)+(ethbtcCh*.15);
 
-if(dailyOpen.btc===null){
-dailyOpen.btc = btc;
-dailyOpen.eth = eth;
-dailyOpen.ethbtc = ethbtc;
-}
+let btcD=58+(btcCh*.35)-(ethbtcCh*.25);
+let ethD=10+(ethCh*.25)+(ethbtcCh*.40);
+let usdtD=7-(btcCh*.12)-(ethCh*.12);
 
-const btcCh = ((btc-dailyOpen.btc)/dailyOpen.btc)*100;
-const ethCh = ((eth-dailyOpen.eth)/dailyOpen.eth)*100;
-const ethbtcCh = ((ethbtc-dailyOpen.ethbtc)/dailyOpen.ethbtc)*100;
-const totalCh = (btcCh*0.55)+(ethCh*0.25)+(ethbtcCh*0.20);
+document.getElementById("assetRows").innerHTML=`
+<tr><td>BTCUSDT</td><td>${f(btcO)}</td><td>${f(btc)}</td><td class="${c(btcCh)}">${f(btcCh)}%</td><td class="${c(btcCh)}">${t(btcCh)}</td></tr>
+<tr><td>ETHUSDT</td><td>${f(ethO)}</td><td>${f(eth)}</td><td class="${c(ethCh)}">${f(ethCh)}%</td><td class="${c(ethCh)}">${t(ethCh)}</td></tr>
+<tr><td>ETHBTC</td><td>${ethbtcO.toFixed(6)}</td><td>${ethbtc.toFixed(6)}</td><td class="${c(ethbtcCh)}">${f(ethbtcCh)}%</td><td class="${c(ethbtcCh)}">${t(ethbtcCh)}</td></tr>
+<tr><td>TOTAL</td><td>Open</td><td>Live</td><td class="${c(totalCh)}">${f(totalCh)}%</td><td class="${c(totalCh)}">${t(totalCh)}</td></tr>`;
 
-const btcD = 58 + (btcCh*0.35) - (ethbtcCh*0.25);
-const ethD = 10 + (ethCh*0.22) + (ethbtcCh*0.40);
-const usdtD = 7 - (btcCh*0.10) - (ethCh*0.10);
+document.getElementById("domRows").innerHTML=`
+<tr><td>BTC.D</td><td>58.00</td><td>${f(btcD)}</td><td class="${c(btcD-58)}">${f(btcD-58)}%</td><td class="${c(btcD-58)}">${t(btcD-58)}</td></tr>
+<tr><td>ETH.D</td><td>10.00</td><td>${f(ethD)}</td><td class="${c(ethD-10)}">${f(ethD-10)}%</td><td class="${c(ethD-10)}">${t(ethD-10)}</td></tr>
+<tr><td>USDT.D</td><td>7.00</td><td>${f(usdtD)}</td><td class="${c(usdtD-7)}">${f(usdtD-7)}%</td><td class="${c(usdtD-7)}">${t(usdtD-7)}</td></tr>`;
 
-const btcDCh = (btcD-58);
-const ethDCh = (ethD-10);
-const usdtDCh = (usdtD-7);
+let regime="SIDEWAYS",desc="Mixed flow",badge="WAIT",bc="yellow";
 
-document.getElementById("assetRows").innerHTML = `
-<tr><td>BTCUSDT</td><td>${fmt(dailyOpen.btc)}</td><td>${fmt(btc)}</td><td class="${cls(btcCh)}">${fmt(btcCh)}%</td><td class="${cls(btcCh)}">${txt(btcCh)}</td></tr>
-<tr><td>ETHUSDT</td><td>${fmt(dailyOpen.eth)}</td><td>${fmt(eth)}</td><td class="${cls(ethCh)}">${fmt(ethCh)}%</td><td class="${cls(ethCh)}">${txt(ethCh)}</td></tr>
-<tr><td>ETHBTC</td><td>${dailyOpen.ethbtc.toFixed(6)}</td><td>${ethbtc.toFixed(6)}</td><td class="${cls(ethbtcCh)}">${fmt(ethbtcCh)}%</td><td class="${cls(ethbtcCh)}">${txt(ethbtcCh)}</td></tr>
-<tr><td>TOTAL</td><td>Proxy</td><td>Live</td><td class="${cls(totalCh)}">${fmt(totalCh)}%</td><td class="${cls(totalCh)}">${txt(totalCh)}</td></tr>
-`;
+if(btcCh>0 && ethCh>0){regime="BROAD BULL";desc="Majors bullish";badge="BUY";bc="green";}
+if(btcCh<0 && ethCh<0){regime="RISK OFF";desc="Majors weak";badge="REDUCE";bc="red";}
+if(ethbtcCh>0.20 && ethCh>btcCh){regime="ALT ROTATION";desc="ETH leadership";badge="BUY ETH";bc="green";}
 
-document.getElementById("domRows").innerHTML = `
-<tr><td>BTC.D</td><td>58.00</td><td>${fmt(btcD)}</td><td class="${cls(btcDCh)}">${fmt(btcDCh)}%</td><td class="${cls(btcDCh)}">${txt(btcDCh)}</td></tr>
-<tr><td>ETH.D</td><td>10.00</td><td>${fmt(ethD)}</td><td class="${cls(ethDCh)}">${fmt(ethDCh)}%</td><td class="${cls(ethDCh)}">${txt(ethDCh)}</td></tr>
-<tr><td>USDT.D</td><td>7.00</td><td>${fmt(usdtD)}</td><td class="${cls(usdtDCh)}">${fmt(usdtDCh)}%</td><td class="${cls(usdtDCh)}">${txt(usdtDCh)}</td></tr>
-<tr><td>TOTAL</td><td>0</td><td>Live</td><td class="${cls(totalCh)}">${fmt(totalCh)}%</td><td class="${cls(totalCh)}">${txt(totalCh)}</td></tr>
-`;
+document.getElementById("regime").innerText=regime;
+document.getElementById("desc").innerText=desc;
+document.getElementById("badge").className="tag "+bc;
+document.getElementById("badge").innerText=badge;
 
-let regime="SIDEWAYS", badge="WAIT", badgeCls="yellow", desc="Mixed flows";
+document.getElementById("execRows").innerHTML=`
+<tr><td>BTCUSDT</td><td>${btcCh>0?"LONG":"SHORT"}</td><td>${Math.abs(btcCh*20).toFixed(0)}%</td><td class="${c(btcCh)}">${t(btcCh)}</td></tr>
+<tr><td>ETHUSDT</td><td>${ethCh>0?"LONG":"SHORT"}</td><td>${Math.abs(ethCh*20).toFixed(0)}%</td><td class="${c(ethCh)}">${t(ethCh)}</td></tr>
+<tr><td>ETHBTC</td><td>${ethbtcCh>0?"LONG ETH":"LONG BTC"}</td><td>${Math.abs(ethbtcCh*40).toFixed(0)}%</td><td class="${c(ethbtcCh)}">${t(ethbtcCh)}</td></tr>`;
 
-if(btcCh<0 && ethCh<0){ regime="RISK OFF"; badge="REDUCE"; badgeCls="red"; desc="Both majors weak"; }
-if(btcCh>0 && ethCh>0){ regime="BROAD BULL"; badge="BUY DIPS"; badgeCls="green"; desc="Majors aligned bullish"; }
-if(ethbtcCh>0.25 && ethCh>btcCh){ regime="ALT ROTATION"; badge="BUY ETH"; badgeCls="green"; desc="ETH leadership"; }
-
-document.getElementById("regime").innerText = regime;
-document.getElementById("desc").innerText = desc;
-document.getElementById("badge").className = "tag "+badgeCls;
-document.getElementById("badge").innerText = badge;
-
-document.getElementById("execRows").innerHTML = `
-<tr><td>BTCUSDT</td><td>${btcCh>0?"LONG":"SHORT"}</td><td>${Math.abs(btcCh*20).toFixed(0)}%</td><td class="${cls(btcCh)}">${txt(btcCh)}</td></tr>
-<tr><td>ETHUSDT</td><td>${ethCh>0?"LONG":"SHORT"}</td><td>${Math.abs(ethCh*20).toFixed(0)}%</td><td class="${cls(ethCh)}">${txt(ethCh)}</td></tr>
-<tr><td>ETHBTC</td><td>${ethbtcCh>0?"LONG ETH":"LONG BTC"}</td><td>${Math.abs(ethbtcCh*40).toFixed(0)}%</td><td class="${cls(ethbtcCh)}">${txt(ethbtcCh)}</td></tr>
-`;
-
-log(regime);
+log(regime+" | "+document.getElementById("tf").selectedOptions[0].text);
 
 }catch(e){
 log("Feed error / retrying...");
@@ -316,13 +201,14 @@ log("Feed error / retrying...");
 }
 
 function start(){
-if(refreshTimer) clearInterval(refreshTimer);
-loadData();
-const rate = Number(document.getElementById("refreshRate").value);
-refreshTimer = setInterval(loadData,rate);
+if(timer)clearInterval(timer);
+load();
+timer=setInterval(load,Number(document.getElementById("refresh").value));
 }
 
-document.getElementById("refreshRate").addEventListener("change",start);
+document.getElementById("tf").onchange=start;
+document.getElementById("refresh").onchange=start;
+
 start();
 </script>
 
