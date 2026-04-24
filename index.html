@@ -1,1 +1,217 @@
-<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>V5 Accurate Engine</title><style>body{margin:0;background:#03070d;color:#dbe7f1;font-family:Arial,sans-serif}header{padding:12px 16px;background:#06111d;border-bottom:1px solid #163047;font-size:22px;font-weight:700}.wrap{padding:10px}.card{background:#07121d;border:1px solid #163047;border-radius:12px;padding:10px;margin-bottom:10px}.tbl{width:100%;border-collapse:collapse;font-size:13px}.tbl th,.tbl td{padding:8px;border-bottom:1px solid #102234;text-align:left}.up{color:#00d26a}.down{color:#ff5252}.side{color:#ffd54a}.strong{font-weight:700}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:800px){.grid{grid-template-columns:1fr}}</style></head><body><header>CRYPTO V5 ACCURATE ENGINE</header><div class='wrap'><div class='card'><table class='tbl'><thead><tr><th>Panel</th><th>Asset</th><th>Price</th><th>24H%</th><th>Weight</th><th>Signal</th><th>Direction</th></tr></thead><tbody id='main'></tbody></table></div><div class='grid'><div class='card'><table class='tbl'><tbody><tr><td>Daily Bias</td><td id='bias'></td></tr><tr><td>Confidence</td><td id='conf'></td></tr><tr><td>Risk Mode</td><td id='risk'></td></tr><tr><td>Alt Rotation</td><td id='alt'></td></tr></tbody></table></div><div class='card'><table class='tbl'><tbody><tr><td>USDT.D Impact</td><td id='u'></td></tr><tr><td>BTC Leadership</td><td id='b'></td></tr><tr><td>ETH Strength</td><td id='e'></td></tr><tr><td>Updated</td><td id='clock'></td></tr></tbody></table></div></div></div><script>const assets=[['BTCUSDT','USDT.D',-1.6],['BTCUSDT','BTC.D',1.3],['ETHBTC','ETHBTC',1.4],['BTCUSDT','TOTAL',1.8],['ETHUSDT','ETH.D',1.2]];const st={};function arr(v){if(v>0.55)return `<span class='up strong'>▲ UP</span>`;if(v<-0.55)return `<span class='down strong'>▼ DOWN</span>`;return `<span class='side strong'>▶ SIDEWAYS</span>`}function sig(v){return v>0?'Bullish':v<0?'Bearish':'Neutral'}function render(){let html='',score=0,totalW=0;assets.forEach(a=>{let s=st[a[1]]||{p:'--',c:0};let val=s.c*a[2];score+=val;totalW+=Math.abs(a[2]);let panel=(a[1]==='USDT.D'||a[1]==='BTC.D')?'Dominance':'Rotation';html+=`<tr><td>${panel}</td><td>${a[1]}</td><td>${s.p}</td><td class='${s.c>=0?'up':'down'}'>${s.c.toFixed(2)}%</td><td>${a[2].toFixed(1)}</td><td>${sig(val)}</td><td>${arr(val)}</td></tr>`});document.getElementById('main').innerHTML=html;let norm=score/totalW;document.getElementById('bias').innerHTML=arr(norm);document.getElementById('conf').textContent=Math.min(100,Math.abs(norm*100)).toFixed(0)+'%';document.getElementById('risk').innerHTML=norm>0?"<span class='up'>RISK ON</span>":norm<0?"<span class='down'>RISK OFF</span>":"<span class='side'>NEUTRAL</span>";document.getElementById('alt').innerHTML=((st['ETHBTC']||{c:0}).c>0&&(st['ETH.D']||{c:0}).c>0)?"<span class='up'>YES</span>":"<span class='down'>NO</span>";document.getElementById('u').innerHTML=arr(-((st['USDT.D']||{c:0}).c));document.getElementById('b').innerHTML=arr((st['BTC.D']||{c:0}).c);document.getElementById('e').innerHTML=arr(((st['ETHBTC']||{c:0}).c+(st['ETH.D']||{c:0}).c)/2);document.getElementById('clock').textContent=new Date().toLocaleTimeString()}function ws(pair,label){let w=new WebSocket('wss://stream.binance.com:9443/ws/'+pair.toLowerCase()+'@ticker');w.onmessage=e=>{let d=JSON.parse(e.data);st[label]={p:parseFloat(d.c).toFixed(4),c:parseFloat(d.P)};render()};w.onclose=()=>setTimeout(()=>ws(pair,label),3000)}assets.forEach(a=>ws(a[0],a[1]));setInterval(render,1000);</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>⚡ FRANCIS TERMINAL V6 — FIXED</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+<style>
+body{
+    margin:0;
+    background:linear-gradient(180deg,#02030a,#050814,#02030a);
+    color:#fff;
+    font-family:Arial, sans-serif;
+}
+.header{
+    text-align:center;
+    padding:14px;
+    font-size:20px;
+    background:#050a18;
+    border-bottom:1px solid #1f2d50;
+}
+.top{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    padding:10px;
+}
+.box{
+    background:#060d1f;
+    border:1px solid #1f2d50;
+    border-radius:10px;
+    padding:12px;
+    text-align:center;
+}
+.symbol{font-size:13px;color:#aaa;}
+.price{font-size:18px;margin-top:5px;}
+.vol{font-size:12px;color:#888;}
+.arrow{font-size:20px;margin-top:5px;}
+
+.green{color:#00ff9c;}
+.red{color:#ff4d4d;}
+.yellow{color:#ffd700;}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    padding:10px;
+}
+.chart{
+    height:320px;
+    border:1px solid #13203a;
+    border-radius:8px;
+}
+@media(max-width:900px){
+.top,.grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">⚡ FRANCIS TERMINAL V6 — ULTRA FLOW ENGINE</div>
+
+<div class="top">
+<div class="box">
+<div class="symbol">USDT.D</div>
+<div class="price" id="p1">--</div>
+<div class="arrow" id="a1">➜</div>
+<div class="vol" id="v1">Loading...</div>
+</div>
+
+<div class="box">
+<div class="symbol">ETHBTC</div>
+<div class="price" id="p2">--</div>
+<div class="arrow" id="a2">➜</div>
+<div class="vol" id="v2">Loading...</div>
+</div>
+
+<div class="box">
+<div class="symbol">BTC.D</div>
+<div class="price" id="p3">--</div>
+<div class="arrow" id="a3">➜</div>
+<div class="vol" id="v3">Loading...</div>
+</div>
+
+<div class="box">
+<div class="symbol">TOTAL</div>
+<div class="price" id="p4">--</div>
+<div class="arrow" id="a4">➜</div>
+<div class="vol" id="v4">Loading...</div>
+</div>
+</div>
+
+<div class="grid">
+<div id="c1" class="chart"></div>
+<div id="c2" class="chart"></div>
+<div id="c3" class="chart"></div>
+<div id="c4" class="chart"></div>
+</div>
+
+<script>
+function fmt(v){
+    v=parseFloat(v||0);
+    if(v>1e9) return (v/1e9).toFixed(2)+"B";
+    if(v>1e6) return (v/1e6).toFixed(2)+"M";
+    return v.toFixed(2);
+}
+
+function getSignal(change){
+    if(change>0.4) return {arrow:"▲",cls:"green"};
+    if(change<-0.4) return {arrow:"▼",cls:"red"};
+    return {arrow:"➜",cls:"yellow"};
+}
+
+async function getTicker(symbol){
+    let r = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+symbol);
+    return await r.json();
+}
+
+async function update(){
+try{
+    const btc = await getTicker("BTCUSDT");
+    const ethbtc = await getTicker("ETHBTC");
+    const eth = await getTicker("ETHUSDT");
+
+    let btcChange = parseFloat(btc.priceChangePercent);
+    let ethbtcChange = parseFloat(ethbtc.priceChangePercent);
+    let ethChange = parseFloat(eth.priceChangePercent);
+
+    // USDT.D proxy
+    let usdtProxy = -(btcChange+ethChange)/2;
+    let s1 = getSignal(usdtProxy);
+    document.getElementById("p1").innerText = usdtProxy.toFixed(2)+"%";
+    document.getElementById("a1").innerHTML =
+        '<span class="'+s1.cls+'">'+s1.arrow+'</span>';
+    document.getElementById("v1").innerText = "Flow";
+
+    // ETHBTC
+    let s2 = getSignal(ethbtcChange);
+    document.getElementById("p2").innerText = parseFloat(ethbtc.lastPrice).toFixed(6);
+    document.getElementById("a2").innerHTML =
+        '<span class="'+s2.cls+'">'+s2.arrow+'</span>';
+    document.getElementById("v2").innerText = "Vol: "+fmt(ethbtc.volume);
+
+    // BTC.D proxy
+    let s3 = getSignal(btcChange);
+    document.getElementById("p3").innerText = btcChange.toFixed(2)+"%";
+    document.getElementById("a3").innerHTML =
+        '<span class="'+s3.cls+'">'+s3.arrow+'</span>';
+    document.getElementById("v3").innerText = "Vol: "+fmt(btc.quoteVolume);
+
+    // TOTAL proxy
+    let total = btcChange + ethChange;
+    let s4 = getSignal(total);
+    document.getElementById("p4").innerText = total.toFixed(2)+"%";
+    document.getElementById("a4").innerHTML =
+        '<span class="'+s4.cls+'">'+s4.arrow+'</span>';
+    document.getElementById("v4").innerText = "Market Flow";
+
+}catch(e){
+console.log(e);
+}
+}
+
+setInterval(update,5000);
+update();
+
+/* TRADINGVIEW CHARTS */
+new TradingView.widget({
+container_id:"c1",
+symbol:"CRYPTOCAP:USDT.D",
+interval:"60",
+theme:"dark",
+style:"1",
+hide_top_toolbar:false,
+allow_symbol_change:true,
+autosize:true
+});
+
+new TradingView.widget({
+container_id:"c2",
+symbol:"BINANCE:ETHBTC",
+interval:"60",
+theme:"dark",
+style:"1",
+hide_top_toolbar:false,
+allow_symbol_change:true,
+autosize:true
+});
+
+new TradingView.widget({
+container_id:"c3",
+symbol:"CRYPTOCAP:BTC.D",
+interval:"60",
+theme:"dark",
+style:"1",
+hide_top_toolbar:false,
+allow_symbol_change:true,
+autosize:true
+});
+
+new TradingView.widget({
+container_id:"c4",
+symbol:"CRYPTOCAP:TOTAL",
+interval:"60",
+theme:"dark",
+style:"1",
+hide_top_toolbar:false,
+allow_symbol_change:true,
+autosize:true
+});
+</script>
+
+</body>
+</html>
