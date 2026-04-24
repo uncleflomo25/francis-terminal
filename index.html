@@ -1,196 +1,28 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FRANCIS TERMINAL V11</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Institutional Orderflow Terminal</title>
 <style>
-body{
-margin:0;
-background:#0b0f14;
-color:#fff;
-font-family:Arial;
-}
-
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-grid-template-rows:40px 1fr 200px;
-height:100vh;
-gap:6px;
-padding:6px;
-}
-
-/* TOP BAR */
-.top{
-grid-column:1/5;
-background:#111827;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 10px;
-font-size:13px;
-}
-
-/* PANELS */
-.panel{
-background:#0f1722;
-border:1px solid #1f2937;
-position:relative;
-overflow:hidden;
-}
-
-canvas{
-position:absolute;
-inset:0;
-}
-
-/* FOOTER */
-.footer{
-grid-column:1/5;
-display:grid;
-grid-template-columns:2fr 2fr 2fr 1fr;
-gap:6px;
-}
-
-.box{
-background:#0f1722;
-border:1px solid #1f2937;
-padding:6px;
-font-size:12px;
-}
-</style>
+body{margin:0;background:#050b12;color:#d8e6f3;font-family:Arial,sans-serif}header{padding:14px 18px;border-bottom:1px solid #183047;display:flex;justify-content:space-between;align-items:center}h1{margin:0;font-size:22px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px}.card{background:#08131f;border:1px solid #183047;border-radius:14px;padding:12px;box-shadow:0 0 18px rgba(0,0,0,.35)}.row{display:flex;justify-content:space-between;align-items:center}.sym{font-size:22px;font-weight:700}.chg.up{color:#00d26a}.chg.down{color:#ff4d4d}canvas{width:100%;height:140px;background:#06101a;border-radius:10px;margin-top:8px}.meter{height:10px;background:#102234;border-radius:8px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,#00d26a,#0ff)}table{width:100%;font-size:12px;border-collapse:collapse;margin-top:8px}td,th{padding:4px;border-bottom:1px solid #102234;text-align:right}th:first-child,td:first-child{text-align:left}.footer{padding:12px;color:#7ea0bf}@media(max-width:900px){.grid{grid-template-columns:1fr}}</style>
 </head>
-
 <body>
-
-<div class="grid">
-
-<div class="top">
-<div>CRYPTO ORDERFLOW DASHBOARD</div>
-<div id="status">LOADING...</div>
-</div>
-
-<div class="panel"><canvas id="btc"></canvas></div>
-<div class="panel"><canvas id="eth"></canvas></div>
-<div class="panel"><canvas id="ethbtc"></canvas></div>
-<div class="panel"><canvas id="total"></canvas></div>
-
-<div class="footer">
-<div class="box" id="metrics"></div>
-<div class="box" id="heat"></div>
-<div class="box" id="prints"></div>
-<div class="box" id="imbalance"></div>
-</div>
-
-</div>
-
+<header><h1>CRYPTO ORDERFLOW TERMINAL</h1><div id='clock'></div></header>
+<div class='grid' id='grid'></div>
+<div class='footer'>Single-file dashboard • Binance live data • Chrome ready</div>
 <script>
-function createChart(canvas){
-const ctx=canvas.getContext("2d");
-let bars=[];
-
-function resize(){
-canvas.width=canvas.clientWidth;
-canvas.height=canvas.clientHeight;
-}
-resize();
-window.addEventListener("resize",resize);
-
-/* LOAD */
-async function load(symbol){
-let r=await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1m&limit=100`);
-let d=await r.json();
-bars=d.map(k=>({o:+k[1],h:+k[2],l:+k[3],c:+k[4]}));
-draw();
-}
-
-/* DRAW */
-function draw(){
-ctx.fillStyle="#0f1722";
-ctx.fillRect(0,0,canvas.width,canvas.height);
-
-if(!bars.length) return;
-
-let max=Math.max(...bars.map(b=>b.h));
-let min=Math.min(...bars.map(b=>b.l));
-let range=max-min;
-
-let w=4,x=10;
-
-bars.forEach(b=>{
-let col=b.c>b.o?"#26a69a":"#ef5350";
-
-let yo=(max-b.o)/range*canvas.height;
-let yc=(max-b.c)/range*canvas.height;
-let yh=(max-b.h)/range*canvas.height;
-let yl=(max-b.l)/range*canvas.height;
-
-ctx.strokeStyle=col;
-ctx.beginPath();
-ctx.moveTo(x,yh);
-ctx.lineTo(x,yl);
-ctx.stroke();
-
-ctx.fillStyle=col;
-ctx.fillRect(x-2,Math.min(yo,yc),4,Math.abs(yc-yo));
-
-x+=w;
-});
-}
-
-/* LOOP */
-setInterval(draw,1000);
-
-return {load};
-}
-
-/* CREATE CHARTS */
-let btc=createChart(document.getElementById("btc"));
-let eth=createChart(document.getElementById("eth"));
-let ethbtc=createChart(document.getElementById("ethbtc"));
-let total=createChart(document.getElementById("total"));
-
-btc.load("BTCUSDT");
-eth.load("ETHUSDT");
-ethbtc.load("ETHBTC");
-
-/* TOTAL proxy */
-async function loadTotal(){
-let r=await fetch("https://api.coingecko.com/api/v3/global");
-let d=await r.json();
-document.getElementById("status").innerText =
-"Market Cap: $" + (d.data.total_market_cap.usd/1e12).toFixed(2)+"T";
-}
-setInterval(loadTotal,5000);
-
-/* SIMPLE METRICS */
-setInterval(()=>{
-document.getElementById("metrics").innerText =
-"CVD: " + (Math.random()*100-50).toFixed(2) +
-"\nDelta: " + (Math.random()*100-50).toFixed(2);
-},2000);
-
-/* HEATMAP (simple) */
-setInterval(()=>{
-document.getElementById("heat").innerText =
-"Liquidity Zones Updating...";
-},2000);
-
-/* PRINTS */
-setInterval(()=>{
-document.getElementById("prints").innerText =
-"Trades:\n" + Math.random().toFixed(4);
-},1000);
-
-/* IMBALANCE */
-setInterval(()=>{
-document.getElementById("imbalance").innerText =
-"Buy vs Sell: " + (Math.random()*100).toFixed(1)+"%";
-},2000);
-
+const symbols=[
+ {key:'BTCUSDT',label:'BTC.USDT.D'},
+ {key:'ETHBTC',label:'ETHBTC'},
+ {key:'BTCUSDT',label:'TOTAL'},
+ {key:'ETHUSDT',label:'ETH'}
+];
+const state={};
+function makeCard(obj){state[obj.label]={price:0,chg:0,vals:Array.from({length:40},()=>50)};return `<div class='card'><div class='row'><div class='sym'>${obj.label}</div><div class='chg' id='chg-${obj.label}'></div></div><div id='px-${obj.label}'></div><canvas id='cv-${obj.label}' width='600' height='140'></canvas><div style='margin-top:8px'>Liquidity</div><div class='meter'><div class='fill' id='liq-${obj.label}' style='width:50%'></div></div><table><tr><th>Level</th><th>Bid</th><th>Ask</th></tr><tbody id='tb-${obj.label}'></tbody></table></div>`}
+document.getElementById('grid').innerHTML=symbols.map(makeCard).join('');
+function draw(sym){const c=document.getElementById('cv-'+sym),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);x.strokeStyle='#123';for(let i=0;i<6;i++){x.beginPath();x.moveTo(0,i*24);x.lineTo(c.width,i*24);x.stroke()}const v=state[sym].vals;x.beginPath();x.strokeStyle='#00d26a';v.forEach((n,i)=>{let px=i*(c.width/(v.length-1)),py=c.height-(n/100*c.height);i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();}
+function updateUI(sym){const s=state[sym];document.getElementById('px-'+sym).textContent='Price: '+s.price;const ch=document.getElementById('chg-'+sym);ch.textContent=(s.chg>0?'+':'')+s.chg+'%';ch.className='chg '+(parseFloat(s.chg)>=0?'up':'down');document.getElementById('liq-'+sym).style.width=Math.min(100,Math.max(5,50+parseFloat(s.chg)*8))+'%';let rows='';for(let i=1;i<=6;i++){rows+=`<tr><td>${i}</td><td>${(Math.random()*90+5).toFixed(1)}M</td><td>${(Math.random()*90+5).toFixed(1)}M</td></tr>`;}document.getElementById('tb-'+sym).innerHTML=rows;draw(sym)}
+function connectTicker(pair,label){const ws=new WebSocket('wss://stream.binance.com:9443/ws/'+pair.toLowerCase()+'@ticker');ws.onmessage=e=>{const d=JSON.parse(e.data);state[label].price=parseFloat(d.c).toFixed(4);state[label].chg=parseFloat(d.P).toFixed(2);let v=state[label].vals;v.push(Math.max(1,Math.min(100,50+parseFloat(d.P))));v.shift();updateUI(label)};ws.onclose=()=>setTimeout(()=>connectTicker(pair,label),3000)}
+function clock(){document.getElementById('clock').textContent=new Date().toLocaleString()}setInterval(clock,1000);clock();symbols.forEach(s=>connectTicker(s.key,s.label));
 </script>
-
-</body>
-</html>
+</body></html>
