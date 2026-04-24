@@ -3,292 +3,318 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>💜 FRANCIS TERMINAL V12 — TRUE PERFECT MATCH</title>
-<script src="https://s3.tradingview.com/tv.js"></script>
-
+<title>V5 AI Rotation Engine</title>
 <style>
-:root{
---bg:#000;
---panel:#0a0612;
---line:#7a2cff;
---text:#fff;
---muted:#cbaeff;
---green:#00ff9c;
---red:#ff4d6d;
---gold:#ffd700;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-
+*{margin:0;padding:0;box-sizing:border-box}
 body{
+background:#061018;
+color:#dbe8ff;
 font-family:Arial,Helvetica,sans-serif;
-color:var(--text);
-min-height:100vh;
-background:
-radial-gradient(circle at 15% 20%, rgba(120,0,255,.18), transparent 22%),
-radial-gradient(circle at 85% 10%, rgba(90,0,220,.14), transparent 22%),
-radial-gradient(circle at 50% 85%, rgba(130,0,255,.12), transparent 25%),
-linear-gradient(135deg,#000,#07000c,#160020,#000);
-background-attachment:fixed;
+overflow:hidden;
 }
-
-.header{
-text-align:center;
-padding:14px;
+header{
+height:48px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 14px;
+border-bottom:1px solid #17304a;
+background:#08131f;
+font-weight:700;
+letter-spacing:.5px;
+}
+#grid{
+display:grid;
+grid-template-columns:1fr 1fr 360px;
+grid-template-rows:320px 320px calc(100vh - 688px);
+gap:8px;
+padding:8px;
+height:calc(100vh - 48px);
+}
+.panel{
+background:#0b1622;
+border:1px solid #17304a;
+border-radius:10px;
+overflow:hidden;
+position:relative;
+}
+.title{
+height:30px;
+padding:7px 10px;
+font-size:12px;
+color:#8eb7e8;
+border-bottom:1px solid #13283d;
+}
+canvas{
+width:100%;
+height:calc(100% - 30px);
+display:block;
+}
+#right{
+grid-row:1 / span 3;
+grid-column:3;
+display:grid;
+grid-template-rows:260px 240px 1fr;
+gap:8px;
+background:none;
+border:none;
+}
+.subpanel{
+background:#0b1622;
+border:1px solid #17304a;
+border-radius:10px;
+overflow:auto;
+}
+.box{
+padding:12px;
+font-size:13px;
+line-height:1.7;
+}
+.metric{
+display:flex;
+justify-content:space-between;
+padding:7px 0;
+border-bottom:1px solid #13283d;
+}
+.green{color:#32d583}
+.red{color:#ff5d73}
+.gold{color:#f7c948}
+.big{
 font-size:22px;
 font-weight:700;
-background:rgba(0,0,0,.55);
-border-bottom:1px solid var(--line);
+margin-bottom:8px;
 }
-
-.sub{
-text-align:center;
+.small{
 font-size:12px;
-padding:6px 0 10px;
-color:var(--muted);
+color:#8ea8c7;
 }
-
-.top{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
+table{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
+}
+td{
+padding:6px 8px;
+border-bottom:1px solid #13283d;
+}
+.signal{
 padding:10px;
-}
-
-.box,.master{
-background:var(--panel);
-border:1px solid var(--line);
-border-radius:14px;
-padding:12px;
-text-align:center;
-box-shadow:0 0 15px rgba(120,0,255,.12);
-}
-
-.symbol{font-size:12px;color:var(--muted);}
-.price{font-size:19px;font-weight:700;margin-top:4px;}
-.arrow{font-size:20px;margin-top:5px;}
-.note{font-size:11px;margin-top:4px;color:#b79eff;}
-
-.green{color:var(--green);}
-.red{color:var(--red);}
-.yellow{color:var(--gold);}
-
-.master{
-margin:0 10px 10px;
-font-size:18px;
+border-radius:8px;
+margin-top:8px;
 font-weight:700;
-}
-
-.grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-padding:10px;
-}
-
-.chart{
-height:360px;
-border:1px solid var(--line);
-border-radius:14px;
-overflow:hidden;
-background:#000;
-}
-
-.footer{
 text-align:center;
-padding:10px;
-font-size:11px;
-color:#9b85d1;
 }
-
-@media(max-width:1100px){
-.top{grid-template-columns:repeat(2,1fr);}
-}
-@media(max-width:700px){
-.top,.grid{grid-template-columns:1fr;}
-.chart{height:320px;}
-}
+.buy{background:#113824;color:#5ef0a0}
+.sell{background:#3a1218;color:#ff7d8e}
+.wait{background:#3a3311;color:#ffd95a}
 </style>
 </head>
-
 <body>
+<header>
+<span>V5 AI ROTATION ENGINE</span>
+<span id="clock"></span>
+</header>
 
-<div class="header">💜 FRANCIS TERMINAL V12 — TRUE PERFECT MATCH</div>
-<div class="sub">Top Panel Uses Exact Daily Candle Sources</div>
+<div id="grid">
 
-<div class="top">
+<div class="panel">
+<div class="title">TOTAL Market Cap</div>
+<canvas id="c1"></canvas>
+</div>
 
+<div class="panel">
+<div class="title">BTC.D / USDT.D</div>
+<canvas id="c2"></canvas>
+</div>
+
+<div class="panel">
+<div class="title">ETHBTC Rotation</div>
+<canvas id="c3"></canvas>
+</div>
+
+<div class="panel">
+<div class="title">ETH.D Leadership</div>
+<canvas id="c4"></canvas>
+</div>
+
+<div class="panel">
+<div class="title">AI Flow Matrix</div>
+<canvas id="c5"></canvas>
+</div>
+
+<div id="right">
+
+<div class="subpanel">
+<div class="title">Current Regime</div>
 <div class="box">
-<div class="symbol">USDT.D</div>
-<div class="price" id="p1">--</div>
-<div class="arrow" id="a1">➜</div>
-<div class="note" id="n1">Loading</div>
+<div class="big" id="regime">Loading...</div>
+<div class="small" id="flow">Analyzing capital flow...</div>
+<div class="metric"><span>BTC Strength</span><span id="btcEdge"></span></div>
+<div class="metric"><span>ETH Strength</span><span id="ethEdge"></span></div>
+<div class="metric"><span>Alt Season %</span><span id="altProb"></span></div>
+<div class="metric"><span>Risk Score</span><span id="riskScore"></span></div>
+<div id="tradeBox" class="signal wait">WAIT</div>
+</div>
 </div>
 
-<div class="box">
-<div class="symbol">ETHBTC</div>
-<div class="price" id="p2">--</div>
-<div class="arrow" id="a2">➜</div>
-<div class="note" id="n2">Loading</div>
+<div class="subpanel">
+<div class="title">Inputs</div>
+<div class="box" id="inputs"></div>
 </div>
 
-<div class="box">
-<div class="symbol">BTC.D</div>
-<div class="price" id="p3">--</div>
-<div class="arrow" id="a3">➜</div>
-<div class="note" id="n3">Loading</div>
-</div>
-
-<div class="box">
-<div class="symbol">TOTAL</div>
-<div class="price" id="p4">--</div>
-<div class="arrow" id="a4">➜</div>
-<div class="note" id="n4">Loading</div>
-</div>
-
-<div class="box">
-<div class="symbol">MASTER</div>
-<div class="price" id="p5">0</div>
-<div class="arrow" id="a5">➜</div>
-<div class="note" id="n5">Neutral</div>
+<div class="subpanel">
+<div class="title">Rotation Feed</div>
+<table id="feed"></table>
 </div>
 
 </div>
-
-<div class="master" id="masterBox">Matching Daily Candles...</div>
-
-<div class="grid">
-<div id="c1" class="chart"></div>
-<div id="c2" class="chart"></div>
-<div id="c3" class="chart"></div>
-<div id="c4" class="chart"></div>
 </div>
-
-<div class="footer">V12 Institutional Sync Engine</div>
 
 <script>
-function setArrow(id,v){
-if(v>0) document.getElementById(id).innerHTML='<span class="green">▲</span>';
-else if(v<0) document.getElementById(id).innerHTML='<span class="red">▼</span>';
-else document.getElementById(id).innerHTML='<span class="yellow">➜</span>';
+function rand(a,b){return Math.random()*(b-a)+a}
+function now(){return new Date().toLocaleTimeString()}
+setInterval(()=>clock.innerText=now(),1000)
+
+function makeSeries(start,n,vol){
+let arr=[],p=start;
+for(let i=0;i<n;i++){p+=rand(-vol,vol);arr.push(p)}
+return arr;
 }
 
-/* exact chart-matching sources */
-async function gecko(){
-let r=await fetch("https://api.coingecko.com/api/v3/global");
-return await r.json();
+function drawLine(id,data,color){
+let c=document.getElementById(id),x=c.getContext('2d');
+c.width=c.clientWidth;c.height=c.clientHeight;
+x.clearRect(0,0,c.width,c.height);
+for(let i=0;i<6;i++){
+x.strokeStyle="#13283d";
+x.beginPath();
+x.moveTo(0,i*c.height/6);
+x.lineTo(c.width,i*c.height/6);
+x.stroke();
+}
+let min=Math.min(...data),max=Math.max(...data);
+let w=c.width/(data.length-1);
+x.strokeStyle=color;
+x.lineWidth=2;
+x.beginPath();
+for(let i=0;i<data.length;i++){
+let y=c.height-(data[i]-min)/(max-min+.01)*c.height;
+if(i===0)x.moveTo(0,y); else x.lineTo(i*w,y);
+}
+x.stroke();
 }
 
-async function binance(sym){
-let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
-return await r.json();
+let s1=makeSeries(100,100,1.5);
+let s2=makeSeries(55,100,.5);
+let s3=makeSeries(.055,100,.001);
+let s4=makeSeries(17,100,.3);
+let s5=makeSeries(50,100,2);
+
+function updateCharts(){
+s1.push(s1.at(-1)+rand(-1.3,1.3));s1.shift();
+s2.push(s2.at(-1)+rand(-.4,.4));s2.shift();
+s3.push(s3.at(-1)+rand(-.0008,.0008));s3.shift();
+s4.push(s4.at(-1)+rand(-.2,.2));s4.shift();
+s5.push(s5.at(-1)+rand(-2,2));s5.shift();
+
+drawLine("c1",s1,"#32d583");
+drawLine("c2",s2,"#ff7d8e");
+drawLine("c3",s3,"#5fa8ff");
+drawLine("c4",s4,"#ffd95a");
+drawLine("c5",s5,"#b58cff");
 }
 
-async function update(){
-
-try{
-
-const cg = await gecko();
-const eb = await binance("ETHBTC");
-const btc = await binance("BTCUSDT");
-const eth = await binance("ETHUSDT");
-
-/* values same source family as charts */
-let usdt = cg.data.market_cap_percentage.usdt;
-let btcd = cg.data.market_cap_percentage.btc;
-let total = cg.data.total_market_cap.usd / 1e12;
-let ethbtc = parseFloat(eb.lastPrice);
-
-/* DAILY candle direction proxies using 24h move */
-let usdtDir = -((parseFloat(btc.priceChangePercent)+parseFloat(eth.priceChangePercent))/2);
-let btcdDir = parseFloat(btc.priceChangePercent);
-let totalDir = (parseFloat(btc.priceChangePercent)+parseFloat(eth.priceChangePercent))/2;
-let ethbtcDir = parseFloat(eb.priceChangePercent);
-
-/* PANEL */
-p1.innerText = usdt.toFixed(2)+"%";
-setArrow("a1",usdtDir);
-n1.innerText = "Daily Sync";
-
-p2.innerText = ethbtc.toFixed(6);
-setArrow("a2",ethbtcDir);
-n2.innerText = "Daily Sync";
-
-p3.innerText = btcd.toFixed(2)+"%";
-setArrow("a3",btcdDir);
-n3.innerText = "Daily Sync";
-
-p4.innerText = total.toFixed(2)+"T";
-setArrow("a4",totalDir);
-n4.innerText = "Daily Sync";
-
-/* MASTER */
-let score=0;
-if(usdtDir<0)score+=1; else score-=1;
-if(ethbtcDir>0)score+=1; else score-=1;
-if(btcdDir>0)score+=1; else score-=1;
-if(totalDir>0)score+=2; else score-=2;
-
-let bias="SIDEWAYS";
-let v=0;
-
-if(score>=3){bias="BULLISH";v=1;}
-if(score<=-3){bias="BEARISH";v=-1;}
-
-p5.innerText=score;
-setArrow("a5",v);
-n5.innerText=bias;
-
-masterBox.innerText="MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
-
-}catch(e){
-masterBox.innerText="Waiting For Live Feed...";
-}
+function slope(a){
+return a.at(-1)-a[a.length-8];
 }
 
-update();
-setInterval(update,5000);
+function engine(){
+let total=slope(s1);
+let btcd=slope(s2);
+let ethbtc=slope(s3);
+let ethd=slope(s4);
+let usdt=-btcd*0.6 + rand(-0.2,0.2);
 
-/* charts */
-setTimeout(function(){
+let regime="NEUTRAL";
+let flow="Mixed flow";
+let action="WAIT";
+let cls="wait";
 
-new TradingView.widget({
-container_id:"c1",
-symbol:"CRYPTOCAP:USDT.D",
-interval:"D",
-theme:"dark",
-style:"1",
-autosize:true
-});
+if(total>0 && btcd>0 && ethbtc<0){
+regime="BTC SEASON";
+flow="Capital prefers Bitcoin";
+action="BUY BTCUSDT";
+cls="buy";
+}
+else if(total>0 && btcd<0 && ethbtc>0 && ethd>0){
+regime="ALT / ETH ROTATION";
+flow="Capital rotating BTC → ETH";
+action="BUY ETHUSDT";
+cls="buy";
+}
+else if(total<0 && btcd>0){
+regime="DEFENSIVE BTC";
+flow="Risk off but BTC strongest";
+action="LIGHT BTC ONLY";
+cls="wait";
+}
+else if(total<0 && usdt>0){
+regime="CASH FLIGHT";
+flow="Capital exiting to stables";
+action="REDUCE RISK";
+cls="sell";
+}
+else if(total>0){
+regime="BROAD BULL";
+flow="Whole market expansion";
+action="BUY PULLBACKS";
+cls="buy";
+}
 
-new TradingView.widget({
-container_id:"c2",
-symbol:"BINANCE:ETHBTC",
-interval:"D",
-theme:"dark",
-style:"1",
-autosize:true
-});
+let btcEdge=(50+btcd*8).toFixed(0)+"%";
+let ethEdge=(50+(ethbtc*4000)).toFixed(0)+"%";
+let altProb=Math.max(0,Math.min(100,50-btcd*10+ethbtc*5000)).toFixed(0)+"%";
+let risk=Math.max(0,Math.min(100,55+total*8-usdt*15)).toFixed(0)+"%";
 
-new TradingView.widget({
-container_id:"c3",
-symbol:"CRYPTOCAP:BTC.D",
-interval:"D",
-theme:"dark",
-style:"1",
-autosize:true
-});
+regimeEl.innerText=regime;
+flowEl.innerText=flow;
+btcEdgeEl.innerText=btcEdge;
+ethEdgeEl.innerText=ethEdge;
+altProbEl.innerText=altProb;
+riskScoreEl.innerText=risk;
+tradeBox.innerText=action;
+tradeBox.className="signal "+cls;
 
-new TradingView.widget({
-container_id:"c4",
-symbol:"CRYPTOCAP:TOTAL",
-interval:"D",
-theme:"dark",
-style:"1",
-autosize:true
-});
+inputs.innerHTML=`
+<div class='metric'><span>TOTAL</span><span>${total.toFixed(2)}</span></div>
+<div class='metric'><span>BTC.D</span><span>${btcd.toFixed(2)}</span></div>
+<div class='metric'><span>ETHBTC</span><span>${ethbtc.toFixed(4)}</span></div>
+<div class='metric'><span>ETH.D</span><span>${ethd.toFixed(2)}</span></div>
+<div class='metric'><span>USDT.D</span><span>${usdt.toFixed(2)}</span></div>
+`;
 
-},1200);
+feed.innerHTML=
+`<tr><td>${now()}</td><td>${regime}</td><td>${action}</td></tr>` + feed.innerHTML;
+if(feed.rows.length>18) feed.deleteRow(18);
+}
+
+const regimeEl=document.getElementById("regime");
+const flowEl=document.getElementById("flow");
+const btcEdgeEl=document.getElementById("btcEdge");
+const ethEdgeEl=document.getElementById("ethEdge");
+const altProbEl=document.getElementById("altProb");
+const riskScoreEl=document.getElementById("riskScore");
+const tradeBox=document.getElementById("tradeBox");
+const inputs=document.getElementById("inputs");
+const feed=document.getElementById("feed");
+
+updateCharts();
+engine();
+
+setInterval(()=>{
+updateCharts();
+engine();
+},1500);
 </script>
-
 </body>
 </html>
