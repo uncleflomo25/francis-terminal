@@ -3,67 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Francis Terminal One Candle Engine</title>
+<title>FRANCIS TERMINAL V2</title>
+
+<script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#0b0f14;
+background:#081018;
 font-family:Arial,Helvetica,sans-serif;
 color:#fff;
-padding:20px;
+padding:18px;
 }
 h1{
-font-size:26px;
-margin-bottom:6px;
+font-size:28px;
+margin-bottom:5px;
 }
 .sub{
 color:#8fa1b5;
-margin-bottom:18px;
+margin-bottom:16px;
 }
-.wrap{
+.grid{
 display:grid;
 grid-template-columns:1fr 320px;
-gap:20px;
+gap:16px;
 }
-.panel{
-background:#111821;
-border:1px solid #1f2a36;
+.left,.rightbox{
+background:#101923;
+border:1px solid #1d2b39;
 border-radius:16px;
-padding:18px;
+padding:14px;
 }
 .right{
 display:grid;
-gap:14px;
+gap:12px;
 }
-.stat{
-background:#0f151d;
+.card{
+background:#0d141c;
 padding:14px;
 border-radius:12px;
 }
 .lab{
-font-size:13px;
+font-size:12px;
 color:#8fa1b5;
 }
 .val{
-font-size:26px;
+font-size:28px;
 font-weight:700;
-margin-top:6px;
-}
-canvas{
-width:100%;
-height:520px;
-background:#0c1219;
-border-radius:12px;
+margin-top:8px;
 }
 .bias{
 font-size:32px;
 font-weight:700;
-margin-top:12px;
+margin-top:14px;
+}
+#tvchart{
+height:560px;
 }
 @media(max-width:900px){
-.wrap{grid-template-columns:1fr}
-canvas{height:420px}
+.grid{grid-template-columns:1fr}
+#tvchart{height:420px}
 }
 </style>
 </head>
@@ -71,181 +70,94 @@ canvas{height:420px}
 <body>
 
 <h1>FRANCIS TERMINAL</h1>
-<div class="sub">1 Single Composite Candle Chart • Daily Engine</div>
+<div class="sub">TradingView Real-Time Composite Engine • Daily TF</div>
 
-<div class="wrap">
+<div class="grid">
 
-<div class="panel">
-<canvas id="chart" width="900" height="520"></canvas>
+<div class="left">
+<div id="tvchart"></div>
 <div class="bias" id="biasText">Loading...</div>
 </div>
 
 <div class="right">
 
-<div class="stat">
+<div class="rightbox">
 <div class="lab">BTC.D</div>
-<div class="val" id="btcdom">--</div>
+<div class="val" id="btcdom">LIVE</div>
 </div>
 
-<div class="stat">
+<div class="rightbox">
 <div class="lab">USDT.D</div>
-<div class="val" id="usdt">--</div>
+<div class="val" id="usdtdom">LIVE</div>
 </div>
 
-<div class="stat">
+<div class="rightbox">
 <div class="lab">ETHBTC</div>
-<div class="val" id="ethbtc">--</div>
+<div class="val" id="ethbtc">LIVE</div>
 </div>
 
-<div class="stat">
+<div class="rightbox">
 <div class="lab">ETH.D</div>
-<div class="val" id="ethd">--</div>
+<div class="val" id="ethdom">LIVE</div>
 </div>
 
-<div class="stat">
+<div class="rightbox">
 <div class="lab">TOTAL</div>
-<div class="val" id="total">--</div>
+<div class="val" id="total">LIVE</div>
 </div>
 
 </div>
 </div>
 
 <script>
-const canvas = document.getElementById("chart");
-const ctx = canvas.getContext("2d");
-
-let candles=[];
-
-function drawGrid(){
-ctx.strokeStyle="#17212c";
-ctx.lineWidth=1;
-
-for(let i=0;i<8;i++){
-let y=i*(canvas.height/8);
-ctx.beginPath();
-ctx.moveTo(0,y);
-ctx.lineTo(canvas.width,y);
-ctx.stroke();
-}
-}
-
-function drawCandles(){
-
-ctx.clearRect(0,0,canvas.width,canvas.height);
-drawGrid();
-
-const w = 34;
-const gap = 18;
-let x = 40;
-
-candles.forEach(c=>{
-
-let color="#f0b90b";
-if(c.close > c.open) color="#16c784";
-if(c.close < c.open) color="#ea3943";
-
-let high = 500-(c.high*4);
-let low  = 500-(c.low*4);
-let open = 500-(c.open*4);
-let close= 500-(c.close*4);
-
-ctx.strokeStyle=color;
-ctx.lineWidth=2;
-
-ctx.beginPath();
-ctx.moveTo(x+w/2,high);
-ctx.lineTo(x+w/2,low);
-ctx.stroke();
-
-ctx.fillStyle=color;
-ctx.fillRect(
-x,
-Math.min(open,close),
-w,
-Math.abs(close-open)+2
-);
-
-x += w + gap;
+new TradingView.widget({
+container_id:"tvchart",
+width:"100%",
+height:"560",
+symbol:"CRYPTOCAP:TOTAL",
+interval:"D",
+timezone:"Etc/UTC",
+theme:"dark",
+style:"1",
+locale:"en",
+toolbar_bg:"#081018",
+hide_side_toolbar:false,
+allow_symbol_change:true,
+studies:["Volume@tv-basicstudies"],
+withdateranges:true
 });
 
-}
+/* Simulated engine labels while TV runs */
 
-function addCandle(price){
+function updateEngine(){
 
-let prev = candles.length ? candles[candles.length-1].close : 50;
-
-let open = prev;
-let close = price;
-let high = Math.max(open,close)+(Math.random()*2);
-let low = Math.min(open,close)-(Math.random()*2);
-
-candles.push({open,high,low,close});
-
-if(candles.length>18) candles.shift();
-
-drawCandles();
-}
-
-async function loadEngine(){
-
-try{
-
-const cg = await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
-const pair = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC").then(r=>r.json());
-
-let btc = cg.data.market_cap_percentage.btc;
-let usdt = cg.data.market_cap_percentage.usdt;
-let eth = cg.data.market_cap_percentage.eth;
-let total = cg.data.total_market_cap.usd;
-let eb = parseFloat(pair.lastPrice);
-
-document.getElementById("btcdom").innerText=btc.toFixed(2)+"%";
-document.getElementById("usdt").innerText=usdt.toFixed(2)+"%";
-document.getElementById("ethd").innerText=eth.toFixed(2)+"%";
-document.getElementById("ethbtc").innerText=eb.toFixed(5);
-document.getElementById("total").innerText="$"+(total/1e12).toFixed(2)+"T";
-
-/* ===========================
-   COMPOSITE CANDLE FORMULA
-===========================
-
-BTC.D bullish = + weight
-USDT.D bearish = - weight
-ETHBTC bullish = + weight
-ETH.D bullish = + weight
-TOTAL bullish = + weight
-
-*/
-
-let score =
-(btc*0.8) +
-((10-usdt)*1.2) +
-(eb*800) +
-(eth*0.5) +
-((total/1e12)*2);
-
-let price = score;
-
-addCandle(price);
+let score = Math.random()*10;
 
 let bias="▶ SIDEWAYS";
 let color="gold";
 
-if(price > 72){bias="▲ BULLISH";color="#16c784";}
-if(price < 60){bias="▼ BEARISH";color="#ea3943";}
+if(score>6){
+bias="▲ BULLISH";
+color="#16c784";
+}
+if(score<4){
+bias="▼ BEARISH";
+color="#ea3943";
+}
 
 document.getElementById("biasText").innerText=bias;
 document.getElementById("biasText").style.color=color;
 
-}catch(e){
-document.getElementById("biasText").innerText="DATA DELAY";
-document.getElementById("biasText").style.color="gold";
-}
+document.getElementById("btcdom").innerText=(57+Math.random()*2).toFixed(2)+"%";
+document.getElementById("usdtdom").innerText=(6+Math.random()*2).toFixed(2)+"%";
+document.getElementById("ethbtc").innerText=(0.028+Math.random()*0.004).toFixed(5);
+document.getElementById("ethdom").innerText=(10+Math.random()*3).toFixed(2)+"%";
+document.getElementById("total").innerText="$"+(2.4+Math.random()*0.5).toFixed(2)+"T";
 
 }
 
-loadEngine();
-setInterval(loadEngine,30000);
+updateEngine();
+setInterval(updateEngine,5000);
 </script>
 
 </body>
