@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>⚡ FRANCIS TERMINAL V8 — TRUE REAL TIME</title>
+<title>⚡ FRANCIS TERMINAL V8 FIXED</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 body{
 margin:0;
 font-family:Arial,Helvetica,sans-serif;
-background:linear-gradient(180deg,#01040c,#07111f,#01040c);
+background:#020814;
 color:#fff;
 }
 .header{
@@ -25,7 +25,7 @@ border-bottom:1px solid #20355d;
 text-align:center;
 font-size:12px;
 color:#8fa4d6;
-padding:4px 0 8px;
+padding:4px 0 10px;
 }
 .top{
 display:grid;
@@ -33,22 +33,27 @@ grid-template-columns:repeat(5,1fr);
 gap:10px;
 padding:10px;
 }
-.box{
+.box,.master{
 background:#071224;
 border:1px solid #1d3357;
 border-radius:10px;
 padding:12px;
 text-align:center;
-box-shadow:0 0 12px rgba(0,150,255,.08);
 }
 .symbol{font-size:12px;color:#8fa4d6;}
 .price{font-size:18px;font-weight:700;margin-top:4px;}
-.arrow{font-size:20px;margin-top:6px;}
+.arrow{font-size:20px;margin-top:5px;}
 .note{font-size:11px;color:#7a88a8;margin-top:4px;}
 
 .green{color:#00ff9c;}
 .red{color:#ff4d4d;}
 .yellow{color:#ffd700;}
+
+.master{
+margin:0 10px 10px;
+font-size:18px;
+font-weight:700;
+}
 
 .grid{
 display:grid;
@@ -56,26 +61,17 @@ grid-template-columns:repeat(2,1fr);
 gap:10px;
 padding:10px;
 }
+
 .chart{
-height:340px;
+height:360px;
 border:1px solid #13203a;
 border-radius:10px;
 overflow:hidden;
-}
-
-.master{
-padding:10px;
-margin:0 10px 10px;
-border-radius:10px;
-text-align:center;
-background:#071224;
-border:1px solid #1d3357;
-font-size:18px;
-font-weight:700;
+background:#000;
 }
 
 @media(max-width:1000px){
-.top{grid-template-columns:repeat(2,1fr);}
+.top{grid-template-columns:1fr 1fr;}
 }
 @media(max-width:700px){
 .top,.grid{grid-template-columns:1fr;}
@@ -85,8 +81,8 @@ font-weight:700;
 
 <body>
 
-<div class="header">⚡ FRANCIS TERMINAL V8 — TRUE REAL TIME ENGINE</div>
-<div class="sub">Live Binance + CoinGecko + TradingView</div>
+<div class="header">⚡ FRANCIS TERMINAL V8 — FIXED LIVE ENGINE</div>
+<div class="sub">Binance + CoinGecko + TradingView</div>
 
 <div class="top">
 
@@ -119,7 +115,7 @@ font-weight:700;
 </div>
 
 <div class="box">
-<div class="symbol">MASTER BIAS</div>
+<div class="symbol">MASTER</div>
 <div class="price" id="p5">--</div>
 <div class="arrow" id="a5">➜</div>
 <div class="note" id="n5">Neutral</div>
@@ -127,7 +123,7 @@ font-weight:700;
 
 </div>
 
-<div class="master" id="masterBox">Waiting For Live Data...</div>
+<div class="master" id="masterBox">Loading Live Data...</div>
 
 <div class="grid">
 <div id="c1" class="chart"></div>
@@ -139,4 +135,123 @@ font-weight:700;
 <script>
 function setArrow(id,v){
 let el=document.getElementById(id);
-if(v>0) el.innerHTML='<span class="green">▲</
+if(v>0) el.innerHTML='<span class="green">▲</span>';
+else if(v<0) el.innerHTML='<span class="red">▼</span>';
+else el.innerHTML='<span class="yellow">➜</span>';
+}
+
+async function ticker(sym){
+let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
+return await r.json();
+}
+
+async function gecko(){
+let r=await fetch("https://api.coingecko.com/api/v3/global");
+return await r.json();
+}
+
+async function update(){
+try{
+
+const btc=await ticker("BTCUSDT");
+const eth=await ticker("ETHUSDT");
+const ethbtc=await ticker("ETHBTC");
+const cg=await gecko();
+
+let btcCh=parseFloat(btc.priceChangePercent);
+let ethCh=parseFloat(eth.priceChangePercent);
+let ebCh=parseFloat(ethbtc.priceChangePercent);
+
+let totalCap=cg.data.total_market_cap.usd;
+let btcDom=cg.data.market_cap_percentage.btc;
+let usdtDom=cg.data.market_cap_percentage.usdt;
+
+/* USDT */
+document.getElementById("p1").innerText=usdtDom.toFixed(2)+"%";
+setArrow("a1",usdtDom-4);
+document.getElementById("n1").innerText=usdtDom>4?"Fear":"Risk On";
+
+/* ETHBTC */
+document.getElementById("p2").innerText=parseFloat(ethbtc.lastPrice).toFixed(6);
+setArrow("a2",ebCh);
+document.getElementById("n2").innerText=ebCh>0?"ETH Leads":"BTC Leads";
+
+/* BTC.D */
+document.getElementById("p3").innerText=btcDom.toFixed(2)+"%";
+setArrow("a3",btcCh);
+document.getElementById("n3").innerText=btcCh>0?"BTC Strong":"BTC Weak";
+
+/* TOTAL */
+document.getElementById("p4").innerText=(totalCap/1e12).toFixed(2)+"T";
+setArrow("a4",(btcCh+ethCh)/2);
+document.getElementById("n4").innerText=(btcCh+ethCh)>0?"Expansion":"Contraction";
+
+/* MASTER */
+let score=0;
+if(usdtDom<4)score+=2;else score-=2;
+if(ebCh>0)score+=1;else score-=1;
+if(btcCh>0)score+=1;else score-=1;
+if((btcCh+ethCh)>0)score+=2;else score-=2;
+
+let bias="SIDEWAYS",val=0;
+if(score>=3){bias="BULLISH";val=1;}
+if(score<=-3){bias="BEARISH";val=-1;}
+
+document.getElementById("p5").innerText=score;
+setArrow("a5",val);
+document.getElementById("n5").innerText=bias;
+document.getElementById("masterBox").innerText=
+"MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
+
+}catch(e){
+document.getElementById("masterBox").innerText="API Loading...";
+}
+}
+
+update();
+setInterval(update,5000);
+
+/* DELAYED WIDGET LOAD FIX */
+setTimeout(function(){
+
+new TradingView.widget({
+container_id:"c1",
+symbol:"CRYPTOCAP:USDT.D",
+interval:"D",
+theme:"dark",
+style:"1",
+autosize:true
+});
+
+new TradingView.widget({
+container_id:"c2",
+symbol:"BINANCE:ETHBTC",
+interval:"D",
+theme:"dark",
+style:"1",
+autosize:true
+});
+
+new TradingView.widget({
+container_id:"c3",
+symbol:"CRYPTOCAP:BTC.D",
+interval:"D",
+theme:"dark",
+style:"1",
+autosize:true
+});
+
+new TradingView.widget({
+container_id:"c4",
+symbol:"CRYPTOCAP:TOTAL",
+interval:"D",
+theme:"dark",
+style:"1",
+autosize:true
+});
+
+},1200);
+</script>
+
+</body>
+</html>
