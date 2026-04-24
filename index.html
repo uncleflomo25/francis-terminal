@@ -1,167 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Francis Terminal Elite RT Dashboard</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-background:#0b0f14;
-font-family:Arial,Helvetica,sans-serif;
-color:#fff;
-padding:18px;
-}
-h1{
-font-size:26px;
-margin-bottom:4px;
-}
-.sub{
-color:#8b9bb0;
-margin-bottom:18px;
-}
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:14px;
-}
-.card{
-background:#111821;
-border:1px solid #1f2a36;
-border-radius:16px;
-padding:16px;
-box-shadow:0 0 20px rgba(0,0,0,.35);
-}
-.sym{
-font-size:14px;
-color:#8fa1b5;
-margin-bottom:8px;
-}
-.val{
-font-size:30px;
-font-weight:700;
-margin-bottom:8px;
-}
-.vol{
-font-size:14px;
-margin-bottom:10px;
-color:#7e92a8;
-}
-.arrow{
-font-size:18px;
-font-weight:700;
-padding:6px 10px;
-border-radius:10px;
-display:inline-block;
-}
-.up{color:#16c784;background:#10261d}
-.down{color:#ea3943;background:#2a1115}
-.side{color:#f0b90b;background:#2a2410}
-footer{
-margin-top:18px;
-color:#7f92a8;
-font-size:13px;
-}
-</style>
-</head>
-
-<body>
-
-<h1>FRANCIS TERMINAL</h1>
-<div class="sub">Real-Time Dominance + Rotation + Volume Dashboard</div>
-
-<div class="grid" id="cards"></div>
-
-<footer>
-Live data via CoinGecko + Binance API • Chrome Ready • GitHub Pages Ready
-</footer>
-
+<!-- DAILY ENGINE MODE ENABLED -->
 <script>
-const assets = [
-{ name:"BTC.D", id:"bitcoin", type:"dom" },
-{ name:"USDT.D", id:"tether", type:"dom" },
-{ name:"ETHBTC", symbol:"ETHBTC", type:"pair" },
-{ name:"ETH.D", id:"ethereum", type:"dom" },
-{ name:"TOTAL", type:"total" }
-];
 
-function arrowClass(v){
-if(v > 0.15) return ['▲ UP','up'];
-if(v < -0.15) return ['▼ DOWN','down'];
-return ['▶ SIDEWAYS','side'];
+/* ===============================
+   FRANCIS TERMINAL GOD MODE V2
+   DAILY TIMEFRAME ENGINE
+================================= */
+
+const TIMEFRAME = "1D";   // SET TO DAILY
+const REFRESH_MS = 60000; // refresh every 60 sec
+
+async function loadDailyEngine(){
+
+// COINGECKO GLOBAL DAILY SNAPSHOT
+const cg = await fetch("https://api.coingecko.com/api/v3/global")
+.then(r=>r.json());
+
+// BINANCE DAILY CANDLE ETHBTC
+const ethbtc = await fetch(
+"https://api.binance.com/api/v3/klines?symbol=ETHBTC&interval=1d&limit=2"
+).then(r=>r.json());
+
+// BINANCE DAILY BTCUSDT
+const btc = await fetch(
+"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=2"
+).then(r=>r.json());
+
+/* ==========================
+   DAILY VALUES
+========================== */
+
+let btcDom = cg.data.market_cap_percentage.btc;
+let usdtDom = cg.data.market_cap_percentage.usdt;
+let ethDom = cg.data.market_cap_percentage.eth;
+let total = cg.data.total_market_cap.usd;
+
+// ETHBTC DAILY CHANGE
+let eOpen = parseFloat(ethbtc[1][1]);
+let eClose = parseFloat(ethbtc[1][4]);
+let ethbtcChange = ((eClose-eOpen)/eOpen)*100;
+
+// BTC DAILY CHANGE
+let bOpen = parseFloat(btc[1][1]);
+let bClose = parseFloat(btc[1][4]);
+let btcChange = ((bClose-bOpen)/bOpen)*100;
+
+/* ==========================
+   DAILY BIAS ENGINE
+========================== */
+
+let score = 0;
+
+// BTC strength
+if(btcDom > 57) score += 2;
+if(btcChange > 0) score += 2;
+
+// USDT weakness bullish
+if(usdtDom < 8) score += 2;
+else score -= 2;
+
+// ETHBTC strength alt bullish
+if(ethbtcChange > 0) score += 2;
+else score -= 1;
+
+// TOTAL size
+if(total > 2.5e12) score += 1;
+
+let bias = "SIDEWAYS";
+let color = "yellow";
+let arrow = "▶";
+
+if(score >=5){
+bias="BULLISH";
+color="#16c784";
+arrow="▲";
+}
+else if(score <=1){
+bias="BEARISH";
+color="#ea3943";
+arrow="▼";
 }
 
-function fmt(n){
-if(n > 1e12) return "$"+(n/1e12).toFixed(2)+"T";
-if(n > 1e9) return "$"+(n/1e9).toFixed(2)+"B";
-if(n > 1e6) return "$"+(n/1e6).toFixed(2)+"M";
-return n.toFixed(2);
+/* ==========================
+   DISPLAY
+========================== */
+
+document.getElementById("engineTF").innerText = "DAILY TF";
+document.getElementById("biasText").innerText = arrow+" "+bias;
+document.getElementById("biasText").style.color = color;
+
+document.getElementById("btcdom").innerText = btcDom.toFixed(2)+"%";
+document.getElementById("usdtdom").innerText = usdtDom.toFixed(2)+"%";
+document.getElementById("ethdom").innerText = ethDom.toFixed(2)+"%";
+document.getElementById("ethbtc").innerText = eClose.toFixed(5);
+document.getElementById("total").innerText =
+"$"+(total/1e12).toFixed(2)+"T";
+
 }
 
-async function load(){
+/* START */
+loadDailyEngine();
+setInterval(loadDailyEngine,REFRESH_MS);
 
-const cg = await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
-const btc = cg.data.market_cap_percentage.btc;
-const eth = cg.data.market_cap_percentage.eth;
-const usdt = cg.data.market_cap_percentage.usdt;
-const total = cg.data.total_market_cap.usd;
-
-const pair = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC").then(r=>r.json());
-
-const data = [
-{
-name:"BTC.D",
-value:btc.toFixed(2)+"%",
-vol:fmt(total*(btc/100)),
-chg:(Math.random()*1.4)-0.7
-},
-{
-name:"USDT.D",
-value:usdt.toFixed(2)+"%",
-vol:fmt(total*(usdt/100)),
-chg:(Math.random()*1.2)-0.6
-},
-{
-name:"ETHBTC",
-value:Number(pair.lastPrice).toFixed(5),
-vol:pair.volume+" ETH",
-chg:parseFloat(pair.priceChangePercent)
-},
-{
-name:"ETH.D",
-value:eth.toFixed(2)+"%",
-vol:fmt(total*(eth/100)),
-chg:(Math.random()*1.4)-0.7
-},
-{
-name:"TOTAL",
-value:fmt(total),
-vol:fmt(cg.data.total_volume.usd),
-chg:(Math.random()*2)-1
-}
-];
-
-let html='';
-
-data.forEach(d=>{
-const a = arrowClass(d.chg);
-html += `
-<div class="card">
-<div class="sym">${d.name}</div>
-<div class="val">${d.value}</div>
-<div class="vol">Volume: ${d.vol}</div>
-<div class="arrow ${a[1]}">${a[0]}</div>
-</div>
-`;
-});
-
-document.getElementById("cards").innerHTML = html;
-}
-
-load();
-setInterval(load,15000);
 </script>
-
-</body>
-</html>
