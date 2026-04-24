@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRANCIS TERMINAL • Institutional Web V1</title>
+<title>FRANCIS TERMINAL • REALTIME INSTITUTIONAL V2</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -14,27 +14,23 @@ color:#fff;
 padding:16px;
 }
 h1{font-size:28px;margin-bottom:4px}
-.sub{color:#8ea2bd;margin-bottom:16px}
-
+.sub{color:#8ea2bd;margin-bottom:14px}
 .wrap{
 display:grid;
 grid-template-columns:1fr 340px;
 gap:16px;
 }
-
 .panel,.side{
 background:#101821;
 border:1px solid #1e2a38;
 border-radius:16px;
 padding:14px;
 }
-
 .side{
 display:grid;
 gap:12px;
 height:max-content;
 }
-
 canvas{
 width:100%;
 height:560px;
@@ -42,46 +38,41 @@ display:block;
 background:#0b1118;
 border-radius:12px;
 }
-
 .bias{
-font-size:32px;
+font-size:30px;
 font-weight:700;
 margin-top:12px;
 }
-
-.meta{
-margin-top:8px;
-font-size:13px;
-color:#8ea2bd;
-}
-
 .table{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:8px;
+gap:10px;
 }
-
 .cell{
 background:#0c141c;
 padding:12px;
 border-radius:12px;
 }
-
 .lab{
 font-size:12px;
 color:#8ea2bd;
 }
-
 .val{
 font-size:24px;
 font-weight:700;
 margin-top:8px;
 }
-
+.meta{
+margin-top:8px;
+font-size:13px;
+color:#8ea2bd;
+display:flex;
+gap:16px;
+flex-wrap:wrap;
+}
 .green{color:#16c784}
 .red{color:#ea3943}
 .gold{color:#f0b90b}
-
 @media(max-width:900px){
 .wrap{grid-template-columns:1fr}
 canvas{height:420px}
@@ -92,18 +83,21 @@ canvas{height:420px}
 <body>
 
 <h1>FRANCIS TERMINAL</h1>
-<div class="sub">Institutional Web V1 • Composite Candle Engine</div>
+<div class="sub">1 Code • Real-Time Institutional Composite Engine</div>
 
 <div class="wrap">
 
 <div class="panel">
 <canvas id="chart" width="980" height="560"></canvas>
 <div class="bias" id="modeText">Loading...</div>
-<div class="meta">BTC.D + USDT.D + ETHBTC + ETH.D + TOTAL</div>
+<div class="meta">
+<div>Assets: BTC.D / USDT.D / ETHBTC / ETH.D / TOTAL</div>
+<div>Refresh: 5s</div>
+<div id="clock">--:--:--</div>
+</div>
 </div>
 
 <div class="side">
-
 <div class="table">
 
 <div class="cell"><div class="lab">BTC.D</div><div class="val" id="btc">--</div></div>
@@ -113,13 +107,12 @@ canvas{height:420px}
 <div class="cell"><div class="lab">ETH.D</div><div class="val" id="ethd">--</div></div>
 
 <div class="cell"><div class="lab">TOTAL</div><div class="val" id="total">--</div></div>
-<div class="cell"><div class="lab">OI</div><div class="val" id="oi">--</div></div>
+<div class="cell"><div class="lab">FLOW</div><div class="val" id="flow">--</div></div>
 
 <div class="cell"><div class="lab">DELTA</div><div class="val" id="delta">--</div></div>
 <div class="cell"><div class="lab">MODE</div><div class="val" id="mode">--</div></div>
 
 </div>
-
 </div>
 
 </div>
@@ -129,9 +122,13 @@ const cv=document.getElementById("chart");
 const ctx=cv.getContext("2d");
 let candles=[];
 
-/* =======================
-DRAW CHART
-======================= */
+/* clock */
+setInterval(()=>{
+document.getElementById("clock").innerText=
+new Date().toLocaleTimeString();
+},1000);
+
+/* chart */
 function bg(){
 ctx.fillStyle="#0b1118";
 ctx.fillRect(0,0,cv.width,cv.height);
@@ -141,35 +138,25 @@ ctx.lineWidth=1;
 
 for(let i=0;i<10;i++){
 let y=i*(cv.height/10);
-ctx.beginPath();
-ctx.moveTo(0,y);
-ctx.lineTo(cv.width,y);
-ctx.stroke();
+ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cv.width,y);ctx.stroke();
 }
-
-for(let i=0;i<14;i++){
-let x=i*(cv.width/14);
-ctx.beginPath();
-ctx.moveTo(x,0);
-ctx.lineTo(x,cv.height);
-ctx.stroke();
+for(let i=0;i<16;i++){
+let x=i*(cv.width/16);
+ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cv.height);ctx.stroke();
 }
 }
 
 function draw(){
-
 bg();
-
 if(candles.length<2)return;
 
 let max=Math.max(...candles.map(x=>x.high));
 let min=Math.min(...candles.map(x=>x.low));
 let range=max-min || 1;
 
-let x=30,w=24,g=10;
+let x=28,w=24,g=10;
 
 candles.forEach(c=>{
-
 let col="#f0b90b";
 if(c.close>c.open) col="#16c784";
 if(c.close<c.open) col="#ea3943";
@@ -190,73 +177,64 @@ ctx.fillStyle=col;
 ctx.fillRect(x,Math.min(yo,yc),w,Math.max(3,Math.abs(yc-yo)));
 
 x+=w+g;
-
 });
-
 }
 
-/* =======================
-ENGINE
-======================= */
+/* fallback */
 function rnd(a,b){return a+Math.random()*(b-a);}
-
 function fake(){
 return{
-btc:rnd(57.5,59.4),
-usdt:rnd(6.6,8.4),
-ethd:rnd(10.2,13.0),
-ethbtc:rnd(0.0288,0.0315),
-total:rnd(2.45,2.88),
-oi:rnd(-3,3),
-delta:rnd(-5,5)
+btc:rnd(57.6,59.5),
+usdt:rnd(6.5,8.5),
+ethd:rnd(10.0,13.0),
+ethbtc:rnd(0.0288,0.0316),
+total:rnd(2.45,2.90)
 };
 }
 
-function build(d){
+/* engine */
+function process(d){
 
-let score =
-(d.total*14) +
-(d.ethbtc*600) +
-((10-d.usdt)*2) +
-(d.ethd*0.8) -
+let score=
+(d.total*14)+
+(d.ethbtc*620)+
+((10-d.usdt)*2.1)+
+(d.ethd*0.8)-
 (d.btc*0.35);
 
 let prev=candles.length?candles[candles.length-1].close:score;
 
 let open=prev;
 let close=score;
-let high=Math.max(open,close)+Math.random()*1.2;
-let low=Math.min(open,close)-Math.random()*1.2;
+let high=Math.max(open,close)+Math.random()*1.1;
+let low=Math.min(open,close)-Math.random()*1.1;
 
 candles.push({open,high,low,close});
-if(candles.length>30)candles.shift();
+if(candles.length>32)candles.shift();
 
 draw();
 
-/* mode logic */
-let mode="BALANCED 🎯";
-let color="gold";
+/* mode */
+let modeTxt="BALANCED 🎯";
+let modeCol="#f0b90b";
 
-if(d.btc>58 && d.ethbtc<0.0300){
-mode="BTC MODE ⚡";
-color="#f0b90b";
+if(d.btc>58.3 && d.ethbtc<0.0300){
+modeTxt="BTC MODE ⚡";
+modeCol="#f0b90b";
+}
+if(d.ethbtc>0.0304 && d.ethd>11.2){
+modeTxt="ETH MODE 🚀";
+modeCol="#16c784";
+}
+if(d.usdt>8.6){
+modeTxt="DEFENSIVE ▼";
+modeCol="#ea3943";
 }
 
-if(d.ethbtc>0.0305 && d.ethd>11){
-mode="ETH MODE 🚀";
-color="#16c784";
-}
-
-if(d.usdt>8.5){
-mode="DEFENSIVE ▼";
-color="#ea3943";
-}
-
-modeText.innerText=mode;
-modeText.style.color=color;
-
-document.getElementById("mode").innerText=mode;
-document.getElementById("mode").style.color=color;
+modeText.innerText=modeTxt;
+modeText.style.color=modeCol;
+mode.innerText=modeTxt;
+mode.style.color=modeCol;
 
 /* cards */
 btc.innerText=d.btc.toFixed(2)+"%";
@@ -265,51 +243,52 @@ ethbtc.innerText=d.ethbtc.toFixed(5);
 ethd.innerText=d.ethd.toFixed(2)+"%";
 total.innerText="$"+d.total.toFixed(2)+"T";
 
-oi.innerText=(d.oi>0?"▲ ":"▼ ")+Math.abs(d.oi).toFixed(2);
-oi.style.color=d.oi>0?"#16c784":"#ea3943";
+let flow=((10-d.usdt)+(d.ethbtc*100)).toFixed(2);
+flowEl=document.getElementById("flow");
+flowEl.innerText="▲ "+flow;
+flowEl.style.color="#16c784";
 
-delta.innerText=(d.delta>0?"▲ ":"▼ ")+Math.abs(d.delta).toFixed(2);
-delta.style.color=d.delta>0?"#16c784":"#ea3943";
+let deltaVal=(close-open).toFixed(2);
+delta.innerText=(deltaVal>=0?"▲ ":"▼ ")+Math.abs(deltaVal);
+delta.style.color=deltaVal>=0?"#16c784":"#ea3943";
 }
 
-/* =======================
-LIVE FETCH + FALLBACK
-======================= */
+/* live fetch */
 async function load(){
 
 try{
 
-const cg=await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
-const pair=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC").then(r=>r.json());
+const [cg,pair]=await Promise.all([
+fetch("https://api.coingecko.com/api/v3/global",{cache:"no-store"}).then(r=>r.json()),
+fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC",{cache:"no-store"}).then(r=>r.json())
+]);
 
-let d={
+const d={
 btc:cg.data.market_cap_percentage.btc,
 usdt:cg.data.market_cap_percentage.usdt,
 ethd:cg.data.market_cap_percentage.eth,
-ethbtc:parseFloat(pair.lastPrice),
-total:cg.data.total_market_cap.usd/1e12,
-oi:rnd(-3,3),
-delta:rnd(-5,5)
+ethbtc:parseFloat(pair.price),
+total:cg.data.total_market_cap.usd/1e12
 };
 
-localStorage.setItem("inst_cache",JSON.stringify(d));
-build(d);
+localStorage.setItem("francis_live",JSON.stringify(d));
+process(d);
 
 }catch(e){
 
-let c=localStorage.getItem("inst_cache");
-if(c) build(JSON.parse(c));
-else build(fake());
+let c=localStorage.getItem("francis_live");
+if(c) process(JSON.parse(c));
+else process(fake());
 
 }
 
 }
 
 /* preload */
-for(let i=0;i<18;i++) build(fake());
+for(let i=0;i<20;i++) process(fake());
 
 load();
-setInterval(load,30000);
+setInterval(load,5000);
 </script>
 
 </body>
