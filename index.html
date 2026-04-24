@@ -3,18 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>💜 FRANCIS TERMINAL V10 — SYNC ENGINE</title>
+<title>💜 FRANCIS TERMINAL V11 — DAILY SYNC</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 :root{
 --text:#fff;
 --muted:#c6a8ff;
---line:#6e2cff;
+--line:#7a2cff;
 --green:#00ff9c;
 --red:#ff4d6d;
 --gold:#ffd700;
 }
+
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
@@ -22,10 +23,10 @@ font-family:Arial,Helvetica,sans-serif;
 color:var(--text);
 min-height:100vh;
 background:
-radial-gradient(circle at 20% 15%, rgba(150,0,255,.22), transparent 22%),
-radial-gradient(circle at 80% 10%, rgba(80,0,180,.18), transparent 20%),
-radial-gradient(circle at 50% 85%, rgba(130,0,255,.14), transparent 25%),
-linear-gradient(135deg,#000,#07000c,#150020,#000);
+radial-gradient(circle at 20% 10%, rgba(140,0,255,.18), transparent 20%),
+radial-gradient(circle at 80% 15%, rgba(90,0,200,.15), transparent 22%),
+radial-gradient(circle at 50% 85%, rgba(140,0,255,.12), transparent 25%),
+linear-gradient(135deg,#000,#08000f,#180025,#000);
 background-attachment:fixed;
 }
 
@@ -58,13 +59,12 @@ border:1px solid var(--line);
 border-radius:14px;
 padding:12px;
 text-align:center;
-box-shadow:0 0 15px rgba(120,0,255,.12);
 }
 
 .symbol{font-size:12px;color:var(--muted);}
 .price{font-size:19px;font-weight:700;margin-top:4px;}
 .arrow{font-size:20px;margin-top:5px;}
-.note{font-size:11px;margin-top:4px;color:#a98bff;}
+.note{font-size:11px;margin-top:4px;color:#b89cff;}
 
 .green{color:var(--green);}
 .red{color:var(--red);}
@@ -91,13 +91,6 @@ overflow:hidden;
 background:#000;
 }
 
-.footer{
-text-align:center;
-font-size:11px;
-padding:10px;
-color:#9b85d1;
-}
-
 @media(max-width:1100px){
 .top{grid-template-columns:repeat(2,1fr);}
 }
@@ -110,49 +103,49 @@ color:#9b85d1;
 
 <body>
 
-<div class="header">💜 FRANCIS TERMINAL V10 — SYNC ENGINE</div>
-<div class="sub">Top Panel Now Uses Same Sources As Charts</div>
+<div class="header">💜 FRANCIS TERMINAL V11 — DAILY SYNC ENGINE</div>
+<div class="sub">Top Panel Uses Daily Candle Direction</div>
 
 <div class="top">
 
 <div class="box">
 <div class="symbol">USDT.D</div>
-<div class="price" id="p1">--</div>
+<div class="price" id="p1">DAILY</div>
 <div class="arrow" id="a1">➜</div>
 <div class="note" id="n1">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">ETHBTC</div>
-<div class="price" id="p2">--</div>
+<div class="price" id="p2">DAILY</div>
 <div class="arrow" id="a2">➜</div>
 <div class="note" id="n2">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">BTC.D</div>
-<div class="price" id="p3">--</div>
+<div class="price" id="p3">DAILY</div>
 <div class="arrow" id="a3">➜</div>
 <div class="note" id="n3">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">TOTAL</div>
-<div class="price" id="p4">--</div>
+<div class="price" id="p4">DAILY</div>
 <div class="arrow" id="a4">➜</div>
 <div class="note" id="n4">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">MASTER</div>
-<div class="price" id="p5">--</div>
+<div class="price" id="p5">SYNC</div>
 <div class="arrow" id="a5">➜</div>
 <div class="note" id="n5">Loading</div>
 </div>
 
 </div>
 
-<div class="master" id="masterBox">Syncing Real-Time Data...</div>
+<div class="master" id="masterBox">Syncing Daily Candle Bias...</div>
 
 <div class="grid">
 <div id="c1" class="chart"></div>
@@ -161,17 +154,14 @@ color:#9b85d1;
 <div id="c4" class="chart"></div>
 </div>
 
-<div class="footer">True Sync Version • Charts + Boxes Match</div>
-
 <script>
-function setArrow(id,v){
-let el=document.getElementById(id);
-if(v>0) el.innerHTML='<span class="green">▲</span>';
-else if(v<0) el.innerHTML='<span class="red">▼</span>';
-else el.innerHTML='<span class="yellow">➜</span>';
+function arrow(id,v){
+if(v>0) document.getElementById(id).innerHTML='<span class="green">▲</span>';
+else if(v<0) document.getElementById(id).innerHTML='<span class="red">▼</span>';
+else document.getElementById(id).innerHTML='<span class="yellow">➜</span>';
 }
 
-async function binance(sym){
+async function ticker(sym){
 let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
 return await r.json();
 }
@@ -182,52 +172,62 @@ return await r.json();
 }
 
 async function update(){
+
 try{
 
-const ethbtc = await binance("ETHBTC");
+const btc = await ticker("BTCUSDT");
+const eth = await ticker("ETHUSDT");
+const ethbtc = await ticker("ETHBTC");
 const cg = await gecko();
 
-let eb = parseFloat(ethbtc.priceChangePercent);
-let ethbtcPrice = parseFloat(ethbtc.lastPrice);
+/* DAILY CHANGE = use 24h % as daily candle proxy */
+let btcD = parseFloat(btc.priceChangePercent);
+let ethD = parseFloat(eth.priceChangePercent);
+let ebD  = parseFloat(ethbtc.priceChangePercent);
 
-let btcDom = cg.data.market_cap_percentage.btc;
-let usdtDom = cg.data.market_cap_percentage.usdt;
-let totalCap = cg.data.total_market_cap.usd;
+/* USDT.D daily inverse market flow */
+let usdtD = -((btcD+ethD)/2);
 
-/* use dominance movement logic aligned to charts */
-p1.innerText = usdtDom.toFixed(2)+"%";
-setArrow("a1",7-usdtDom);
-n1.innerText = usdtDom>7 ? "Bullish USDT.D" : "Weak USDT.D";
+/* TOTAL daily proxy */
+let totalD = (btcD+ethD)/2;
 
-p2.innerText = ethbtcPrice.toFixed(6);
-setArrow("a2",eb);
-n2.innerText = eb>0 ? "ETH Up" : "ETH Down";
+/* BTC.D proxy */
+let btcDomD = btcD;
 
-p3.innerText = btcDom.toFixed(2)+"%";
-setArrow("a3",btcDom-57);
-n3.innerText = btcDom>57 ? "BTC Rising" : "BTC Falling";
+/* ===== TOP PANEL DAILY ===== */
 
-p4.innerText = (totalCap/1e12).toFixed(2)+"T";
-setArrow("a4",totalCap-2600000000000);
-n4.innerText = totalCap>2600000000000 ? "Cap Rising" : "Cap Weak";
+p1.innerText = usdtD.toFixed(2)+"%";
+arrow("a1",usdtD);
+n1.innerText = "Daily Candle";
 
-/* MASTER SCORE */
+p2.innerText = parseFloat(ethbtc.lastPrice).toFixed(6);
+arrow("a2",ebD);
+n2.innerText = "Daily Candle";
+
+p3.innerText = btcDomD.toFixed(2)+"%";
+arrow("a3",btcDomD);
+n3.innerText = "Daily Candle";
+
+p4.innerText = totalD.toFixed(2)+"%";
+arrow("a4",totalD);
+n4.innerText = "Daily Candle";
+
+/* MASTER */
 let score=0;
-
-if(usdtDom<7)score+=2; else score-=2;
-if(eb>0)score+=1; else score-=1;
-if(btcDom>57)score+=1; else score-=1;
-if(totalCap>2600000000000)score+=2; else score-=2;
+if(usdtD<0)score+=1;else score-=1;
+if(ebD>0)score+=1;else score-=1;
+if(btcDomD>0)score+=1;else score-=1;
+if(totalD>0)score+=2;else score-=2;
 
 let bias="SIDEWAYS";
-let val=0;
+let v=0;
 
-if(score>=3){bias="BULLISH";val=1;}
-if(score<=-3){bias="BEARISH";val=-1;}
+if(score>=3){bias="BULLISH";v=1;}
+if(score<=-3){bias="BEARISH";v=-1;}
 
-p5.innerText = score;
-setArrow("a5",val);
-n5.innerText = bias;
+p5.innerText=score;
+arrow("a5",v);
+n5.innerText=bias;
 
 masterBox.innerText =
 "MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
@@ -240,7 +240,7 @@ masterBox.innerText="Waiting For API...";
 update();
 setInterval(update,5000);
 
-/* charts */
+/* DAILY CHARTS */
 setTimeout(function(){
 
 new TradingView.widget({
