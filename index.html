@@ -2,95 +2,103 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>⚡ FRANCIS TERMINAL V6 — FIXED</title>
+<title>⚡ FRANCIS TERMINAL DAILY ENGINE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 body{
-    margin:0;
-    background:linear-gradient(180deg,#02030a,#050814,#02030a);
-    color:#fff;
-    font-family:Arial, sans-serif;
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(180deg,#02030a,#07111f,#02030a);
+color:#fff;
 }
 .header{
-    text-align:center;
-    padding:14px;
-    font-size:20px;
-    background:#050a18;
-    border-bottom:1px solid #1f2d50;
+text-align:center;
+padding:14px;
+font-size:22px;
+font-weight:bold;
+background:#050a18;
+border-bottom:1px solid #1f2d50;
 }
 .top{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:10px;
-    padding:10px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+padding:10px;
 }
 .box{
-    background:#060d1f;
-    border:1px solid #1f2d50;
-    border-radius:10px;
-    padding:12px;
-    text-align:center;
+background:#071224;
+border:1px solid #1d3357;
+border-radius:10px;
+padding:12px;
+text-align:center;
+box-shadow:0 0 12px rgba(0,150,255,.08);
 }
-.symbol{font-size:13px;color:#aaa;}
-.price{font-size:18px;margin-top:5px;}
-.vol{font-size:12px;color:#888;}
-.arrow{font-size:20px;margin-top:5px;}
-
+.symbol{font-size:13px;color:#8fa4d6;}
+.price{font-size:19px;margin-top:5px;font-weight:bold;}
+.arrow{font-size:20px;margin-top:6px;}
+.vol{font-size:12px;color:#7a88a8;margin-top:4px;}
 .green{color:#00ff9c;}
 .red{color:#ff4d4d;}
 .yellow{color:#ffd700;}
 
 .grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    padding:10px;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+padding:10px;
 }
 .chart{
-    height:320px;
-    border:1px solid #13203a;
-    border-radius:8px;
+height:340px;
+border:1px solid #13203a;
+border-radius:10px;
+overflow:hidden;
 }
+
 @media(max-width:900px){
 .top,.grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:650px){
+.top,.grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">⚡ FRANCIS TERMINAL V6 — ULTRA FLOW ENGINE</div>
+<div class="header">⚡ FRANCIS TERMINAL — DAILY BIAS ENGINE</div>
 
 <div class="top">
+
 <div class="box">
 <div class="symbol">USDT.D</div>
 <div class="price" id="p1">--</div>
 <div class="arrow" id="a1">➜</div>
-<div class="vol" id="v1">Loading...</div>
+<div class="vol" id="v1">Daily Flow</div>
 </div>
 
 <div class="box">
 <div class="symbol">ETHBTC</div>
 <div class="price" id="p2">--</div>
 <div class="arrow" id="a2">➜</div>
-<div class="vol" id="v2">Loading...</div>
+<div class="vol" id="v2">Daily Flow</div>
 </div>
 
 <div class="box">
 <div class="symbol">BTC.D</div>
 <div class="price" id="p3">--</div>
 <div class="arrow" id="a3">➜</div>
-<div class="vol" id="v3">Loading...</div>
+<div class="vol" id="v3">Daily Flow</div>
 </div>
 
 <div class="box">
 <div class="symbol">TOTAL</div>
 <div class="price" id="p4">--</div>
 <div class="arrow" id="a4">➜</div>
-<div class="vol" id="v4">Loading...</div>
+<div class="vol" id="v4">Daily Flow</div>
 </div>
+
 </div>
 
 <div class="grid">
@@ -102,78 +110,77 @@ body{
 
 <script>
 function fmt(v){
-    v=parseFloat(v||0);
-    if(v>1e9) return (v/1e9).toFixed(2)+"B";
-    if(v>1e6) return (v/1e6).toFixed(2)+"M";
-    return v.toFixed(2);
+v=parseFloat(v||0);
+if(v>1e9)return (v/1e9).toFixed(2)+"B";
+if(v>1e6)return (v/1e6).toFixed(2)+"M";
+return v.toFixed(2);
 }
 
-function getSignal(change){
-    if(change>0.4) return {arrow:"▲",cls:"green"};
-    if(change<-0.4) return {arrow:"▼",cls:"red"};
-    return {arrow:"➜",cls:"yellow"};
+function signal(x){
+if(x>0.40)return {a:"▲",c:"green"};
+if(x<-0.40)return {a:"▼",c:"red"};
+return {a:"➜",c:"yellow"};
 }
 
-async function getTicker(symbol){
-    let r = await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+symbol);
-    return await r.json();
+async function ticker(sym){
+let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
+return await r.json();
 }
 
 async function update(){
 try{
-    const btc = await getTicker("BTCUSDT");
-    const ethbtc = await getTicker("ETHBTC");
-    const eth = await getTicker("ETHUSDT");
+const btc=await ticker("BTCUSDT");
+const eth=await ticker("ETHUSDT");
+const ethbtc=await ticker("ETHBTC");
 
-    let btcChange = parseFloat(btc.priceChangePercent);
-    let ethbtcChange = parseFloat(ethbtc.priceChangePercent);
-    let ethChange = parseFloat(eth.priceChangePercent);
+let btcCh=parseFloat(btc.priceChangePercent);
+let ethCh=parseFloat(eth.priceChangePercent);
+let ebCh=parseFloat(ethbtc.priceChangePercent);
 
-    // USDT.D proxy
-    let usdtProxy = -(btcChange+ethChange)/2;
-    let s1 = getSignal(usdtProxy);
-    document.getElementById("p1").innerText = usdtProxy.toFixed(2)+"%";
-    document.getElementById("a1").innerHTML =
-        '<span class="'+s1.cls+'">'+s1.arrow+'</span>';
-    document.getElementById("v1").innerText = "Flow";
+/* USDT.D proxy */
+let usdt = -((btcCh+ethCh)/2);
+let s1=signal(usdt);
+p1.innerText=usdt.toFixed(2)+"%";
+a1.innerHTML='<span class="'+s1.c+'">'+s1.a+'</span>';
+v1.innerText="Risk Flow";
 
-    // ETHBTC
-    let s2 = getSignal(ethbtcChange);
-    document.getElementById("p2").innerText = parseFloat(ethbtc.lastPrice).toFixed(6);
-    document.getElementById("a2").innerHTML =
-        '<span class="'+s2.cls+'">'+s2.arrow+'</span>';
-    document.getElementById("v2").innerText = "Vol: "+fmt(ethbtc.volume);
+/* ETHBTC */
+let s2=signal(ebCh);
+p2.innerText=parseFloat(ethbtc.lastPrice).toFixed(6);
+a2.innerHTML='<span class="'+s2.c+'">'+s2.a+'</span>';
+v2.innerText="Vol "+fmt(ethbtc.volume);
 
-    // BTC.D proxy
-    let s3 = getSignal(btcChange);
-    document.getElementById("p3").innerText = btcChange.toFixed(2)+"%";
-    document.getElementById("a3").innerHTML =
-        '<span class="'+s3.cls+'">'+s3.arrow+'</span>';
-    document.getElementById("v3").innerText = "Vol: "+fmt(btc.quoteVolume);
+/* BTC.D proxy */
+let s3=signal(btcCh);
+p3.innerText=btcCh.toFixed(2)+"%";
+a3.innerHTML='<span class="'+s3.c+'">'+s3.a+'</span>';
+v3.innerText="Vol "+fmt(btc.quoteVolume);
 
-    // TOTAL proxy
-    let total = btcChange + ethChange;
-    let s4 = getSignal(total);
-    document.getElementById("p4").innerText = total.toFixed(2)+"%";
-    document.getElementById("a4").innerHTML =
-        '<span class="'+s4.cls+'">'+s4.arrow+'</span>';
-    document.getElementById("v4").innerText = "Market Flow";
+/* TOTAL proxy */
+let total=btcCh+ethCh;
+let s4=signal(total);
+p4.innerText=total.toFixed(2)+"%";
+a4.innerHTML='<span class="'+s4.c+'">'+s4.a+'</span>';
+v4.innerText="Market Bias";
 
 }catch(e){
 console.log(e);
 }
 }
 
-setInterval(update,5000);
+/* DAILY REFRESH */
 update();
+setInterval(update,60000);
 
-/* TRADINGVIEW CHARTS */
+/* DAILY CHARTS */
+
 new TradingView.widget({
 container_id:"c1",
 symbol:"CRYPTOCAP:USDT.D",
-interval:"60",
+interval:"D",
 theme:"dark",
 style:"1",
+toolbar_bg:"#050a18",
 hide_top_toolbar:false,
 allow_symbol_change:true,
 autosize:true
@@ -182,9 +189,10 @@ autosize:true
 new TradingView.widget({
 container_id:"c2",
 symbol:"BINANCE:ETHBTC",
-interval:"60",
+interval:"D",
 theme:"dark",
 style:"1",
+toolbar_bg:"#050a18",
 hide_top_toolbar:false,
 allow_symbol_change:true,
 autosize:true
@@ -193,9 +201,10 @@ autosize:true
 new TradingView.widget({
 container_id:"c3",
 symbol:"CRYPTOCAP:BTC.D",
-interval:"60",
+interval:"D",
 theme:"dark",
 style:"1",
+toolbar_bg:"#050a18",
 hide_top_toolbar:false,
 allow_symbol_change:true,
 autosize:true
@@ -204,9 +213,10 @@ autosize:true
 new TradingView.widget({
 container_id:"c4",
 symbol:"CRYPTOCAP:TOTAL",
-interval:"60",
+interval:"D",
 theme:"dark",
 style:"1",
+toolbar_bg:"#050a18",
 hide_top_toolbar:false,
 allow_symbol_change:true,
 autosize:true
