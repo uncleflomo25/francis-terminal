@@ -3,106 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Flow Terminal - V500 QUANT INSTITUTIONAL OS</title>
+<title>Flow Terminal - V700 SMART CANDLE ENGINE</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-background:#040b14;
-color:#dbe9ff;
-font-family:Segoe UI,Arial,sans-serif;
-overflow:hidden;
-}
+body{background:#040b14;color:#dbe9ff;font-family:Segoe UI,Arial,sans-serif;overflow:hidden}
 header{
-height:54px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 14px;
-background:#08121f;
-border-bottom:1px solid #18324a;
-font-weight:700;
-font-size:14px;
+height:54px;display:flex;justify-content:space-between;align-items:center;
+padding:0 14px;background:#08121f;border-bottom:1px solid #18324a;font-weight:700
 }
-#rightTop{display:flex;gap:10px;align-items:center}
+#top{display:flex;gap:10px;align-items:center}
 select{
-background:#0d1a2a;
-color:#dbe9ff;
-border:1px solid #23445e;
-padding:6px 10px;
-border-radius:8px;
-font-weight:700;
+background:#0d1a2a;color:#dbe9ff;border:1px solid #23445e;
+padding:6px 10px;border-radius:8px;font-weight:700
 }
 #grid{
 display:grid;
-grid-template-columns:1fr 1fr 1fr 330px;
+grid-template-columns:1fr 1fr 1fr 340px;
 grid-template-rows:1fr 1fr;
-gap:10px;
-padding:10px;
-height:calc(100vh - 54px);
+gap:10px;padding:10px;height:calc(100vh - 54px)
 }
-.panel{
-background:#08131f;
-border:1px solid #163049;
-border-radius:12px;
-overflow:hidden;
-}
+.panel{background:#08131f;border:1px solid #163049;border-radius:12px;overflow:hidden}
 .title{
-height:34px;
-display:flex;
-align-items:center;
-padding:0 10px;
-font-size:12px;
-font-weight:700;
-color:#86acd8;
-border-bottom:1px solid #10273a;
+height:34px;display:flex;align-items:center;padding:0 10px;
+font-size:12px;font-weight:700;color:#86acd8;border-bottom:1px solid #10273a
 }
 table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{
-padding:8px 10px;
-border-bottom:1px solid #10273a;
-text-align:left;
-white-space:nowrap;
-}
+th,td{padding:8px 10px;border-bottom:1px solid #10273a;text-align:left;white-space:nowrap}
 th{font-size:11px;color:#7ca4d3}
 tr:hover{background:#0f1d2b}
 .green{color:#31d27c;font-weight:700}
 .red{color:#ff6275;font-weight:700}
 .yellow{color:#ffd166;font-weight:700}
 .blue{color:#74b9ff;font-weight:700}
-.big{
-font-size:30px;
-font-weight:800;
-padding:14px 12px 4px;
-}
-.sub{
-padding:0 12px 10px;
-font-size:12px;
-color:#8ba7c8;
-}
-.metric{
-display:flex;
-justify-content:space-between;
-padding:8px 12px;
-border-top:1px solid #10273a;
-font-size:13px;
-}
-.badge{
-padding:4px 8px;
-border-radius:6px;
-font-size:11px;
-font-weight:700;
-}
+.big{font-size:28px;font-weight:800;padding:14px 12px 4px}
+.sub{padding:0 12px 10px;font-size:12px;color:#8ba7c8}
+.metric{display:flex;justify-content:space-between;padding:8px 12px;border-top:1px solid #10273a;font-size:13px}
+.badge{padding:4px 8px;border-radius:6px;font-size:11px;font-weight:700}
 .buy{background:#133b24;color:#7ff0b1}
 .sell{background:#43161c;color:#ff9cab}
 .wait{background:#453813;color:#ffe07c}
 .feed{overflow:auto}
-#side{
-grid-column:4;
-grid-row:1/span 2;
-display:grid;
-grid-template-rows:430px 1fr;
-gap:10px;
-}
+#side{grid-column:4;grid-row:1/span 2;display:grid;grid-template-rows:440px 1fr;gap:10px}
 .flash{animation:flash 1s infinite}
 @keyframes flash{50%{opacity:.45}}
 </style>
@@ -110,15 +51,15 @@ gap:10px;
 <body>
 
 <header>
-<div>V500 QUANT INSTITUTIONAL OS</div>
-<div id="rightTop">
+<div>V700 SMART CANDLE ENGINE</div>
+<div id="top">
 <select id="tf">
-<option value="1">1M</option>
-<option value="5">5M</option>
-<option value="15">15M</option>
-<option value="60">1H</option>
-<option value="240">4H</option>
-<option value="1440" selected>1D</option>
+<option value="1m">1M</option>
+<option value="5m">5M</option>
+<option value="15m">15M</option>
+<option value="1h">1H</option>
+<option value="4h">4H</option>
+<option value="1d" selected>1D</option>
 </select>
 <div id="clock">LIVE</div>
 </div>
@@ -127,21 +68,17 @@ gap:10px;
 <div id="grid">
 
 <div class="panel">
-<div class="title">Weighted Market Matrix</div>
+<div class="title">Smart Candle Matrix</div>
 <table>
-<thead>
-<tr><th>Asset</th><th>Price</th><th>Move</th><th>Bias</th><th>Weight</th></tr>
-</thead>
+<thead><tr><th>Asset</th><th>Close</th><th>Body%</th><th>Wick</th><th>Bias</th></tr></thead>
 <tbody id="matrix"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">Dominance / Rotation Core</div>
+<div class="title">Rotation / Dominance</div>
 <table>
-<thead>
-<tr><th>Metric</th><th>Value</th><th>Status</th><th>Meaning</th></tr>
-</thead>
+<thead><tr><th>Metric</th><th>Value</th><th>Status</th><th>Meaning</th></tr></thead>
 <tbody id="dom"></tbody>
 </table>
 </div>
@@ -149,29 +86,23 @@ gap:10px;
 <div class="panel">
 <div class="title">Execution Radar</div>
 <table>
-<thead>
-<tr><th>Pair</th><th>Signal</th><th>Conf</th><th>Entry</th><th>State</th></tr>
-</thead>
+<thead><tr><th>Pair</th><th>Signal</th><th>Conf</th><th>Entry</th><th>Bias</th></tr></thead>
 <tbody id="exec"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">Capital Flow Map</div>
+<div class="title">Capital Flow</div>
 <table>
-<thead>
-<tr><th>From</th><th>To</th><th>Status</th><th>Reason</th></tr>
-</thead>
+<thead><tr><th>From</th><th>To</th><th>Status</th><th>Reason</th></tr></thead>
 <tbody id="flow"></tbody>
 </table>
 </div>
 
 <div class="panel">
-<div class="title">Quant Risk Matrix</div>
+<div class="title">Risk Engine</div>
 <table>
-<thead>
-<tr><th>Module</th><th>Score</th><th>State</th></tr>
-</thead>
+<thead><tr><th>Module</th><th>Score</th><th>State</th></tr></thead>
 <tbody id="risk"></tbody>
 </table>
 </div>
@@ -179,9 +110,7 @@ gap:10px;
 <div class="panel">
 <div class="title">Signal Board</div>
 <table>
-<thead>
-<tr><th>Market</th><th>Action</th><th>Bias</th></tr>
-</thead>
+<thead><tr><th>Market</th><th>Action</th><th>Bias</th></tr></thead>
 <tbody id="board"></tbody>
 </table>
 </div>
@@ -189,22 +118,22 @@ gap:10px;
 <div id="side">
 
 <div class="panel">
-<div class="title">AI Regime Engine</div>
+<div class="title">AI Master Regime</div>
 <div class="big" id="regime">CONNECTING...</div>
-<div class="sub" id="desc">Waiting for market feed...</div>
+<div class="sub" id="desc">Loading candle engine...</div>
 
 <div class="metric"><span>Timeframe</span><span id="mtf">1D</span></div>
-<div class="metric"><span>TOTAL Score</span><span id="totals">--</span></div>
-<div class="metric"><span>BTC Score</span><span id="btcs">--</span></div>
-<div class="metric"><span>ETH Score</span><span id="eths">--</span></div>
-<div class="metric"><span>Rotation</span><span id="rots">--</span></div>
-<div class="metric"><span>Defense</span><span id="defs">--</span></div>
-<div class="metric"><span>Risk</span><span id="risks">--</span></div>
-<div class="metric"><span>Master Signal</span><span id="masters">--</span></div>
+<div class="metric"><span>BTC Candle</span><span id="btcC">--</span></div>
+<div class="metric"><span>ETH Candle</span><span id="ethC">--</span></div>
+<div class="metric"><span>ETHBTC Candle</span><span id="pairC">--</span></div>
+<div class="metric"><span>TOTAL</span><span id="totC">--</span></div>
+<div class="metric"><span>Reversal Odds</span><span id="rev">--</span></div>
+<div class="metric"><span>Risk</span><span id="riskV">--</span></div>
+<div class="metric"><span>Master Signal</span><span id="master"></span></div>
 </div>
 
 <div class="panel feed">
-<div class="title">Live Quant Feed</div>
+<div class="title">Live Candle Feed</div>
 <table><tbody id="feed"></tbody></table>
 </div>
 
@@ -213,135 +142,135 @@ gap:10px;
 
 <script>
 const tf=document.getElementById("tf");
-function side(v){
-if(v>0.45)return '<span class="green">▲ UP</span>';
-if(v<-0.45)return '<span class="red">▼ DOWN</span>';
-return '<span class="yellow">▶ SIDE</span>';
-}
-function badge(txt,type){return `<span class="badge ${type}">${txt}</span>`;}
-function label(v){return v>=0?"LONG":"SHORT";}
-function tfName(v){
-if(v=="1440")return"1D";
-if(v=="240")return"4H";
-if(v=="60")return"1H";
-return v+"M";
-}
 setInterval(()=>clock.innerText=new Date().toLocaleTimeString()+" | LIVE",1000);
 
-let btc=0,eth=0,pair=0,ob=0,oe=0,op=0;
+let data={
+BTCUSDT:null,
+ETHUSDT:null,
+ETHBTC:null
+};
 
-const ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker/ethbtc@ticker");
+function bias(score){
+if(score>70)return '<span class="green">▲▲ STRONG UP</span>';
+if(score>55)return '<span class="green">▲ UP</span>';
+if(score<30)return '<span class="red">▼▼ STRONG DOWN</span>';
+if(score<45)return '<span class="red">▼ DOWN</span>';
+return '<span class="yellow">▶ SIDE</span>';
+}
+function badge(t,c){return `<span class="badge ${c}">${t}</span>`;}
+
+function candleScore(k){
+let o=parseFloat(k.o),h=parseFloat(k.h),l=parseFloat(k.l),c=parseFloat(k.c);
+let range=Math.max(h-l,0.0000001);
+let body=((c-o)/range)*100;
+let closePos=((c-l)/range)*100;
+let lower=Math.min(o,c)-l;
+let upper=h-Math.max(o,c);
+
+let score=50;
+
+score += body*0.45;
+score += (closePos-50)*0.35;
+
+if(lower>upper)score+=8;
+if(upper>lower*1.6)score-=8;
+
+if(c>o)score+=6;
+if(c<o)score-=6;
+
+score=Math.max(0,Math.min(100,score));
+
+return {
+score:score,
+body:body,
+wick: lower>upper ? "Bull Wick" : upper>lower ? "Bear Wick":"Neutral",
+close:c
+};
+}
+
+const ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@kline_1d/ethusdt@kline_1d/ethbtc@kline_1d");
 
 ws.onmessage=(e)=>{
-let d=JSON.parse(e.data).data;
-if(d.s==="BTCUSDT"){btc=parseFloat(d.c);ob=parseFloat(d.o);}
-if(d.s==="ETHUSDT"){eth=parseFloat(d.c);oe=parseFloat(d.o);}
-if(d.s==="ETHBTC"){pair=parseFloat(d.c);op=parseFloat(d.o);}
-if(btc&&eth&&pair)render();
+let x=JSON.parse(e.data).data;
+let s=x.s;
+if(x.k)data[s]=x.k;
+if(data.BTCUSDT&&data.ETHUSDT&&data.ETHBTC)render();
 };
 
 function render(){
 
-let b=((btc-ob)/ob)*100;
-let h=((eth-oe)/oe)*100;
-let p=((pair-op)/op)*100;
+let btc=candleScore(data.BTCUSDT);
+let eth=candleScore(data.ETHUSDT);
+let pair=candleScore(data.ETHBTC);
 
-let total=(b*0.6+h*0.4);
-let btcd=100*(btc/(btc+eth*14));
-let ethd=100-btcd;
-let usdt=30-total*0.7;
-
-let totalScore=total*35;
-let btcScore=b*25;
-let ethScore=h*20;
-let rotScore=p*10;
-let defScore=(-total)*10;
-
-let quant = totalScore+btcScore+ethScore+rotScore+defScore;
-
-let risk=Math.max(0,Math.min(100,55-total*5+Math.abs(p)*15));
-
-let regime="SIDEWAYS";
-let descText="Balanced market";
-let master=badge("WAIT","wait");
-
-if(risk>68 && total<0){
-regime="RISK OFF";
-descText="Capital exiting risk assets";
-master=badge("REDUCE","sell");
-}
-else if(total>0.7 && b>0.5 && btcd>89){
-regime="BTC SEASON";
-descText="Bitcoin leading market flows";
-master=badge("BUY BTC","buy");
-}
-else if(total>0.7 && h>0.8 && p>0.2){
-regime="ETH ROTATION";
-descText="Ethereum leading capital rotation";
-master=badge("BUY ETH","buy");
-}
-else if(total>0.8 && h>0.4 && b>0.2 && p>0){
-regime="ALT SEASON";
-descText="Broad risk expansion";
-master=badge("BUY ALTS","buy");
-}
-else if(total>0.2){
-regime="BROAD BULL";
-descText="Market expansion";
-master=badge("BUY DIPS","buy");
-}
+let total=((btc.score-50)+(eth.score-50))/2 + 50;
+let risk=Math.max(0,100-total+Math.abs(pair.score-50));
+let reversal=Math.abs((btc.score+eth.score)/2-50)*2;
 
 matrix.innerHTML=`
-<tr><td>BTCUSDT</td><td>${btc.toFixed(0)}</td><td>${b.toFixed(2)}%</td><td>${side(b)}</td><td>25%</td></tr>
-<tr><td>ETHUSDT</td><td>${eth.toFixed(2)}</td><td>${h.toFixed(2)}%</td><td>${side(h)}</td><td>20%</td></tr>
-<tr><td>ETHBTC</td><td>${pair.toFixed(5)}</td><td>${p.toFixed(2)}%</td><td>${side(p)}</td><td>10%</td></tr>
-<tr><td>TOTAL</td><td>${(1900+total*8).toFixed(2)}T</td><td>${total.toFixed(2)}%</td><td>${side(total)}</td><td>35%</td></tr>
-<tr><td>USDT.D</td><td>${usdt.toFixed(2)}%</td><td>${(-total).toFixed(2)}%</td><td>${side(-total)}</td><td>10%</td></tr>
+<tr><td>BTCUSDT</td><td>${btc.close.toFixed(0)}</td><td>${btc.body.toFixed(1)}</td><td>${btc.wick}</td><td>${bias(btc.score)}</td></tr>
+<tr><td>ETHUSDT</td><td>${eth.close.toFixed(2)}</td><td>${eth.body.toFixed(1)}</td><td>${eth.wick}</td><td>${bias(eth.score)}</td></tr>
+<tr><td>ETHBTC</td><td>${pair.close.toFixed(5)}</td><td>${pair.body.toFixed(1)}</td><td>${pair.wick}</td><td>${bias(pair.score)}</td></tr>
+<tr><td>TOTAL</td><td>Proxy</td><td>${(total-50).toFixed(1)}</td><td>Composite</td><td>${bias(total)}</td></tr>
 `;
 
 dom.innerHTML=`
-<tr><td>BTC.D</td><td>${btcd.toFixed(2)}%</td><td>${side(b)}</td><td>Bitcoin share</td></tr>
-<tr><td>ETH.D</td><td>${ethd.toFixed(2)}%</td><td>${side(h)}</td><td>Ethereum share</td></tr>
-<tr><td>Rotation</td><td>${p.toFixed(2)}%</td><td>${side(p)}</td><td>ETH vs BTC</td></tr>
-<tr><td>Quant Score</td><td>${quant.toFixed(0)}</td><td>${side(quant/10)}</td><td>Composite model</td></tr>
+<tr><td>BTC Strength</td><td>${btc.score.toFixed(0)}</td><td>${bias(btc.score)}</td><td>Daily candle</td></tr>
+<tr><td>ETH Strength</td><td>${eth.score.toFixed(0)}</td><td>${bias(eth.score)}</td><td>Daily candle</td></tr>
+<tr><td>ETHBTC Rot.</td><td>${pair.score.toFixed(0)}</td><td>${bias(pair.score)}</td><td>ETH vs BTC</td></tr>
+<tr><td>Market Tone</td><td>${total.toFixed(0)}</td><td>${bias(total)}</td><td>Composite flow</td></tr>
 `;
 
+let regime="SIDEWAYS";
+let desc="Balanced conditions";
+let sig=badge("WAIT","wait");
+
+if(risk>65 && total<45){
+regime="RISK OFF";desc="Defensive capital flow";sig=badge("REDUCE","sell");
+}else if(pair.score>62 && eth.score>55){
+regime="ETH ROTATION";desc="ETH outperforming BTC";sig=badge("BUY ETH","buy");
+}else if(btc.score>62 && pair.score<45){
+regime="BTC SEASON";desc="Bitcoin leadership";sig=badge("BUY BTC","buy");
+}else if(total>58){
+regime="BROAD BULL";desc="Expansion phase";sig=badge("BUY DIPS","buy");
+}
+
 exec.innerHTML=`
-<tr><td>BTCUSDT</td><td>${label(b)}</td><td>${(60+Math.abs(b)*10).toFixed(0)}%</td><td>${btc.toFixed(0)}</td><td>${side(b)}</td></tr>
-<tr><td>ETHUSDT</td><td>${label(h)}</td><td>${(60+Math.abs(h)*10).toFixed(0)}%</td><td>${eth.toFixed(2)}</td><td>${side(h)}</td></tr>
-<tr><td>ETHBTC</td><td>${p>0?"LONG ETH":"LONG BTC"}</td><td>${(60+Math.abs(p)*18).toFixed(0)}%</td><td>${pair.toFixed(5)}</td><td>${side(p)}</td></tr>
+<tr><td>BTCUSDT</td><td>${btc.score>50?"LONG":"SHORT"}</td><td>${btc.score.toFixed(0)}%</td><td>${btc.close.toFixed(0)}</td><td>${bias(btc.score)}</td></tr>
+<tr><td>ETHUSDT</td><td>${eth.score>50?"LONG":"SHORT"}</td><td>${eth.score.toFixed(0)}%</td><td>${eth.close.toFixed(2)}</td><td>${bias(eth.score)}</td></tr>
+<tr><td>ETHBTC</td><td>${pair.score>50?"LONG ETH":"LONG BTC"}</td><td>${pair.score.toFixed(0)}%</td><td>${pair.close.toFixed(5)}</td><td>${bias(pair.score)}</td></tr>
 `;
 
 flow.innerHTML=`
-<tr><td>USDT</td><td>${h>b?"ETH":"BTC"}</td><td class="green">ACTIVE</td><td>Strongest momentum</td></tr>
-<tr><td>BTC</td><td>${p>0?"ETH":"USDT"}</td><td class="yellow">ROTATE</td><td>Relative shift</td></tr>
-<tr><td>ALTS</td><td>${risk<58?"MARKET":"CASH"}</td><td>${risk<58?'<span class="green">EXPAND</span>':'<span class="red">EXIT</span>'}</td><td>Risk appetite</td></tr>
+<tr><td>USDT</td><td>${eth.score>btc.score?"ETH":"BTC"}</td><td class="green">ACTIVE</td><td>Strongest candle</td></tr>
+<tr><td>BTC</td><td>${pair.score>50?"ETH":"USDT"}</td><td class="yellow">ROTATE</td><td>Relative shift</td></tr>
+<tr><td>ALTS</td><td>${total>55?"MARKET":"CASH"}</td><td>${total>55?'<span class="green">EXPAND</span>':'<span class="red">EXIT</span>'}</td><td>Risk appetite</td></tr>
 `;
 
 risk.innerHTML=`
-<tr><td>Macro Risk</td><td>${risk.toFixed(0)}%</td><td>${side(-risk+50)}</td></tr>
-<tr><td>Trend Quality</td><td>${Math.abs(total*30).toFixed(0)}%</td><td>${side(total)}</td></tr>
-<tr><td>Rotation Strength</td><td>${Math.abs(p*35).toFixed(0)}%</td><td>${side(p)}</td></tr>
+<tr><td>Macro Risk</td><td>${risk.toFixed(0)}%</td><td>${bias(100-risk)}</td></tr>
+<tr><td>Reversal</td><td>${reversal.toFixed(0)}%</td><td>${bias(reversal)}</td></tr>
+<tr><td>Trend Quality</td><td>${total.toFixed(0)}%</td><td>${bias(total)}</td></tr>
 `;
 
 board.innerHTML=`
-<tr><td>BTCUSDT</td><td>${label(b)}</td><td>${side(b)}</td></tr>
-<tr><td>ETHUSDT</td><td>${label(h)}</td><td>${side(h)}</td></tr>
-<tr><td>PORTFOLIO</td><td>${master}</td><td>${side(total)}</td></tr>
+<tr><td>BTCUSDT</td><td>${btc.score>50?"LONG":"SHORT"}</td><td>${bias(btc.score)}</td></tr>
+<tr><td>ETHUSDT</td><td>${eth.score>50?"LONG":"SHORT"}</td><td>${bias(eth.score)}</td></tr>
+<tr><td>PORTFOLIO</td><td>${sig}</td><td>${bias(total)}</td></tr>
 `;
 
-regime.innerText=regime;
-desc.innerText=descText;
-mtf.innerText=tfName(tf.value);
-totals.innerHTML=side(total);
-btcs.innerHTML=side(b);
-eths.innerHTML=side(h);
-rots.innerHTML=side(p);
-defs.innerHTML=side(-total);
-risks.innerHTML=risk>68?'<span class="red flash">HIGH</span>':'<span class="green">LOW</span>';
-masters.innerHTML=master;
+document.getElementById("regime").innerText=regime;
+document.getElementById("desc").innerText=desc;
+document.getElementById("mtf").innerText=tf.options[tf.selectedIndex].text;
+btcC.innerHTML=bias(btc.score);
+ethC.innerHTML=bias(eth.score);
+pairC.innerHTML=bias(pair.score);
+totC.innerHTML=bias(total);
+rev.innerHTML=reversal.toFixed(0)+"%";
+riskV.innerHTML=risk>65?'<span class="red flash">HIGH</span>':'<span class="green">LOW</span>';
+master.innerHTML=sig;
 
-feed.innerHTML=`<tr><td>${new Date().toLocaleTimeString()}</td><td>${regime}</td><td>${master.replace(/<[^>]*>/g,'')}</td></tr>`+feed.innerHTML;
+feed.innerHTML=`<tr><td>${new Date().toLocaleTimeString()}</td><td>${regime}</td><td>${sig.replace(/<[^>]*>/g,'')}</td></tr>`+feed.innerHTML;
 if(feed.rows.length>55)feed.deleteRow(55);
 }
 </script>
