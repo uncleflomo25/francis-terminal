@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>FRANCIS TERMINAL REAL V9</title>
+<title>FRANCIS TERMINAL V10</title>
 
 <style>
 body{margin:0;background:#0f1722;color:#fff;font-family:Arial}
@@ -22,22 +22,24 @@ flex-direction:column;
 .ask{color:#ef5350}
 
 /* TAPE */
-.tape{
-height:200px;
-overflow:auto;
-border-top:1px solid #1f2937;
-font-size:12px;
-}
+.tape{height:200px;overflow:auto;border-top:1px solid #1f2937;font-size:12px}
 .trade{display:flex;justify-content:space-between;padding:2px}
 .buy{color:#26a69a}
 .sell{color:#ef5350}
+
+/* CROSSHAIR */
+.cross{
+position:absolute;
+pointer-events:none;
+font-size:11px;
+color:#ccc;
+}
 </style>
 </head>
 
 <body>
 
 <div class="wrap">
-
 <div class="left">
 <canvas id="c"></canvas>
 </div>
@@ -49,7 +51,6 @@ font-size:12px;
 <div style="padding:6px">TRADE TAPE</div>
 <div id="tape" class="tape"></div>
 </div>
-
 </div>
 
 <script>
@@ -59,10 +60,15 @@ const domEl=document.getElementById("dom");
 const tapeEl=document.getElementById("tape");
 
 let bars=[];
-let bids=[],asks=[];
-let heatmap=[];
-let trades=[];
+let bids=[],asks=[],trades=[];
 let price=0;
+
+/* VIEW */
+let zoom=6;
+let offset=0;
+let dragging=false;
+let lastX=0;
+let mouseX=0,mouseY=0;
 
 /* RESIZE */
 function resize(){
@@ -72,43 +78,36 @@ c.height=window.innerHeight;
 window.onresize=resize;
 resize();
 
-/* LOAD REAL CANDLES */
-async function loadCandles(){
-let res=await fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=150");
-let data=await res.json();
-bars=data.map(k=>({o:+k[1],h:+k[2],l:+k[3],c:+k[4]}));
+/* LOAD CANDLES */
+async function load(){
+let r=await fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=200");
+let d=await r.json();
+bars=d.map(k=>({o:+k[1],h:+k[2],l:+k[3],c:+k[4]}));
 }
+load();
 
 /* WEBSOCKETS */
 let depthWS=new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@depth20@100ms");
 let tradeWS=new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
 
 /* DEPTH */
-depthWS.onmessage=(e)=>{
+depthWS.onmessage=e=>{
 let d=JSON.parse(e.data);
 bids=d.bids.map(b=>[+b[0],+b[1]]);
 asks=d.asks.map(a=>[+a[0],+a[1]]);
 price=bids[0][0];
-
-heatmap.push([...bids,...asks]);
-if(heatmap.length>80) heatmap.shift();
-
 renderDOM();
 };
 
 /* TRADES */
-tradeWS.onmessage=(e)=>{
+tradeWS.onmessage=e=>{
 let t=JSON.parse(e.data);
-
-let trade={
+trades.unshift({
 price:+t.p,
 qty:+t.q,
-side:t.m ? "sell" : "buy"
-};
-
-trades.unshift(trade);
+side:t.m?"sell":"buy"
+});
 if(trades.length>50) trades.pop();
-
 renderTape();
 };
 
@@ -116,10 +115,10 @@ renderTape();
 function renderDOM(){
 domEl.innerHTML="";
 asks.slice().reverse().forEach(a=>{
-domEl.innerHTML+=`<div class="row ask"><span>${a[0]}</span><span>${a[1]}</span></div>`;
+domEl.innerHTML+=`<div class="row ask">${a[0]} ${a[1]}</div>`;
 });
 bids.forEach(b=>{
-domEl.innerHTML+=`<div class="row bid"><span>${b[0]}</span><span>${b[1]}</span></div>`;
+domEl.innerHTML+=`<div class="row bid">${b[0]} ${b[1]}</div>`;
 });
 }
 
@@ -127,13 +126,30 @@ domEl.innerHTML+=`<div class="row bid"><span>${b[0]}</span><span>${b[1]}</span><
 function renderTape(){
 tapeEl.innerHTML="";
 trades.forEach(t=>{
-tapeEl.innerHTML+=`
-<div class="trade ${t.side}">
-<span>${t.price}</span>
-<span>${t.qty}</span>
-</div>`;
+tapeEl.innerHTML+=`<div class="trade ${t.side}">${t.price} ${t.qty}</div>`;
 });
 }
+
+/* INTERACTION */
+c.onmousedown=e=>{
+dragging=true;
+lastX=e.clientX;
+};
+window.onmouseup=()=>dragging=false;
+window.onmousemove=e=>{
+mouseX=e.offsetX;
+mouseY=e.offsetY;
+if(dragging){
+offset += (e.clientX-lastX);
+lastX=e.clientX;
+}
+};
+c.onwheel=e=>{
+e.preventDefault();
+zoom += e.deltaY>0?-1:1;
+if(zoom<2) zoom=2;
+if(zoom>20) zoom=20;
+};
 
 /* DRAW */
 function draw(){
@@ -148,8 +164,19 @@ let max=Math.max(...bars.map(b=>b.h));
 let min=Math.min(...bars.map(b=>b.l));
 let range=max-min;
 
+/* POSITION */
+let w=zoom;
+let totalWidth=bars.length*w;
+let startX=c.width-totalWidth-40+offset;
+
+/* LIMIT OFFSET */
+let minOffset=-(totalWidth-c.width+40);
+if(offset<minOffset) offset=minOffset;
+if(offset>0) offset=0;
+
 /* DRAW CANDLES */
-let w=5,x=20;
+let x=startX;
+
 bars.forEach(b=>{
 let col=b.c>b.o?"#26a69a":"#ef5350";
 
@@ -165,25 +192,9 @@ ctx.lineTo(x,yl);
 ctx.stroke();
 
 ctx.fillStyle=col;
-ctx.fillRect(x-2,Math.min(yo,yc),4,Math.abs(yc-yo));
+ctx.fillRect(x-w/3,Math.min(yo,yc),w/1.5,Math.abs(yc-yo));
 
 x+=w;
-});
-
-/* HEATMAP */
-heatmap.forEach((snap,i)=>{
-let px=i*(c.width/heatmap.length);
-
-snap.forEach(([p,v])=>{
-let y=(max-p)/range*c.height;
-let alpha=Math.min(v/5,1);
-
-ctx.fillStyle = p>price
-? `rgba(239,83,80,${alpha*0.25})`
-: `rgba(38,166,154,${alpha*0.25})`;
-
-ctx.fillRect(px,y,3,2);
-});
 });
 
 /* PRICE LINE */
@@ -194,15 +205,19 @@ ctx.moveTo(0,py);
 ctx.lineTo(c.width,py);
 ctx.stroke();
 
+/* CROSSHAIR */
+ctx.strokeStyle="#888";
+ctx.beginPath();
+ctx.moveTo(mouseX,0);
+ctx.lineTo(mouseX,c.height);
+ctx.moveTo(0,mouseY);
+ctx.lineTo(c.width,mouseY);
+ctx.stroke();
+
 requestAnimationFrame(draw);
 }
 
-/* INIT */
-async function init(){
-await loadCandles();
 draw();
-}
-init();
 </script>
 
 </body>
