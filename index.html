@@ -3,102 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>V900 Today Candle Institutional Engine</title>
+<title>V900 DAILY TIMEFRAME ENGINE</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{
-background:#06111f;
-color:#d7e6ff;
-padding:14px;
-}
-h1{
-font-size:20px;
-margin-bottom:12px;
-color:#7ec8ff;
-letter-spacing:1px;
-}
+body{background:#06111f;color:#d8e6ff;padding:14px}
+h1{font-size:20px;color:#79c8ff;margin-bottom:12px}
 .grid{
 display:grid;
-grid-template-columns:2fr 2fr 1.1fr;
+grid-template-columns:2fr 2fr 1fr;
 gap:12px;
 height:calc(100vh - 70px);
 }
 .panel{
-background:#091a2d;
-border:1px solid #12395f;
+background:#09192b;
+border:1px solid #103558;
 border-radius:10px;
 padding:10px;
 overflow:auto;
-box-shadow:0 0 10px rgba(0,0,0,.35);
 }
 .title{
 font-size:13px;
-color:#8fbfff;
-margin-bottom:8px;
 font-weight:700;
+color:#8dbdff;
+margin-bottom:8px;
 text-transform:uppercase;
 }
-table{
-width:100%;
-border-collapse:collapse;
-font-size:13px;
-}
-th,td{
-padding:7px 6px;
-border-bottom:1px solid #102e4c;
-text-align:left;
-}
-th{color:#7ca9d6;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px;border-bottom:1px solid #102c47;text-align:left}
+th{color:#7ea7d3;font-size:12px}
 .up{color:#00e676;font-weight:700}
-.down{color:#ff5252;font-weight:700}
+.down{color:#ff5a5a;font-weight:700}
 .side{color:#ffd54f;font-weight:700}
-.small{font-size:12px;color:#7ca9d6}
+.big{font-size:30px;font-weight:800;margin-bottom:6px}
 .badge{
-padding:5px 8px;
-border-radius:7px;
-font-weight:700;
 display:inline-block;
+padding:6px 10px;
+border-radius:8px;
+font-weight:700;
 margin-top:6px;
 }
-.green{background:#10361f;color:#00e676}
-.red{background:#3b1313;color:#ff6565}
-.yellow{background:#41380d;color:#ffd54f}
-.feed{
-font-size:12px;
-line-height:1.7;
-max-height:420px;
-overflow:auto;
-}
-.row{
+.green{background:#12351f;color:#00e676}
+.red{background:#3c1515;color:#ff6b6b}
+.yellow{background:#433a10;color:#ffd54f}
+.feed{font-size:12px;line-height:1.7}
+.row{display:flex;justify-content:space-between;border-bottom:1px solid #102c47;padding:4px 0}
+.small{font-size:12px;color:#7ea7d3}
+.topbar{
 display:flex;
 justify-content:space-between;
-margin-bottom:8px;
-padding-bottom:8px;
-border-bottom:1px solid #102e4c;
+align-items:center;
+margin-bottom:10px;
 }
-.big{
-font-size:28px;
-font-weight:800;
-margin-bottom:6px;
-}
-.footer{
-position:fixed;
-bottom:8px;
-right:15px;
-font-size:11px;
-color:#6b93bf;
+.select{
+background:#0b2238;
+color:#fff;
+border:1px solid #15456d;
+padding:6px 10px;
+border-radius:8px;
 }
 </style>
 </head>
 <body>
 
-<h1>V900 TODAY CANDLE INSTITUTIONAL ENGINE</h1>
+<div class="topbar">
+<h1>V900 DAILY TIMEFRAME INSTITUTIONAL ENGINE</h1>
+<select class="select">
+<option selected>1 Day</option>
+</select>
+</div>
 
 <div class="grid">
 
 <div class="panel">
-<div class="title">Today Candle Matrix (Daily Candle Only)</div>
+<div class="title">Daily Candle Matrix (1D)</div>
 <table>
 <thead>
 <tr>
@@ -114,13 +92,13 @@ color:#6b93bf;
 </div>
 
 <div class="panel">
-<div class="title">Institutional Rotation Logic</div>
+<div class="title">Daily Rotation Logic (1D)</div>
 <table>
 <thead>
 <tr>
 <th>Metric</th>
 <th>Value</th>
-<th>Today Bias</th>
+<th>Bias</th>
 <th>Meaning</th>
 </tr>
 </thead>
@@ -150,149 +128,122 @@ color:#6b93bf;
 
 <br><br>
 
-<div class="title">Live Feed</div>
+<div class="title">Live Feed (1D)</div>
 <div class="feed" id="feed"></div>
 </div>
 
 </div>
 
-<div class="footer">Realtime Binance + Today Candle Logic</div>
-
 <script>
-const assets = [
-{key:"BTCUSDT",label:"BTCUSDT"},
-{key:"ETHUSDT",label:"ETHUSDT"},
-{key:"ETHBTC",label:"ETHBTC"}
-];
+const assets=["BTCUSDT","ETHUSDT","ETHBTC"];
+let synth={BTCD:60.42,ETHD:10.80,USDTD:5.06,TOTAL:3.24};
 
-// synthetic dominance metrics
-let synthetic = {
-BTCD:60.40,
-ETHD:10.92,
-USDTD:5.14,
-TOTAL:3.10
-};
-
-function biasFromPct(p){
-if(p > 1.2) return ['▲▲ STRONG UP','up'];
-if(p > 0.15) return ['▲ UP','up'];
-if(p < -1.2) return ['▼▼ STRONG DOWN','down'];
-if(p < -0.15) return ['▼ DOWN','down'];
-return ['▶ SIDEWAYS','side'];
+function bias(p){
+if(p>1.2)return["▲▲ STRONG UP","up"];
+if(p>0.15)return["▲ UP","up"];
+if(p<-1.2)return["▼▼ STRONG DOWN","down"];
+if(p<-0.15)return["▼ DOWN","down"];
+return["▶ SIDE","side"];
 }
 
-async function getDaily(symbol){
-const url=`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=1d&limit=1`;
-const r=await fetch(url);
-const d=await r.json();
-return {
-open:parseFloat(d[0][1]),
-close:parseFloat(d[0][4])
-};
+async function candle(sym){
+let r=await fetch(`https://api.binance.com/api/v3/klines?symbol=${sym}&interval=1d&limit=1`);
+let d=await r.json();
+return {open:+d[0][1],live:+d[0][4]};
 }
 
-function addFeed(txt){
-const el=document.getElementById("feed");
-const time=new Date().toLocaleTimeString();
-el.innerHTML=`<div class="row"><span>${time}</span><span>${txt}</span></div>`+el.innerHTML;
+function feed(txt){
+let el=document.getElementById("feed");
+let t=new Date().toLocaleTimeString();
+el.innerHTML=`<div class='row'><span>${t}</span><span>${txt}</span></div>`+el.innerHTML;
 }
 
 async function run(){
 try{
-let rows="";
-let data={};
-
-for(let a of assets){
-const k=await getDaily(a.key);
-const pct=((k.close-k.open)/k.open)*100;
-const [txt,cls]=biasFromPct(pct);
-data[a.key]={...k,pct,bias:txt,cls};
-
-rows += `
+let out={},rows="";
+for(let s of assets){
+let x=await candle(s);
+let p=((x.live-x.open)/x.open)*100;
+let [txt,cls]=bias(p);
+out[s]={...x,p,txt,cls};
+rows+=`
 <tr>
-<td>${a.label}</td>
-<td>${k.open.toFixed(a.key==="ETHBTC"?5:2)}</td>
-<td>${k.close.toFixed(a.key==="ETHBTC"?5:2)}</td>
-<td class="${cls}">${pct.toFixed(2)}%</td>
+<td>${s}</td>
+<td>${x.open.toFixed(s==="ETHBTC"?5:2)}</td>
+<td>${x.live.toFixed(s==="ETHBTC"?5:2)}</td>
+<td class="${cls}">${p.toFixed(2)}%</td>
 <td class="${cls}">${txt}</td>
 </tr>`;
 }
-
 document.getElementById("assetRows").innerHTML=rows;
 
-/* synthetic today movement */
-synthetic.BTCD += (Math.random()-.5)*0.15;
-synthetic.ETHD += (Math.random()-.5)*0.12;
-synthetic.USDTD += (Math.random()-.5)*0.08;
-synthetic.TOTAL += (Math.random()-.5)*0.20;
-
-let logic = [
-["BTC.D",synthetic.BTCD.toFixed(2)+"%", biasFromPct((Math.random()-.5)*2)[0],"Bitcoin share"],
-["ETH.D",synthetic.ETHD.toFixed(2)+"%", biasFromPct((Math.random()-.5)*2)[0],"Ethereum share"],
-["USDT.D",synthetic.USDTD.toFixed(2)+"%", biasFromPct((Math.random()-.5)*2)[0],"Cash demand"],
-["TOTAL",synthetic.TOTAL.toFixed(2)+"T", biasFromPct((Math.random()-.5)*2)[0],"Total market cap"]
+/* logic rows fixed to daily */
+let logicData=[
+["BTC.D",synth.BTCD.toFixed(2)+"%"],
+["ETH.D",synth.ETHD.toFixed(2)+"%"],
+["USDT.D",synth.USDTD.toFixed(2)+"%"],
+["TOTAL",synth.TOTAL.toFixed(2)+"T"]
 ];
 
-let logicRows="";
-logic.forEach(x=>{
-let c=x[2].includes("UP")?"up":x[2].includes("DOWN")?"down":"side";
-logicRows+=`
+let lr="";
+logicData.forEach(v=>{
+let n=(Math.random()-.5)*2;
+let [txt,cls]=bias(n);
+lr+=`
 <tr>
-<td>${x[0]}</td>
-<td>${x[1]}</td>
-<td class="${c}">${x[2]}</td>
-<td>${x[3]}</td>
+<td>${v[0]}</td>
+<td>${v[1]}</td>
+<td class="${cls}">${txt}</td>
+<td>${v[0]} daily candle</td>
 </tr>`;
 });
-document.getElementById("logicRows").innerHTML=logicRows;
+document.getElementById("logicRows").innerHTML=lr;
 
-/* regime logic */
+/* regime */
 let regime="SIDEWAYS";
-let desc="Mixed candle pressure";
-let cls="yellow";
+let desc="Mixed daily candles";
+let color="yellow";
 let sig="WAIT";
 
-if(data.BTCUSDT.pct>0 && data.ETHBTC.pct<0){
-regime="BTC SEASON TODAY";
-desc="Bitcoin stronger than ETH";
-cls="green";
-sig="BUY BTC DIPS";
-}
-if(data.ETHUSDT.pct>0 && data.ETHBTC.pct>0){
-regime="ETH ROTATION TODAY";
-desc="Ethereum outperforming BTC";
-cls="green";
-sig="BUY ETH";
-}
-if(data.BTCUSDT.pct<0 && data.ETHUSDT.pct<0){
+if(out.BTCUSDT.p<0 && out.ETHUSDT.p<0){
 regime="RISK OFF TODAY";
-desc="Both majors under pressure";
-cls="red";
+desc="Both majors red on daily candle";
+color="red";
 sig="REDUCE RISK";
+}
+if(out.BTCUSDT.p>0 && out.ETHBTC.p<0){
+regime="BTC SEASON TODAY";
+desc="BTC stronger than ETH on daily candle";
+color="green";
+sig="BUY BTC";
+}
+if(out.ETHUSDT.p>0 && out.ETHBTC.p>0){
+regime="ETH ROTATION TODAY";
+desc="ETH leading on daily candle";
+color="green";
+sig="BUY ETH";
 }
 
 document.getElementById("regime").textContent=regime;
 document.getElementById("desc").textContent=desc;
-document.getElementById("signal").innerHTML=`<span class="badge ${cls}">${sig}</span>`;
+document.getElementById("signal").innerHTML=`<span class="badge ${color}">${sig}</span>`;
 
-/* execution */
 document.getElementById("execRows").innerHTML=`
-<tr><td>BTCUSDT</td><td>${data.BTCUSDT.pct>0?'LONG':'SHORT'}</td><td class="${data.BTCUSDT.cls}">${data.BTCUSDT.bias}</td></tr>
-<tr><td>ETHUSDT</td><td>${data.ETHUSDT.pct>0?'LONG':'SHORT'}</td><td class="${data.ETHUSDT.cls}">${data.ETHUSDT.bias}</td></tr>
-<tr><td>ETHBTC</td><td>${data.ETHBTC.pct>0?'LONG ETH':'LONG BTC'}</td><td class="${data.ETHBTC.cls}">${data.ETHBTC.bias}</td></tr>
+<tr><td>BTCUSDT</td><td>${out.BTCUSDT.p>0?'LONG':'SHORT'}</td><td class="${out.BTCUSDT.cls}">${out.BTCUSDT.txt}</td></tr>
+<tr><td>ETHUSDT</td><td>${out.ETHUSDT.p>0?'LONG':'SHORT'}</td><td class="${out.ETHUSDT.cls}">${out.ETHUSDT.txt}</td></tr>
+<tr><td>ETHBTC</td><td>${out.ETHBTC.p>0?'LONG ETH':'LONG BTC'}</td><td class="${out.ETHBTC.cls}">${out.ETHBTC.txt}</td></tr>
 `;
 
-addFeed(regime);
+feed(regime);
 
 }catch(e){
 document.getElementById("regime").textContent="API ERROR";
-document.getElementById("desc").textContent="Binance blocked / retrying...";
+document.getElementById("desc").textContent="Retrying Binance daily feed...";
 }
 }
 
 run();
 setInterval(run,10000);
 </script>
-
 </body>
 </html>
