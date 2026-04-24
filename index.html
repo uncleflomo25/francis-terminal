@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>V6 REAL DATA DESKTOP ELITE</title>
-<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+<title>V8 REALTIME ROTATION TABLE PRO</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -14,239 +13,312 @@ font-family:Arial,Helvetica,sans-serif;
 overflow:hidden;
 }
 header{
-height:48px;
+height:52px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:0 14px;
+padding:0 16px;
 background:#09121c;
 border-bottom:1px solid #17304a;
-font-size:13px;
 font-weight:700;
+font-size:14px;
 }
-#grid{
+#wrap{
+padding:10px;
 display:grid;
 grid-template-columns:1fr 1fr 340px;
-grid-template-rows:300px 300px 300px calc(100vh - 956px);
-gap:8px;
-padding:8px;
-height:calc(100vh - 48px);
+grid-template-rows:auto auto;
+gap:10px;
+height:calc(100vh - 52px);
 }
 .panel{
 background:#0b1622;
 border:1px solid #17304a;
-border-radius:10px;
+border-radius:12px;
 overflow:hidden;
 }
 .title{
-height:28px;
-padding:7px 9px;
+padding:10px 12px;
 font-size:12px;
+font-weight:700;
 color:#8fb8ea;
 border-bottom:1px solid #13283d;
-}
-.chart{
-height:calc(100% - 28px);
-}
-#side{
-grid-row:1/span 4;
-grid-column:3;
-display:grid;
-grid-template-rows:260px 1fr;
-gap:8px;
-background:none;
-border:none;
-}
-.box{
-padding:12px;
-font-size:12px;
-}
-.row{
 display:flex;
 justify-content:space-between;
-padding:6px 0;
-border-bottom:1px solid #13283d;
+align-items:center;
 }
-.big{
-font-size:24px;
-font-weight:700;
-margin-bottom:10px;
-}
-.green{color:#32d583}
-.red{color:#ff5d73}
-.gold{color:#ffd166}
 table{
 width:100%;
 border-collapse:collapse;
-font-size:11px;
+font-size:13px;
 }
-td{
-padding:6px;
+th,td{
+padding:10px 12px;
 border-bottom:1px solid #13283d;
+text-align:left;
 }
-.small{
-font-size:11px;
+th{color:#7ea8d7;font-size:12px}
+tr:hover{background:#0f1f31}
+.green{color:#32d583;font-weight:700}
+.red{color:#ff5d73;font-weight:700}
+.gold{color:#ffd166;font-weight:700}
+.big{
+font-size:24px;
+font-weight:700;
+padding:14px 12px 0 12px;
+}
+.sub{
+padding:6px 12px 14px 12px;
+font-size:12px;
 color:#8ea8c7;
-margin-top:8px;
 }
+.metric{
+display:flex;
+justify-content:space-between;
+padding:10px 12px;
+border-top:1px solid #13283d;
+font-size:13px;
+}
+.badge{
+padding:5px 8px;
+border-radius:6px;
+font-size:11px;
+font-weight:700;
+}
+.buy{background:#103824;color:#5ef0a0}
+.sell{background:#3a1318;color:#ff8897}
+.wait{background:#3b3312;color:#ffd95a}
+select{
+background:#102236;
+color:#dce8ff;
+border:1px solid #17304a;
+padding:4px 6px;
+border-radius:6px;
+font-size:11px;
+}
+#side{
+grid-row:1/span 2;
+grid-column:3;
+display:grid;
+grid-template-rows:290px 1fr;
+gap:10px;
+background:none;border:none;
+}
+.feed{max-height:100%;overflow:auto}
 </style>
 </head>
 <body>
 
 <header>
-<span>V6 REAL DATA DESKTOP ELITE</span>
+<span>V8 REALTIME ROTATION TABLE PRO</span>
 <span id="clock"></span>
 </header>
 
-<div id="grid">
+<div id="wrap">
 
-<div class="panel"><div class="title">BTCUSDT LIVE</div><div id="c1" class="chart"></div></div>
-<div class="panel"><div class="title">ETHUSDT LIVE</div><div id="c2" class="chart"></div></div>
+<div class="panel">
+<div class="title">
+<span>Realtime Market Matrix</span>
+<select id="tf">
+<option value="1m">1 Minute</option>
+<option value="5m">5 Minute</option>
+<option value="15m">15 Minute</option>
+<option value="1h">1 Hour</option>
+<option value="4h">4 Hour</option>
+<option value="1d">1 Day</option>
+</select>
+</div>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Price</th>
+<th>24h Vol</th>
+<th>Bias</th>
+<th>TF Move</th>
+</tr>
+</thead>
+<tbody id="marketBody"></tbody>
+</table>
+</div>
 
-<div class="panel"><div class="title">ETHBTC LIVE</div><div id="c3" class="chart"></div></div>
-<div class="panel"><div class="title">BTC.D</div><div id="c4" class="chart"></div></div>
-
-<div class="panel"><div class="title">USDT.D</div><div id="c5" class="chart"></div></div>
-<div class="panel"><div class="title">TOTAL Market Proxy</div><div id="c6" class="chart"></div></div>
-
-<div class="panel"><div class="title">AI Rotation Score</div><div id="c7" class="chart"></div></div>
-<div class="panel"><div class="title">ETH Leadership</div><div id="c8" class="chart"></div></div>
+<div class="panel">
+<div class="title">Dominance & Rotation</div>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+<th>Bias</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody id="domBody"></tbody>
+</table>
+</div>
 
 <div id="side">
 
 <div class="panel">
 <div class="title">AI Regime Engine</div>
-<div class="box">
 <div class="big" id="regime">CONNECTING...</div>
-<div class="row"><span>BTC Edge</span><span id="btcEdge">--</span></div>
-<div class="row"><span>ETH Edge</span><span id="ethEdge">--</span></div>
-<div class="row"><span>Alt Season</span><span id="altProb">--</span></div>
-<div class="row"><span>Signal</span><span id="signal">--</span></div>
-<div class="small" id="status">Waiting for live market...</div>
+<div class="sub" id="flow">Waiting for live data...</div>
+
+<div class="metric"><span>BTC Edge</span><span id="btcEdge">--</span></div>
+<div class="metric"><span>ETH Edge</span><span id="ethEdge">--</span></div>
+<div class="metric"><span>Alt Season</span><span id="altEdge">--</span></div>
+<div class="metric"><span>Signal</span><span id="signal"><span class="badge wait">WAIT</span></span></div>
 </div>
+
+<div class="panel feed">
+<div class="title">Live Feed</div>
+<table><tbody id="feed"></tbody></table>
+</div>
+
 </div>
 
 <div class="panel">
-<div class="title">Live Feed</div>
-<table id="feed"></table>
+<div class="title">Execution Radar</div>
+<table>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Bias</th>
+<th>Action</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody id="tradeBody"></tbody>
+</table>
 </div>
 
+<div class="panel">
+<div class="title">Capital Flow Summary</div>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Destination</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="flowBody"></tbody>
+</table>
 </div>
+
 </div>
 
 <script>
-clock.innerText=new Date().toLocaleTimeString();
-setInterval(()=>clock.innerText=new Date().toLocaleTimeString(),1000);
-
-function mkChart(id,color){
-let chart=LightweightCharts.createChart(document.getElementById(id),{
-layout:{background:{color:"#0b1622"},textColor:"#8fb8ea"},
-grid:{vertLines:{color:"#102236"},horzLines:{color:"#102236"}},
-rightPriceScale:{borderColor:"#17304a"},
-timeScale:{borderColor:"#17304a",timeVisible:true,secondsVisible:false},
-crosshair:{mode:1}
-});
-let line=chart.addLineSeries({color:color,lineWidth:2});
-return {chart,line,data:[]};
-}
-
-function add(o,v){
-let t=Math.floor(Date.now()/1000);
-o.data.push({time:t,value:v});
-if(o.data.length>240)o.data.shift();
-o.line.setData(o.data);
-}
-
-const A=mkChart("c1","#32d583");
-const B=mkChart("c2","#ff8fab");
-const C=mkChart("c3","#5fa8ff");
-const D=mkChart("c4","#ffd166");
-const E=mkChart("c5","#ff5d73");
-const F=mkChart("c6","#00d1ff");
-const G=mkChart("c7","#b388ff");
-const H=mkChart("c8","#9eff6b");
+function clk(){clock.innerText=new Date().toLocaleTimeString()}
+setInterval(clk,1000); clk();
 
 let btc=0,eth=0,pair=0;
+let prev={btc:0,eth:0,pair:0};
 let ws;
 
-function connect(){
-status.innerHTML="<span class='gold'>Connecting...</span>";
-
-ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@miniTicker/ethusdt@miniTicker/ethbtc@miniTicker");
-
-ws.onopen=()=>{
-status.innerHTML="<span class='green'>LIVE CONNECTED</span>";
-};
-
-ws.onmessage=(msg)=>{
-let j=JSON.parse(msg.data);
-let s=j.data.s;
-let p=parseFloat(j.data.c);
-
-if(s==="BTCUSDT") btc=p;
-if(s==="ETHUSDT") eth=p;
-if(s==="ETHBTC") pair=p;
-
-if(btc && eth && pair) update();
-};
-
-ws.onerror=()=>{
-status.innerHTML="<span class='red'>Feed Error</span>";
-};
-
-ws.onclose=()=>{
-status.innerHTML="<span class='gold'>Reconnecting...</span>";
-setTimeout(connect,3000);
-};
+function cls(v){return v>=0?"green":"red";}
+function dir(v){
+if(v>0.15)return "UP";
+if(v<-0.15)return "DOWN";
+return "SIDEWAYS";
+}
+function badge(txt,type){
+return `<span class="badge ${type}">${txt}</span>`;
 }
 
-function update(){
+function connect(){
+ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@ticker/ethusdt@ticker/ethbtc@ticker");
 
+ws.onmessage=(e)=>{
+let j=JSON.parse(e.data);
+let d=j.data;
+let s=d.s;
+let p=parseFloat(d.c);
+
+if(s==="BTCUSDT"){btc=p; btcVol=parseFloat(d.q);}
+if(s==="ETHUSDT"){eth=p; ethVol=parseFloat(d.q);}
+if(s==="ETHBTC"){pair=p; pairVol=parseFloat(d.q);}
+
+if(btc && eth && pair) render();
+};
+
+ws.onclose=()=>setTimeout(connect,3000);
+}
+
+let btcVol=0,ethVol=0,pairVol=0;
+
+function render(){
+
+let tfm=tf.value;
+let mult=1;
+if(tfm==="5m")mult=1.8;
+if(tfm==="15m")mult=2.8;
+if(tfm==="1h")mult=5;
+if(tfm==="4h")mult=8;
+if(tfm==="1d")mult=12;
+
+let btcMove=((btc-prev.btc)/btc*100 || 0)*mult;
+let ethMove=((eth-prev.eth)/eth*100 || 0)*mult;
+let pairMove=((pair-prev.pair)/pair*100 || 0)*mult;
+
+prev={btc,eth,pair};
+
+let total=((btc*21)+(eth*120))/1000;
 let btcd=(btc/(btc+eth*15))*100;
 let usdt=100-btcd;
-let total=(btc*21 + eth*120)/1000;
-let ethLead=pair*100000;
 
-add(A,btc);
-add(B,eth);
-add(C,pair);
-add(D,btcd);
-add(E,usdt);
-add(F,total);
-add(H,ethLead);
+marketBody.innerHTML=`
+<tr><td>BTCUSDT</td><td>${btc.toFixed(0)}</td><td>${(btcVol/1000000).toFixed(1)}M</td><td class="${cls(btcMove)}">${dir(btcMove)}</td><td>${btcMove.toFixed(2)}%</td></tr>
+<tr><td>ETHUSDT</td><td>${eth.toFixed(2)}</td><td>${(ethVol/1000000).toFixed(1)}M</td><td class="${cls(ethMove)}">${dir(ethMove)}</td><td>${ethMove.toFixed(2)}%</td></tr>
+<tr><td>ETHBTC</td><td>${pair.toFixed(5)}</td><td>${(pairVol/1000000).toFixed(1)}M</td><td class="${cls(pairMove)}">${dir(pairMove)}</td><td>${pairMove.toFixed(2)}%</td></tr>
+<tr><td>TOTAL</td><td>${total.toFixed(2)}T</td><td>LIVE</td><td class="${cls(btcMove+ethMove)}">${dir(btcMove+ethMove)}</td><td>${(btcMove+ethMove).toFixed(2)}%</td></tr>
+`;
 
-let bm=A.data.length>10 ? btc-A.data[A.data.length-10].value : 0;
-let em=B.data.length>10 ? eth-B.data[B.data.length-10].value : 0;
-let pm=C.data.length>10 ? pair-C.data[C.data.length-10].value : 0;
+domBody.innerHTML=`
+<tr><td>BTC.D</td><td>${btcd.toFixed(2)}%</td><td class="${cls(btcMove)}">${dir(btcMove)}</td><td>Bitcoin Share</td></tr>
+<tr><td>USDT.D</td><td>${usdt.toFixed(2)}%</td><td class="${cls(-btcMove)}">${dir(-btcMove)}</td><td>Cash Preference</td></tr>
+<tr><td>ETH Strength</td><td>${(pair*100000).toFixed(0)}</td><td class="${cls(pairMove)}">${dir(pairMove)}</td><td>ETH vs BTC</td></tr>
+`;
 
-let score=(bm*0.01)+(em*0.08)+(pm*100000);
-add(G,score);
+let regime="BROAD BULL";
+let flowtxt="Capital entering crypto";
+let sig=badge("BUY DIPS","buy");
 
-let regime="NEUTRAL";
-let sig="WAIT";
-
-if(bm>0 && pm<0){
+if(btcMove>0.1 && pairMove<0){
 regime="BTC SEASON";
-sig="BUY BTC";
-}else if(em>0 && pm>0){
+flowtxt="Money prefers Bitcoin";
+sig=badge("BUY BTC","buy");
+}else if(ethMove>0.1 && pairMove>0){
 regime="ETH ROTATION";
-sig="BUY ETH";
-}else if(bm<0 && em<0){
+flowtxt="Capital rotating into ETH";
+sig=badge("BUY ETH","buy");
+}else if(btcMove<0 && ethMove<0){
 regime="RISK OFF";
-sig="REDUCE";
-}else{
-regime="BROAD BULL";
-sig="BUY DIPS";
+flowtxt="Capital leaving market";
+sig=badge("REDUCE","sell");
 }
 
+regime.innerText=regime;
 document.getElementById("regime").innerText=regime;
-btcEdge.innerHTML="<span class='green'>"+(50+bm/20).toFixed(1)+"%</span>";
-ethEdge.innerHTML="<span class='gold'>"+(50+em/2).toFixed(1)+"%</span>";
-altProb.innerHTML="<span class='red'>"+(50+pm*9000).toFixed(1)+"%</span>";
-signal.innerText=sig;
+flow.innerText=flowtxt;
+btcEdge.innerHTML=`<span class="${cls(btcMove)}">${(50+btcMove*80).toFixed(0)}%</span>`;
+ethEdge.innerHTML=`<span class="${cls(ethMove)}">${(50+ethMove*80).toFixed(0)}%</span>`;
+altEdge.innerHTML=`<span class="${cls(pairMove)}">${(50+pairMove*80).toFixed(0)}%</span>`;
+signal.innerHTML=sig;
 
-feed.innerHTML="<tr><td>"+new Date().toLocaleTimeString()+"</td><td>"+regime+"</td><td>"+sig+"</td></tr>"+feed.innerHTML;
-if(feed.rows.length>25)feed.deleteRow(25);
+tradeBody.innerHTML=`
+<tr><td>BTCUSDT</td><td class="${cls(btcMove)}">${dir(btcMove)}</td><td>${btcMove>=0?"Long":"Short"}</td><td>${Math.abs(btcMove*100).toFixed(0)}%</td></tr>
+<tr><td>ETHUSDT</td><td class="${cls(ethMove)}">${dir(ethMove)}</td><td>${ethMove>=0?"Long":"Short"}</td><td>${Math.abs(ethMove*100).toFixed(0)}%</td></tr>
+`;
+
+flowBody.innerHTML=`
+<tr><td>USDT</td><td>${btcMove>ethMove?"BTC":"ETH"}</td><td class="green">ACTIVE</td></tr>
+<tr><td>BTC</td><td>${pairMove>0?"ETH":"USDT"}</td><td class="gold">ROTATING</td></tr>
+<tr><td>Alts</td><td>${btcMove+ethMove>0?"MARKET":"CASH"}</td><td class="${cls(btcMove+ethMove)}">${btcMove+ethMove>0?"EXPAND":"EXIT"}</td></tr>
+`;
+
+feed.innerHTML=`<tr><td>${new Date().toLocaleTimeString()}</td><td>${regime}</td><td>${sig.replace(/<[^>]+>/g,'')}</td></tr>`+feed.innerHTML;
+if(feed.rows.length>20)feed.deleteRow(20);
 }
 
 connect();
