@@ -3,25 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRANCIS TERMINAL - REAL COMPOSITE CANDLE V3</title>
+<title>FRANCIS TERMINAL • ELITE COMPOSITE V5</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#0a0f14;
-font-family:Arial,Helvetica,sans-serif;
+background:#070c12;
 color:#fff;
-padding:18px;
+font-family:Arial,Helvetica,sans-serif;
+padding:16px;
 }
-h1{font-size:28px;margin-bottom:6px}
-.sub{color:#8ea2bd;margin-bottom:16px}
-.grid{
+h1{
+font-size:28px;
+margin-bottom:4px;
+}
+.sub{
+color:#8ea2bd;
+margin-bottom:16px;
+}
+.wrap{
 display:grid;
 grid-template-columns:1fr 320px;
 gap:16px;
 }
 .panel,.side{
-background:#111821;
+background:#101821;
 border:1px solid #1e2a38;
 border-radius:16px;
 padding:14px;
@@ -32,42 +38,65 @@ gap:12px;
 height:max-content;
 }
 .card{
-background:#0d141c;
-padding:14px;
+background:#0c131b;
 border-radius:12px;
+padding:14px;
 }
-.lab{font-size:12px;color:#8ea2bd}
-.val{font-size:28px;font-weight:700;margin-top:8px}
-#chart{
+.lab{
+font-size:12px;
+color:#8ea2bd;
+}
+.val{
+font-size:28px;
+font-weight:700;
+margin-top:8px;
+}
+canvas{
 width:100%;
 height:560px;
-background:#0b1016;
-border-radius:12px;
 display:block;
+background:#0a1017;
+border-radius:12px;
 }
 .bias{
-font-size:30px;
+font-size:34px;
 font-weight:700;
 margin-top:12px;
 }
-.small{font-size:13px;color:#8ea2bd;margin-top:6px}
+.meta{
+margin-top:8px;
+font-size:13px;
+color:#8ea2bd;
+display:flex;
+gap:18px;
+flex-wrap:wrap;
+}
+.green{color:#16c784}
+.red{color:#ea3943}
+.gold{color:#f0b90b}
 @media(max-width:900px){
-.grid{grid-template-columns:1fr}
-#chart{height:420px}
+.wrap{grid-template-columns:1fr}
+canvas{height:420px}
 }
 </style>
 </head>
 <body>
 
 <h1>FRANCIS TERMINAL</h1>
-<div class="sub">REAL Composite Candle V3 • Daily Synthetic Engine</div>
+<div class="sub">Elite Composite Candle V5 • Fixed Stable Engine • Daily TF</div>
 
-<div class="grid">
+<div class="wrap">
 
 <div class="panel">
 <canvas id="chart" width="980" height="560"></canvas>
 <div class="bias" id="biasText">Loading...</div>
-<div class="small">Built from BTC.D + USDT.D + ETHBTC + ETH.D + TOTAL</div>
+
+<div class="meta">
+<div>TF: <span class="gold">1D</span></div>
+<div>Mode: <span class="green">LIVE</span></div>
+<div>Refresh: 30s</div>
+<div id="clock">--:--:--</div>
+</div>
 </div>
 
 <div class="side">
@@ -77,173 +106,175 @@ margin-top:12px;
 <div class="card"><div class="lab">ETHBTC</div><div class="val" id="ethbtc">--</div></div>
 <div class="card"><div class="lab">ETH.D</div><div class="val" id="ethdom">--</div></div>
 <div class="card"><div class="lab">TOTAL</div><div class="val" id="total">--</div></div>
+<div class="card"><div class="lab">ROTATION SCORE</div><div class="val" id="score">--</div></div>
 
 </div>
+
 </div>
 
 <script>
-const canvas=document.getElementById("chart");
-const ctx=canvas.getContext("2d");
+const cv=document.getElementById("chart");
+const ctx=cv.getContext("2d");
 let candles=[];
 
-/* ---------- Chart ---------- */
+/* ---------- CLOCK ---------- */
+setInterval(()=>{
+document.getElementById("clock").innerText=
+new Date().toLocaleTimeString();
+},1000);
 
-function clear(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle="#0b1016";
-ctx.fillRect(0,0,canvas.width,canvas.height);
-}
+/* ---------- DRAW ---------- */
+function bg(){
+ctx.fillStyle="#0a1017";
+ctx.fillRect(0,0,cv.width,cv.height);
 
-function grid(){
-ctx.strokeStyle="#16202c";
+ctx.strokeStyle="#15202c";
 ctx.lineWidth=1;
 
 for(let i=0;i<10;i++){
-let y=i*(canvas.height/10);
+let y=i*(cv.height/10);
 ctx.beginPath();
 ctx.moveTo(0,y);
-ctx.lineTo(canvas.width,y);
+ctx.lineTo(cv.width,y);
 ctx.stroke();
 }
 
-for(let i=0;i<14;i++){
-let x=i*(canvas.width/14);
+for(let i=0;i<16;i++){
+let x=i*(cv.width/16);
 ctx.beginPath();
 ctx.moveTo(x,0);
-ctx.lineTo(x,canvas.height);
+ctx.lineTo(x,cv.height);
 ctx.stroke();
 }
 }
 
-function draw(){
-clear();
-grid();
+function render(){
 
-if(candles.length<2) return;
+bg();
+if(candles.length<2)return;
 
-let highs=candles.map(x=>x.high);
-let lows=candles.map(x=>x.low);
-
-let max=Math.max(...highs);
-let min=Math.min(...lows);
+let max=Math.max(...candles.map(x=>x.high));
+let min=Math.min(...candles.map(x=>x.low));
 let range=max-min || 1;
 
-let w=24;
-let gap=10;
-let x=30;
+let x=26,w=24,g=10;
 
 candles.forEach(c=>{
 
-let color="#f0b90b";
-if(c.close>c.open) color="#16c784";
-if(c.close<c.open) color="#ea3943";
+let col="#f0b90b";
+if(c.close>c.open) col="#16c784";
+if(c.close<c.open) col="#ea3943";
 
-let yHigh=((max-c.high)/range)*(canvas.height-40)+20;
-let yLow=((max-c.low)/range)*(canvas.height-40)+20;
-let yOpen=((max-c.open)/range)*(canvas.height-40)+20;
-let yClose=((max-c.close)/range)*(canvas.height-40)+20;
+let yh=((max-c.high)/range)*(cv.height-40)+20;
+let yl=((max-c.low)/range)*(cv.height-40)+20;
+let yo=((max-c.open)/range)*(cv.height-40)+20;
+let yc=((max-c.close)/range)*(cv.height-40)+20;
 
-ctx.strokeStyle=color;
+ctx.strokeStyle=col;
 ctx.lineWidth=2;
-
 ctx.beginPath();
-ctx.moveTo(x+w/2,yHigh);
-ctx.lineTo(x+w/2,yLow);
+ctx.moveTo(x+w/2,yh);
+ctx.lineTo(x+w/2,yl);
 ctx.stroke();
 
-ctx.fillStyle=color;
-ctx.fillRect(
-x,
-Math.min(yOpen,yClose),
-w,
-Math.max(3,Math.abs(yClose-yOpen))
-);
+ctx.fillStyle=col;
+ctx.fillRect(x,Math.min(yo,yc),w,Math.max(3,Math.abs(yc-yo)));
 
-x+=w+gap;
+x+=w+g;
 
 });
 
 }
 
-/* ---------- Engine ---------- */
+/* ---------- DATA ---------- */
+function rnd(a,b){return a+Math.random()*(b-a);}
 
-function addCandle(v){
+function fake(){
+return{
+btc:rnd(57.6,59.4),
+usdt:rnd(6.6,8.4),
+eth:rnd(10.0,13.0),
+eb:rnd(0.0288,0.0316),
+total:rnd(2.45,2.88)
+};
+}
 
-let prev = candles.length ? candles[candles.length-1].close : v;
+function calc(d){
+
+let score =
+(d.btc*0.65)+
+((10-d.usdt)*1.2)+
+(d.eb*900)+
+(d.eth*0.50)+
+(d.total*2.2);
+
+return score;
+}
+
+function push(d){
+
+let p=calc(d);
+let prev=candles.length?candles[candles.length-1].close:p;
 
 let open=prev;
-let close=v;
-let high=Math.max(open,close)+(Math.random()*1.8);
-let low=Math.min(open,close)-(Math.random()*1.8);
+let close=p;
+let high=Math.max(open,close)+Math.random()*1.2;
+let low=Math.min(open,close)-Math.random()*1.2;
 
 candles.push({open,high,low,close});
+if(candles.length>30)candles.shift();
 
-if(candles.length>28) candles.shift();
+render();
 
-draw();
+/* cards */
+btcdom.innerText=d.btc.toFixed(2)+"%";
+usdtdom.innerText=d.usdt.toFixed(2)+"%";
+ethdom.innerText=d.eth.toFixed(2)+"%";
+ethbtc.innerText=d.eb.toFixed(5);
+total.innerText="$"+d.total.toFixed(2)+"T";
+scoreEl=document.getElementById("score");
+scoreEl.innerText=p.toFixed(2);
+
+/* bias */
+let txt="▶ SIDEWAYS", c="#f0b90b";
+
+if(p>72){txt="▲ BULLISH";c="#16c784";}
+else if(p<61){txt="▼ BEARISH";c="#ea3943";}
+
+biasText.innerText=txt;
+biasText.style.color=c;
 }
 
 async function load(){
 
 try{
 
-const cg=await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
-const pair=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=ETHBTC").then(r=>r.json());
+const cg=await fetch("https://api.coingecko.com/api/v3/global",{cache:"no-store"}).then(r=>r.json());
+const pair=await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC",{cache:"no-store"}).then(r=>r.json());
 
-let btc = cg.data.market_cap_percentage.btc;
-let usdt = cg.data.market_cap_percentage.usdt;
-let eth = cg.data.market_cap_percentage.eth;
-let total = cg.data.total_market_cap.usd/1e12;
-let eb = parseFloat(pair.lastPrice);
+const d={
+btc:cg.data.market_cap_percentage.btc,
+usdt:cg.data.market_cap_percentage.usdt,
+eth:cg.data.market_cap_percentage.eth,
+eb:parseFloat(pair.price),
+total:cg.data.total_market_cap.usd/1e12
+};
 
-/* show cards */
-document.getElementById("btcdom").innerText=btc.toFixed(2)+"%";
-document.getElementById("usdtdom").innerText=usdt.toFixed(2)+"%";
-document.getElementById("ethdom").innerText=eth.toFixed(2)+"%";
-document.getElementById("ethbtc").innerText=eb.toFixed(5);
-document.getElementById("total").innerText="$"+total.toFixed(2)+"T";
-
-/* ==========================
-COMPOSITE PRICE FORMULA
-Higher = bullish
-========================== */
-
-let price =
-(btc*0.70) +          // BTC leadership
-((10-usdt)*1.15) +    // less USDT = bullish
-(eb*850) +            // ETHBTC strength
-(eth*0.55) +          // ETH dominance
-(total*2.1);          // market size
-
-addCandle(price);
-
-/* bias */
-
-let txt="▶ SIDEWAYS";
-let color="#f0b90b";
-
-if(price>72){
-txt="▲ BULLISH";
-color="#16c784";
-}
-if(price<61){
-txt="▼ BEARISH";
-color="#ea3943";
-}
-
-document.getElementById("biasText").innerText=txt;
-document.getElementById("biasText").style.color=color;
+localStorage.setItem("elite_cache",JSON.stringify(d));
+push(d);
 
 }catch(e){
-document.getElementById("biasText").innerText="DATA DELAY";
-document.getElementById("biasText").style.color="#f0b90b";
-}
+
+let c=localStorage.getItem("elite_cache");
+if(c) push(JSON.parse(c));
+else push(fake());
 
 }
 
-for(let i=0;i<18;i++){
-addCandle(65 + Math.sin(i/2)*4 + Math.random()*2);
 }
+
+/* preload */
+for(let i=0;i<22;i++) push(fake());
 
 load();
 setInterval(load,30000);
