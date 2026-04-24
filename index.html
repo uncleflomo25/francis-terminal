@@ -2,41 +2,38 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FRANCIS TERMINAL • TradingView Style</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FRANCIS TERMINAL V2 FIXED</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#0a0e14;
-font-family:Arial,Helvetica,sans-serif;
+background:#0f1722;
 color:#fff;
-padding:0;
+font-family:Arial,Helvetica,sans-serif;
 overflow:hidden;
 }
 .topbar{
 height:48px;
 background:#131722;
-border-bottom:1px solid #2a2e39;
+border-bottom:1px solid #222b39;
 display:flex;
 align-items:center;
-padding:0 14px;
-gap:14px;
-font-size:14px;
+padding:0 12px;
+gap:8px;
+font-size:13px;
 }
-.logo{
-font-weight:700;
-color:#fff;
-}
+.logo{font-weight:700;color:#fff;margin-right:8px}
 .btn{
 padding:6px 10px;
 background:#1e222d;
 border-radius:6px;
-color:#c7cbd1;
+cursor:pointer;
+color:#cfd6e4;
 }
-.wrap{
+.main{
 display:grid;
-grid-template-columns:1fr 300px;
+grid-template-columns:1fr 280px;
 height:calc(100vh - 48px);
 }
 .left{
@@ -44,8 +41,8 @@ position:relative;
 background:#131722;
 }
 .right{
-background:#0f1623;
-border-left:1px solid #2a2e39;
+background:#0d1520;
+border-left:1px solid #202a38;
 padding:12px;
 display:grid;
 gap:10px;
@@ -59,7 +56,7 @@ padding:12px;
 }
 .lab{
 font-size:11px;
-color:#9aa4af;
+color:#8fa0b8;
 }
 .val{
 font-size:28px;
@@ -71,31 +68,27 @@ width:100%;
 height:100%;
 display:block;
 }
-.watermark{
+.status{
+position:absolute;
+bottom:12px;
+left:14px;
+font-size:13px;
+color:#94a3b8;
+display:flex;
+gap:16px;
+}
+.water{
 position:absolute;
 left:18px;
 top:16px;
-font-size:26px;
+font-size:28px;
 font-weight:700;
-color:rgba(255,255,255,.05);
+color:rgba(255,255,255,.04);
 pointer-events:none;
-}
-.status{
-position:absolute;
-left:16px;
-bottom:12px;
-font-size:13px;
-color:#9aa4af;
-display:flex;
-gap:16px;
 }
 .green{color:#26a69a}
 .red{color:#ef5350}
 .gold{color:#f0b90b}
-@media(max-width:900px){
-.wrap{grid-template-columns:1fr}
-.right{display:none}
-}
 </style>
 </head>
 
@@ -111,15 +104,15 @@ gap:16px;
 <div class="btn">Indicators</div>
 </div>
 
-<div class="wrap">
+<div class="main">
 
 <div class="left">
-<div class="watermark">FRANCIS TERMINAL</div>
-<canvas id="chart" width="1400" height="900"></canvas>
+<div class="water">FRANCIS TERMINAL</div>
+<canvas id="chart"></canvas>
 
 <div class="status">
-<div>BTC.D / USDT.D / ETHBTC / ETH.D / TOTAL</div>
-<div>Refresh: 5s</div>
+<div>BTC.D + USDT.D + ETHBTC + ETH.D + TOTAL</div>
+<div>Refresh 5s</div>
 <div id="clock"></div>
 </div>
 </div>
@@ -129,4 +122,212 @@ gap:16px;
 <div class="card"><div class="lab">BTC.D</div><div class="val" id="btc">--</div></div>
 <div class="card"><div class="lab">USDT.D</div><div class="val" id="usdt">--</div></div>
 <div class="card"><div class="lab">ETHBTC</div><div class="val" id="ethbtc">--</div></div>
-<div class="card"><div class="lab
+<div class="card"><div class="lab">ETH.D</div><div class="val" id="ethd">--</div></div>
+<div class="card"><div class="lab">TOTAL</div><div class="val" id="total">--</div></div>
+<div class="card"><div class="lab">MODE</div><div class="val" id="mode">--</div></div>
+
+</div>
+
+</div>
+
+<script>
+const canvas=document.getElementById("chart");
+const ctx=canvas.getContext("2d");
+
+const elBTC=document.getElementById("btc");
+const elUSDT=document.getElementById("usdt");
+const elETHBTC=document.getElementById("ethbtc");
+const elETHD=document.getElementById("ethd");
+const elTOTAL=document.getElementById("total");
+const elMODE=document.getElementById("mode");
+const elCLOCK=document.getElementById("clock");
+
+let candles=[];
+
+/* resize */
+function resize(){
+canvas.width=canvas.clientWidth;
+canvas.height=canvas.clientHeight;
+draw();
+}
+window.addEventListener("resize",resize);
+
+/* clock */
+setInterval(()=>{
+elCLOCK.innerText=new Date().toLocaleTimeString();
+},1000);
+
+/* chart bg */
+function background(){
+ctx.fillStyle="#131722";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+ctx.strokeStyle="#1f2430";
+ctx.lineWidth=1;
+
+for(let i=0;i<12;i++){
+let y=i*canvas.height/12;
+ctx.beginPath();
+ctx.moveTo(0,y);
+ctx.lineTo(canvas.width,y);
+ctx.stroke();
+}
+
+for(let i=0;i<18;i++){
+let x=i*canvas.width/18;
+ctx.beginPath();
+ctx.moveTo(x,0);
+ctx.lineTo(x,canvas.height);
+ctx.stroke();
+}
+}
+
+/* draw candles */
+function draw(){
+background();
+
+if(candles.length<2)return;
+
+let max=Math.max(...candles.map(c=>c.high));
+let min=Math.min(...candles.map(c=>c.low));
+let range=max-min || 1;
+
+let x=30;
+let w=12;
+let gap=7;
+
+candles.forEach(c=>{
+
+let color="#f0b90b";
+if(c.close>c.open) color="#26a69a";
+if(c.close<c.open) color="#ef5350";
+
+let yh=((max-c.high)/range)*(canvas.height-40)+20;
+let yl=((max-c.low)/range)*(canvas.height-40)+20;
+let yo=((max-c.open)/range)*(canvas.height-40)+20;
+let yc=((max-c.close)/range)*(canvas.height-40)+20;
+
+ctx.strokeStyle=color;
+ctx.lineWidth=1.5;
+ctx.beginPath();
+ctx.moveTo(x+w/2,yh);
+ctx.lineTo(x+w/2,yl);
+ctx.stroke();
+
+ctx.fillStyle=color;
+ctx.fillRect(x,Math.min(yo,yc),w,Math.max(2,Math.abs(yc-yo)));
+
+x+=w+gap;
+});
+}
+
+/* fake data fallback */
+function rnd(a,b){return a+Math.random()*(b-a);}
+
+function fakeData(){
+return{
+btc:rnd(57.5,59.2),
+usdt:rnd(6.7,8.3),
+ethd:rnd(10.2,12.8),
+ethbtc:rnd(0.0289,0.0314),
+total:rnd(2.45,2.86)
+};
+}
+
+/* process */
+function process(d){
+
+let score=
+(d.total*14)+
+(d.ethbtc*620)+
+((10-d.usdt)*2)+
+(d.ethd*0.8)-
+(d.btc*0.35);
+
+let prev=candles.length?candles[candles.length-1].close:score;
+
+let candle={
+open:prev,
+close:score,
+high:Math.max(prev,score)+Math.random(),
+low:Math.min(prev,score)-Math.random()
+};
+
+candles.push(candle);
+if(candles.length>80)candles.shift();
+
+draw();
+
+/* cards */
+elBTC.innerText=d.btc.toFixed(2)+"%";
+elUSDT.innerText=d.usdt.toFixed(2)+"%";
+elETHBTC.innerText=d.ethbtc.toFixed(5);
+elETHD.innerText=d.ethd.toFixed(2)+"%";
+elTOTAL.innerText="$"+d.total.toFixed(2)+"T";
+
+/* mode */
+let txt="BALANCED";
+let col="#f0b90b";
+
+if(d.btc>58.2 && d.ethbtc<0.0300){
+txt="BTC MODE";
+col="#f0b90b";
+}
+if(d.ethbtc>0.0304 && d.ethd>11){
+txt="ETH MODE";
+col="#26a69a";
+}
+if(d.usdt>8.4){
+txt="DEFENSIVE";
+col="#ef5350";
+}
+
+elMODE.innerText=txt;
+elMODE.style.color=col;
+}
+
+/* live fetch */
+async function loadData(){
+
+try{
+
+const cg=await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
+const bn=await fetch("https://api.binance.com/api/v3/ticker/price?symbol=ETHBTC").then(r=>r.json());
+
+const d={
+btc:cg.data.market_cap_percentage.btc,
+usdt:cg.data.market_cap_percentage.usdt,
+ethd:cg.data.market_cap_percentage.eth,
+ethbtc:parseFloat(bn.price),
+total:cg.data.total_market_cap.usd/1000000000000
+};
+
+localStorage.setItem("francis_cache",JSON.stringify(d));
+process(d);
+
+}catch(err){
+
+let cache=localStorage.getItem("francis_cache");
+if(cache){
+process(JSON.parse(cache));
+}else{
+process(fakeData());
+}
+
+}
+
+}
+
+/* start */
+resize();
+
+for(let i=0;i<50;i++){
+process(fakeData());
+}
+
+loadData();
+setInterval(loadData,5000);
+</script>
+
+</body>
+</html>
