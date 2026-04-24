@@ -1,104 +1,96 @@
-<!-- DAILY ENGINE MODE ENABLED -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Francis Terminal Daily Engine</title>
+<style>
+body{
+margin:0;
+background:#0b0f14;
+color:white;
+font-family:Arial;
+padding:20px;
+}
+h1{margin:0 0 10px}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-top:20px;
+}
+.card{
+background:#111821;
+padding:18px;
+border-radius:14px;
+border:1px solid #1f2a36;
+}
+.label{color:#8fa1b5;font-size:14px}
+.value{font-size:30px;font-weight:700;margin-top:8px}
+#biasText{font-size:34px;font-weight:700}
+</style>
+</head>
+<body>
+
+<h1>FRANCIS TERMINAL</h1>
+<div id="engineTF">DAILY TF</div>
+<div id="biasText">Loading...</div>
+
+<div class="grid">
+<div class="card"><div class="label">BTC.D</div><div class="value" id="btcdom">--</div></div>
+<div class="card"><div class="label">USDT.D</div><div class="value" id="usdtdom">--</div></div>
+<div class="card"><div class="label">ETH.D</div><div class="value" id="ethdom">--</div></div>
+<div class="card"><div class="label">ETHBTC</div><div class="value" id="ethbtc">--</div></div>
+<div class="card"><div class="label">TOTAL</div><div class="value" id="total">--</div></div>
+</div>
+
 <script>
-
-/* ===============================
-   FRANCIS TERMINAL GOD MODE V2
-   DAILY TIMEFRAME ENGINE
-================================= */
-
-const TIMEFRAME = "1D";   // SET TO DAILY
-const REFRESH_MS = 60000; // refresh every 60 sec
-
 async function loadDailyEngine(){
 
-// COINGECKO GLOBAL DAILY SNAPSHOT
-const cg = await fetch("https://api.coingecko.com/api/v3/global")
-.then(r=>r.json());
-
-// BINANCE DAILY CANDLE ETHBTC
-const ethbtc = await fetch(
-"https://api.binance.com/api/v3/klines?symbol=ETHBTC&interval=1d&limit=2"
-).then(r=>r.json());
-
-// BINANCE DAILY BTCUSDT
-const btc = await fetch(
-"https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=2"
-).then(r=>r.json());
-
-/* ==========================
-   DAILY VALUES
-========================== */
+const cg = await fetch("https://api.coingecko.com/api/v3/global").then(r=>r.json());
+const ethbtc = await fetch("https://api.binance.com/api/v3/klines?symbol=ETHBTC&interval=1d&limit=2").then(r=>r.json());
+const btc = await fetch("https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1d&limit=2").then(r=>r.json());
 
 let btcDom = cg.data.market_cap_percentage.btc;
 let usdtDom = cg.data.market_cap_percentage.usdt;
 let ethDom = cg.data.market_cap_percentage.eth;
 let total = cg.data.total_market_cap.usd;
 
-// ETHBTC DAILY CHANGE
 let eOpen = parseFloat(ethbtc[1][1]);
 let eClose = parseFloat(ethbtc[1][4]);
 let ethbtcChange = ((eClose-eOpen)/eOpen)*100;
 
-// BTC DAILY CHANGE
 let bOpen = parseFloat(btc[1][1]);
 let bClose = parseFloat(btc[1][4]);
 let btcChange = ((bClose-bOpen)/bOpen)*100;
 
-/* ==========================
-   DAILY BIAS ENGINE
-========================== */
-
 let score = 0;
 
-// BTC strength
-if(btcDom > 57) score += 2;
-if(btcChange > 0) score += 2;
+if(btcDom > 57) score +=2;
+if(btcChange > 0) score +=2;
+if(usdtDom < 8) score +=2; else score -=2;
+if(ethbtcChange > 0) score +=2; else score -=1;
+if(total > 2.5e12) score +=1;
 
-// USDT weakness bullish
-if(usdtDom < 8) score += 2;
-else score -= 2;
+let txt="▶ SIDEWAYS";
+let color="yellow";
 
-// ETHBTC strength alt bullish
-if(ethbtcChange > 0) score += 2;
-else score -= 1;
+if(score >=5){txt="▲ BULLISH"; color="#16c784";}
+if(score <=1){txt="▼ BEARISH"; color="#ea3943";}
 
-// TOTAL size
-if(total > 2.5e12) score += 1;
+document.getElementById("biasText").innerText=txt;
+document.getElementById("biasText").style.color=color;
 
-let bias = "SIDEWAYS";
-let color = "yellow";
-let arrow = "▶";
-
-if(score >=5){
-bias="BULLISH";
-color="#16c784";
-arrow="▲";
-}
-else if(score <=1){
-bias="BEARISH";
-color="#ea3943";
-arrow="▼";
+document.getElementById("btcdom").innerText=btcDom.toFixed(2)+"%";
+document.getElementById("usdtdom").innerText=usdtDom.toFixed(2)+"%";
+document.getElementById("ethdom").innerText=ethDom.toFixed(2)+"%";
+document.getElementById("ethbtc").innerText=eClose.toFixed(5);
+document.getElementById("total").innerText="$"+(total/1e12).toFixed(2)+"T";
 }
 
-/* ==========================
-   DISPLAY
-========================== */
-
-document.getElementById("engineTF").innerText = "DAILY TF";
-document.getElementById("biasText").innerText = arrow+" "+bias;
-document.getElementById("biasText").style.color = color;
-
-document.getElementById("btcdom").innerText = btcDom.toFixed(2)+"%";
-document.getElementById("usdtdom").innerText = usdtDom.toFixed(2)+"%";
-document.getElementById("ethdom").innerText = ethDom.toFixed(2)+"%";
-document.getElementById("ethbtc").innerText = eClose.toFixed(5);
-document.getElementById("total").innerText =
-"$"+(total/1e12).toFixed(2)+"T";
-
-}
-
-/* START */
 loadDailyEngine();
-setInterval(loadDailyEngine,REFRESH_MS);
-
+setInterval(loadDailyEngine,60000);
 </script>
+
+</body>
+</html>
