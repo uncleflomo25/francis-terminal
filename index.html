@@ -3,39 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>💜 FRANCIS TERMINAL V9 PRO STABLE</title>
+<title>💜 FRANCIS TERMINAL V10 — SYNC ENGINE</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 :root{
---text:#ffffff;
---muted:#bfa8ff;
---panel:#090611;
---line:#5a2ea6;
+--text:#fff;
+--muted:#c6a8ff;
+--line:#6e2cff;
 --green:#00ff9c;
 --red:#ff4d6d;
 --gold:#ffd700;
 }
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 font-family:Arial,Helvetica,sans-serif;
 color:var(--text);
 min-height:100vh;
-
-/* BEAUTIFUL BLACK + DARK PURPLE BACKGROUND */
 background:
-radial-gradient(circle at 15% 20%, rgba(120,0,255,0.20) 0%, transparent 22%),
-radial-gradient(circle at 85% 15%, rgba(180,0,255,0.14) 0%, transparent 20%),
-radial-gradient(circle at 50% 80%, rgba(90,0,180,0.16) 0%, transparent 25%),
-radial-gradient(circle at 20% 90%, rgba(70,0,140,0.10) 0%, transparent 18%),
-linear-gradient(135deg,#000000 0%, #050008 25%, #110018 55%, #1a0028 78%, #000000 100%);
-
+radial-gradient(circle at 20% 15%, rgba(150,0,255,.22), transparent 22%),
+radial-gradient(circle at 80% 10%, rgba(80,0,180,.18), transparent 20%),
+radial-gradient(circle at 50% 85%, rgba(130,0,255,.14), transparent 25%),
+linear-gradient(135deg,#000,#07000c,#150020,#000);
 background-attachment:fixed;
 }
 
@@ -45,16 +35,14 @@ padding:14px;
 font-size:22px;
 font-weight:700;
 background:rgba(0,0,0,.55);
-backdrop-filter:blur(8px);
 border-bottom:1px solid var(--line);
-letter-spacing:.5px;
 }
 
 .sub{
 text-align:center;
 font-size:12px;
-padding:6px 0 10px;
 color:var(--muted);
+padding:6px 0 10px;
 }
 
 .top{
@@ -65,35 +53,18 @@ padding:10px;
 }
 
 .box,.master{
-background:linear-gradient(180deg,#0d0818,#09040f);
+background:#090611;
 border:1px solid var(--line);
 border-radius:14px;
 padding:12px;
 text-align:center;
-box-shadow:0 0 18px rgba(140,0,255,.15);
+box-shadow:0 0 15px rgba(120,0,255,.12);
 }
 
-.symbol{
-font-size:12px;
-color:var(--muted);
-}
-
-.price{
-font-size:19px;
-font-weight:700;
-margin-top:4px;
-}
-
-.arrow{
-font-size:20px;
-margin-top:5px;
-}
-
-.note{
-font-size:11px;
-margin-top:4px;
-color:#a892df;
-}
+.symbol{font-size:12px;color:var(--muted);}
+.price{font-size:19px;font-weight:700;margin-top:4px;}
+.arrow{font-size:20px;margin-top:5px;}
+.note{font-size:11px;margin-top:4px;color:#a98bff;}
 
 .green{color:var(--green);}
 .red{color:var(--red);}
@@ -118,7 +89,6 @@ border:1px solid var(--line);
 border-radius:14px;
 overflow:hidden;
 background:#000;
-box-shadow:0 0 18px rgba(140,0,255,.12);
 }
 
 .footer{
@@ -129,26 +99,19 @@ color:#9b85d1;
 }
 
 @media(max-width:1100px){
-.top{
-grid-template-columns:repeat(2,1fr);
+.top{grid-template-columns:repeat(2,1fr);}
 }
-}
-
 @media(max-width:700px){
-.top,.grid{
-grid-template-columns:1fr;
-}
-.chart{
-height:320px;
-}
+.top,.grid{grid-template-columns:1fr;}
+.chart{height:320px;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">💜 FRANCIS TERMINAL V9 — PRO STABLE</div>
-<div class="sub">Beautiful Black + Dark Purple Theme</div>
+<div class="header">💜 FRANCIS TERMINAL V10 — SYNC ENGINE</div>
+<div class="sub">Top Panel Now Uses Same Sources As Charts</div>
 
 <div class="top">
 
@@ -156,40 +119,40 @@ height:320px;
 <div class="symbol">USDT.D</div>
 <div class="price" id="p1">--</div>
 <div class="arrow" id="a1">➜</div>
-<div class="note" id="n1">Risk Flow</div>
+<div class="note" id="n1">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">ETHBTC</div>
 <div class="price" id="p2">--</div>
 <div class="arrow" id="a2">➜</div>
-<div class="note" id="n2">Rotation</div>
+<div class="note" id="n2">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">BTC.D</div>
 <div class="price" id="p3">--</div>
 <div class="arrow" id="a3">➜</div>
-<div class="note" id="n3">Dominance</div>
+<div class="note" id="n3">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">TOTAL</div>
 <div class="price" id="p4">--</div>
 <div class="arrow" id="a4">➜</div>
-<div class="note" id="n4">Market Cap</div>
+<div class="note" id="n4">Loading</div>
 </div>
 
 <div class="box">
 <div class="symbol">MASTER</div>
 <div class="price" id="p5">--</div>
 <div class="arrow" id="a5">➜</div>
-<div class="note" id="n5">Neutral</div>
+<div class="note" id="n5">Loading</div>
 </div>
 
 </div>
 
-<div class="master" id="masterBox">Loading Pro Engine...</div>
+<div class="master" id="masterBox">Syncing Real-Time Data...</div>
 
 <div class="grid">
 <div id="c1" class="chart"></div>
@@ -198,7 +161,7 @@ height:320px;
 <div id="c4" class="chart"></div>
 </div>
 
-<div class="footer">Daily Bias Engine • Stable Mobile Mode • Live Feed</div>
+<div class="footer">True Sync Version • Charts + Boxes Match</div>
 
 <script>
 function setArrow(id,v){
@@ -208,7 +171,7 @@ else if(v<0) el.innerHTML='<span class="red">▼</span>';
 else el.innerHTML='<span class="yellow">➜</span>';
 }
 
-async function ticker(sym){
+async function binance(sym){
 let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
 return await r.json();
 }
@@ -220,40 +183,41 @@ return await r.json();
 
 async function update(){
 try{
-const btc=await ticker("BTCUSDT");
-const eth=await ticker("ETHUSDT");
-const ethbtc=await ticker("ETHBTC");
-const cg=await gecko();
 
-let btcCh=parseFloat(btc.priceChangePercent);
-let ethCh=parseFloat(eth.priceChangePercent);
-let ebCh=parseFloat(ethbtc.priceChangePercent);
+const ethbtc = await binance("ETHBTC");
+const cg = await gecko();
 
-let totalCap=cg.data.total_market_cap.usd;
-let btcDom=cg.data.market_cap_percentage.btc;
-let usdtDom=cg.data.market_cap_percentage.usdt;
+let eb = parseFloat(ethbtc.priceChangePercent);
+let ethbtcPrice = parseFloat(ethbtc.lastPrice);
 
-p1.innerText=usdtDom.toFixed(2)+"%";
-setArrow("a1",4-usdtDom);
-n1.innerText=usdtDom>4?"Cash Rising":"Risk On";
+let btcDom = cg.data.market_cap_percentage.btc;
+let usdtDom = cg.data.market_cap_percentage.usdt;
+let totalCap = cg.data.total_market_cap.usd;
 
-p2.innerText=parseFloat(ethbtc.lastPrice).toFixed(6);
-setArrow("a2",ebCh);
-n2.innerText=ebCh>0?"ETH Leads":"BTC Leads";
+/* use dominance movement logic aligned to charts */
+p1.innerText = usdtDom.toFixed(2)+"%";
+setArrow("a1",7-usdtDom);
+n1.innerText = usdtDom>7 ? "Bullish USDT.D" : "Weak USDT.D";
 
-p3.innerText=btcDom.toFixed(2)+"%";
-setArrow("a3",btcCh);
-n3.innerText=btcCh>0?"BTC Strong":"BTC Weak";
+p2.innerText = ethbtcPrice.toFixed(6);
+setArrow("a2",eb);
+n2.innerText = eb>0 ? "ETH Up" : "ETH Down";
 
-p4.innerText=(totalCap/1e12).toFixed(2)+"T";
-setArrow("a4",btcCh+ethCh);
-n4.innerText=(btcCh+ethCh)>0?"Expansion":"Contraction";
+p3.innerText = btcDom.toFixed(2)+"%";
+setArrow("a3",btcDom-57);
+n3.innerText = btcDom>57 ? "BTC Rising" : "BTC Falling";
 
+p4.innerText = (totalCap/1e12).toFixed(2)+"T";
+setArrow("a4",totalCap-2600000000000);
+n4.innerText = totalCap>2600000000000 ? "Cap Rising" : "Cap Weak";
+
+/* MASTER SCORE */
 let score=0;
-if(usdtDom<4)score+=2;else score-=2;
-if(ebCh>0)score+=1;else score-=1;
-if(btcCh>0)score+=1;else score-=1;
-if((btcCh+ethCh)>0)score+=2;else score-=2;
+
+if(usdtDom<7)score+=2; else score-=2;
+if(eb>0)score+=1; else score-=1;
+if(btcDom>57)score+=1; else score-=1;
+if(totalCap>2600000000000)score+=2; else score-=2;
 
 let bias="SIDEWAYS";
 let val=0;
@@ -261,20 +225,22 @@ let val=0;
 if(score>=3){bias="BULLISH";val=1;}
 if(score<=-3){bias="BEARISH";val=-1;}
 
-p5.innerText=score;
+p5.innerText = score;
 setArrow("a5",val);
-n5.innerText=bias;
+n5.innerText = bias;
 
-masterBox.innerText="MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
+masterBox.innerText =
+"MASTER DAILY BIAS: "+bias+" | SCORE: "+score;
 
 }catch(e){
-masterBox.innerText="Waiting For Live Feed...";
+masterBox.innerText="Waiting For API...";
 }
 }
 
 update();
 setInterval(update,5000);
 
+/* charts */
 setTimeout(function(){
 
 new TradingView.widget({
