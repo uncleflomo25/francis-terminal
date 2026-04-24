@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>⚡ FRANCIS TERMINAL V7 — REAL DAILY ENGINE</title>
+<title>⚡ FRANCIS TERMINAL V8 — TRUE REAL TIME</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
 body{
 margin:0;
 font-family:Arial,Helvetica,sans-serif;
-background:linear-gradient(180deg,#02030a,#07111f,#02030a);
+background:linear-gradient(180deg,#01040c,#07111f,#01040c);
 color:#fff;
 }
 .header{
@@ -19,11 +19,17 @@ padding:14px;
 font-size:22px;
 font-weight:700;
 background:#050a18;
-border-bottom:1px solid #1f2d50;
+border-bottom:1px solid #20355d;
+}
+.sub{
+text-align:center;
+font-size:12px;
+color:#8fa4d6;
+padding:4px 0 8px;
 }
 .top{
 display:grid;
-grid-template-columns:repeat(4,1fr);
+grid-template-columns:repeat(5,1fr);
 gap:10px;
 padding:10px;
 }
@@ -35,10 +41,10 @@ padding:12px;
 text-align:center;
 box-shadow:0 0 12px rgba(0,150,255,.08);
 }
-.symbol{font-size:13px;color:#8fa4d6;}
-.price{font-size:19px;font-weight:bold;margin-top:5px;}
+.symbol{font-size:12px;color:#8fa4d6;}
+.price{font-size:18px;font-weight:700;margin-top:4px;}
 .arrow{font-size:20px;margin-top:6px;}
-.note{font-size:12px;color:#7a88a8;margin-top:4px;}
+.note{font-size:11px;color:#7a88a8;margin-top:4px;}
 
 .green{color:#00ff9c;}
 .red{color:#ff4d4d;}
@@ -57,10 +63,21 @@ border-radius:10px;
 overflow:hidden;
 }
 
-@media(max-width:900px){
-.top,.grid{grid-template-columns:1fr 1fr;}
+.master{
+padding:10px;
+margin:0 10px 10px;
+border-radius:10px;
+text-align:center;
+background:#071224;
+border:1px solid #1d3357;
+font-size:18px;
+font-weight:700;
 }
-@media(max-width:650px){
+
+@media(max-width:1000px){
+.top{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:700px){
 .top,.grid{grid-template-columns:1fr;}
 }
 </style>
@@ -68,39 +85,49 @@ overflow:hidden;
 
 <body>
 
-<div class="header">⚡ FRANCIS TERMINAL — REAL DAILY BIAS ENGINE</div>
+<div class="header">⚡ FRANCIS TERMINAL V8 — TRUE REAL TIME ENGINE</div>
+<div class="sub">Live Binance + CoinGecko + TradingView</div>
 
 <div class="top">
 
 <div class="box">
 <div class="symbol">USDT.D</div>
-<div class="price" id="p1">REAL</div>
+<div class="price" id="p1">--</div>
 <div class="arrow" id="a1">➜</div>
 <div class="note" id="n1">Risk Flow</div>
 </div>
 
 <div class="box">
 <div class="symbol">ETHBTC</div>
-<div class="price" id="p2">REAL</div>
+<div class="price" id="p2">--</div>
 <div class="arrow" id="a2">➜</div>
 <div class="note" id="n2">Rotation</div>
 </div>
 
 <div class="box">
 <div class="symbol">BTC.D</div>
-<div class="price" id="p3">REAL</div>
+<div class="price" id="p3">--</div>
 <div class="arrow" id="a3">➜</div>
 <div class="note" id="n3">Dominance</div>
 </div>
 
 <div class="box">
 <div class="symbol">TOTAL</div>
-<div class="price" id="p4">REAL</div>
+<div class="price" id="p4">--</div>
 <div class="arrow" id="a4">➜</div>
 <div class="note" id="n4">Market Cap</div>
 </div>
 
+<div class="box">
+<div class="symbol">MASTER BIAS</div>
+<div class="price" id="p5">--</div>
+<div class="arrow" id="a5">➜</div>
+<div class="note" id="n5">Neutral</div>
 </div>
+
+</div>
+
+<div class="master" id="masterBox">Waiting For Live Data...</div>
 
 <div class="grid">
 <div id="c1" class="chart"></div>
@@ -110,138 +137,6 @@ overflow:hidden;
 </div>
 
 <script>
-/* ---------- REAL DAILY ENGINE ----------
-   Since TradingView widgets display the real symbols,
-   top panel now uses symbol-aligned logic instead of BTC/ETH proxy.
----------------------------------------- */
-
-function setArrow(id,val){
+function setArrow(id,v){
 let el=document.getElementById(id);
-
-if(val>0){
-el.innerHTML='<span class="green">▲</span>';
-}
-else if(val<0){
-el.innerHTML='<span class="red">▼</span>';
-}
-else{
-el.innerHTML='<span class="yellow">➜</span>';
-}
-}
-
-async function ticker(sym){
-let r=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol="+sym);
-return await r.json();
-}
-
-async function update(){
-
-try{
-
-/* Real Binance feeds used as nearest live proxies */
-const btc = await ticker("BTCUSDT");
-const eth = await ticker("ETHUSDT");
-const ethbtc = await ticker("ETHBTC");
-
-let btcCh = parseFloat(btc.priceChangePercent);
-let ethCh = parseFloat(eth.priceChangePercent);
-let ebCh  = parseFloat(ethbtc.priceChangePercent);
-
-/* 1. USDT.D Risk Flow
-   If market weak => USDT.D up
-   If market strong => USDT.D down
-*/
-let risk = -((btcCh+ethCh)/2);
-document.getElementById("p1").innerText = risk.toFixed(2)+"%";
-setArrow("a1",risk);
-document.getElementById("n1").innerText =
-risk>0 ? "Stablecoin Inflow" :
-risk<0 ? "Risk On" : "Neutral";
-
-/* 2. ETHBTC Rotation */
-document.getElementById("p2").innerText =
-parseFloat(ethbtc.lastPrice).toFixed(6);
-setArrow("a2",ebCh);
-document.getElementById("n2").innerText =
-ebCh>0 ? "ETH Leading" :
-ebCh<0 ? "BTC Leading" : "Balanced";
-
-/* 3. BTC.D Dominance */
-document.getElementById("p3").innerText =
-btcCh.toFixed(2)+"%";
-setArrow("a3",btcCh);
-document.getElementById("n3").innerText =
-btcCh>0 ? "BTC Strength" :
-btcCh<0 ? "BTC Weakness" : "Flat";
-
-/* 4. TOTAL Market */
-let total = (btcCh+ethCh)/2;
-document.getElementById("p4").innerText =
-total.toFixed(2)+"%";
-setArrow("a4",total);
-document.getElementById("n4").innerText =
-total>0 ? "Bull Flow" :
-total<0 ? "Bear Flow" : "Neutral";
-
-}catch(e){
-console.log(e);
-}
-}
-
-/* update every minute */
-update();
-setInterval(update,60000);
-
-/* ---------- DAILY CHARTS ---------- */
-
-new TradingView.widget({
-container_id:"c1",
-symbol:"CRYPTOCAP:USDT.D",
-interval:"D",
-theme:"dark",
-style:"1",
-toolbar_bg:"#050a18",
-hide_top_toolbar:false,
-allow_symbol_change:true,
-autosize:true
-});
-
-new TradingView.widget({
-container_id:"c2",
-symbol:"BINANCE:ETHBTC",
-interval:"D",
-theme:"dark",
-style:"1",
-toolbar_bg:"#050a18",
-hide_top_toolbar:false,
-allow_symbol_change:true,
-autosize:true
-});
-
-new TradingView.widget({
-container_id:"c3",
-symbol:"CRYPTOCAP:BTC.D",
-interval:"D",
-theme:"dark",
-style:"1",
-toolbar_bg:"#050a18",
-hide_top_toolbar:false,
-allow_symbol_change:true,
-autosize:true
-});
-
-new TradingView.widget({
-container_id:"c4",
-symbol:"CRYPTOCAP:TOTAL",
-interval:"D",
-theme:"dark",
-style:"1",
-toolbar_bg:"#050a18",
-hide_top_toolbar:false,
-allow_symbol_change:true,
-autosize:true
-});
-</script>
-
-</body>
-</html>
+if(v>0) el.innerHTML='<span class="green">▲</
