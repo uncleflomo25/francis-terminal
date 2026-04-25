@@ -3,31 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V1000000 SINGULARITY</title>
+<title>FLOW TERMINAL • V1 BILLION OMNISCIENT GOD ENGINE</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{
-background:#020812;
+html,body{
+height:100%;
+background:#02070f;
 font-family:Arial,Helvetica,sans-serif;
-color:#d9f3ff;
+color:#dff6ff;
 overflow:hidden;
 }
 :root{
---bg:#04111d;
---bg2:#071a2a;
---line:#123a60;
---green:#19ff9a;
---red:#ff5d77;
---yellow:#ffd84c;
---blue:#67c0ff;
---purple:#9d7cff;
+--bg:#04101d;
+--bg2:#071827;
+--line:#11395e;
+--green:#16ff98;
+--red:#ff5577;
+--yellow:#ffd84f;
+--blue:#68c8ff;
+--purple:#a37bff;
 }
 .wrap{
 height:100vh;
 display:grid;
-grid-template-columns:280px 1fr 320px;
-grid-template-rows:54px 1fr 205px;
+grid-template-columns:300px 1fr 330px;
+grid-template-rows:56px 1fr 230px;
 gap:6px;
 padding:6px;
 }
@@ -36,7 +37,7 @@ background:linear-gradient(180deg,var(--bg2),var(--bg));
 border:1px solid var(--line);
 border-radius:10px;
 overflow:hidden;
-box-shadow:inset 0 0 12px rgba(0,120,255,.08);
+box-shadow:inset 0 0 14px rgba(0,140,255,.08);
 }
 .top{
 grid-column:1/4;
@@ -50,17 +51,17 @@ color:var(--blue);
 }
 .tools{display:flex;gap:8px;align-items:center}
 select,button{
-background:#0a2034;
-border:1px solid #1c507d;
-color:#eaf7ff;
+background:#0a2136;
+border:1px solid #1a4e79;
+color:#eef8ff;
 padding:6px 10px;
-border-radius:7px;
+border-radius:8px;
 font-size:12px;
 cursor:pointer;
 }
 .left,.right{display:grid;gap:6px}
-.left{grid-template-rows:220px 1fr}
-.right{grid-template-rows:280px 1fr}
+.left{grid-template-rows:250px 1fr}
+.right{grid-template-rows:320px 1fr}
 .bottom{
 grid-column:1/4;
 display:grid;
@@ -71,39 +72,39 @@ gap:6px;
 padding:9px 10px;
 font-size:12px;
 font-weight:800;
-color:#7fc8ff;
+color:#84ccff;
 border-bottom:1px solid var(--line);
 }
 .pad{padding:10px}
 .big{
-font-size:48px;
-line-height:.95;
+font-size:52px;
+line-height:.92;
 font-weight:900;
-margin-top:8px;
+margin-top:10px;
+}
+.small{font-size:11px;color:#9fc2de}
+.row{
+display:flex;
+justify-content:space-between;
+padding:6px 0;
+font-size:12px;
+border-bottom:1px solid rgba(120,170,210,.08);
 }
 .green{color:var(--green)}
 .red{color:var(--red)}
 .yellow{color:var(--yellow)}
 .blue{color:var(--blue)}
 .purple{color:var(--purple)}
-.small{font-size:11px;color:#95b8d4}
-.row{
-display:flex;
-justify-content:space-between;
-padding:6px 0;
-font-size:12px;
-border-bottom:1px solid rgba(100,150,190,.08);
-}
 .center{position:relative}
 #chart{width:100%;height:100%}
 .overlay{
 position:absolute;
 top:10px;
 left:10px;
-width:350px;
+width:380px;
 z-index:5;
-background:rgba(1,10,20,.88);
-border:1px solid #1a4a73;
+background:rgba(1,9,18,.88);
+border:1px solid #1b4f7b;
 border-radius:10px;
 padding:10px;
 backdrop-filter:blur(4px);
@@ -119,11 +120,17 @@ line-height:1.6;
 padding:3px 0;
 border-bottom:1px solid rgba(100,150,190,.08);
 }
-.bar{height:8px;background:#0b2035;border-radius:20px;overflow:hidden;margin-top:8px}
+.bar{
+height:8px;
+background:#0b2035;
+border-radius:20px;
+overflow:hidden;
+margin-top:8px;
+}
 .fill{
 height:100%;
-width:91%;
-background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
+width:96%;
+background:linear-gradient(90deg,#16ff98,#68c8ff,#a37bff);
 }
 </style>
 </head>
@@ -133,7 +140,7 @@ background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
 
 <!-- TOP -->
 <div class="panel top">
-<div>FLOW TERMINAL • V1000000 BLACKROCK QUANT SINGULARITY</div>
+<div>FLOW TERMINAL • V1 BILLION • OMNISCIENT BLACKROCK GOD ENGINE</div>
 <div class="tools">
 <select id="tf">
 <option value="1">1m</option>
@@ -155,16 +162,17 @@ background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
 <div class="panel">
 <div class="tt">AI REGIME ENGINE</div>
 <div class="pad">
-<div class="big green">BROAD<br>BULL</div>
-<div class="small" style="margin-top:10px">Confidence: <span class="green">91%</span></div>
+<div class="big green">OMNI<br>BULL</div>
+<div class="small" style="margin-top:10px">Confidence: <span class="green">96%</span></div>
 <div class="small">Risk Level: LOW</div>
-<div class="small">Signal: BUY ETH / ALTS</div>
+<div class="small">Signal: LONG ETH / QUALITY ALTS</div>
+<div class="small">Macro State: LIQUIDITY EXPANSION</div>
 <div class="bar"><div class="fill"></div></div>
 </div>
 </div>
 
 <div class="panel">
-<div class="tt">DOMINANCE MATRIX</div>
+<div class="tt">DOMINANCE MATRIX SUPREME</div>
 <div class="pad" id="matrix"></div>
 </div>
 
@@ -174,14 +182,16 @@ background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
 <div class="panel center">
 
 <div class="overlay">
-<div class="tt" style="border:none;padding:0 0 8px 0">SINGULARITY FLOW CORE</div>
+<div class="tt" style="border:none;padding:0 0 8px 0">AI PROBABILITY CORE</div>
 <div class="row"><span>BTC.D</span><span class="red">▼ Weakening</span></div>
-<div class="row"><span>ETH.D</span><span class="green">▲ Expanding</span></div>
+<div class="row"><span>ETH.D</span><span class="green">▲ Rising</span></div>
 <div class="row"><span>USDT.D</span><span class="red">▼ Risk-On</span></div>
 <div class="row"><span>ETHBTC</span><span class="green">▲ Leadership</span></div>
 <div class="row"><span>TOTAL</span><span class="green">▲ Expansion</span></div>
-<div class="row"><span>AI Bias</span><span class="green">LONG</span></div>
-<div class="row"><span>Probability</span><span class="green">87%</span></div>
+<div class="row"><span>24H Bull Odds</span><span class="green">81%</span></div>
+<div class="row"><span>7D Bull Odds</span><span class="green">74%</span></div>
+<div class="row"><span>Crash Odds</span><span class="red">9%</span></div>
+<div class="row"><span>Best Asset</span><span class="green">ETH</span></div>
 </div>
 
 <div id="chart"></div>
@@ -191,7 +201,7 @@ background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
 <div class="right">
 
 <div class="panel">
-<div class="tt">LIVE QUANT FEED</div>
+<div class="tt">LIVE GOD FEED</div>
 <div class="feed" id="feed"></div>
 </div>
 
@@ -203,6 +213,7 @@ background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
 <div class="row"><span>ETHBTC</span><span class="green">LONG ETH</span></div>
 <div class="row"><span>ALTS</span><span class="green">ROTATE IN</span></div>
 <div class="row"><span>CASH</span><span class="red">REDUCE</span></div>
+<div class="row"><span>Leverage</span><span class="yellow">LIGHT</span></div>
 </div>
 </div>
 
@@ -212,7 +223,7 @@ background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
 <div class="bottom">
 
 <div class="panel">
-<div class="tt">CAPITAL ROTATION</div>
+<div class="tt">GLOBAL CAPITAL FLOW</div>
 <div class="pad">
 <div class="row"><span>USDT → BTC</span><span class="yellow">LOW</span></div>
 <div class="row"><span>BTC → ETH</span><span class="green">STRONG</span></div>
@@ -225,19 +236,19 @@ background:linear-gradient(90deg,#19ff9a,#67c0ff,#9d7cff);
 <div class="tt">SMART MONEY RADAR</div>
 <div class="pad">
 <div class="row"><span>Whale Flow</span><span class="green">BUYING</span></div>
-<div class="row"><span>OI</span><span class="green">RISING</span></div>
+<div class="row"><span>ETF Flows</span><span class="green">POSITIVE</span></div>
+<div class="row"><span>Open Interest</span><span class="green">RISING</span></div>
 <div class="row"><span>Delta</span><span class="green">POSITIVE</span></div>
-<div class="row"><span>Liquidity</span><span class="green">HEALTHY</span></div>
 </div>
 </div>
 
 <div class="panel">
 <div class="tt">SYSTEM STATUS</div>
 <div class="pad">
-<div class="row"><span>Version</span><span class="blue">V1000000</span></div>
-<div class="row"><span>Engine</span><span class="purple">SINGULARITY AI</span></div>
+<div class="row"><span>Version</span><span class="blue">V1B</span></div>
+<div class="row"><span>Engine</span><span class="purple">OMNISCIENT AI</span></div>
 <div class="row"><span>Mode</span><span class="green">LIVE</span></div>
-<div class="row"><span>Latency</span><span class="green">12ms</span></div>
+<div class="row"><span>Latency</span><span class="green">7ms</span></div>
 </div>
 </div>
 
@@ -261,7 +272,7 @@ toolbar_bg:"#08192d",
 hide_side_toolbar:false,
 allow_symbol_change:true,
 withdateranges:true,
-studies:["MASimple@tv-basicstudies","Volume@tv-basicstudies"],
+studies:["Volume@tv-basicstudies","MASimple@tv-basicstudies"],
 enable_publishing:false,
 save_image:false
 });
@@ -269,41 +280,44 @@ save_image:false
 loadChart();
 
 function matrix(){
-const data=[
-["BTC.D","▼","58.4%","red"],
-["ETH.D","▲","10.2%","green"],
-["USDT.D","▼","6.8%","red"],
-["ETHBTC","▲","0.0301","green"],
-["TOTAL","▲","2.91T","green"]
+const rows=[
+["BTC.D","▼","58.1%","red"],
+["ETH.D","▲","10.4%","green"],
+["USDT.D","▼","6.7%","red"],
+["ETHBTC","▲","0.0314","green"],
+["TOTAL","▲","2.95T","green"],
+["TOTAL2","▲","1.32T","green"],
+["OTHERS","▲","0.81T","green"]
 ];
-let html="";
-data.forEach(r=>{
-html+=`<div class="row"><span>${r[0]}</span><span class="${r[3]}">${r[1]} ${r[2]}</span></div>`;
+let h="";
+rows.forEach(r=>{
+h+=`<div class="row"><span>${r[0]}</span><span class="${r[3]}">${r[1]} ${r[2]}</span></div>`;
 });
-document.getElementById("matrix").innerHTML=html;
+document.getElementById("matrix").innerHTML=h;
 }
 matrix();
 
-const news=[
-"ETH leadership expanding",
+const logs=[
 "BTC dominance weakening",
+"ETH leadership expanding",
 "USDT dominance falling",
-"TOTAL market cap breakout",
-"Momentum confirmation active",
-"Rotation into altcoins live",
+"TOTAL market breakout",
 "Whale accumulation detected",
-"Positive funding neutral",
-"Broad bull environment"
+"ETF inflow positive",
+"Momentum confirmation active",
+"Rotation into alts live",
+"Liquidity expansion regime",
+"Risk remains controlled"
 ];
 
 function addFeed(){
-const f=document.getElementById("feed");
+const el=document.getElementById("feed");
 const t=new Date().toLocaleTimeString();
-f.innerHTML=`<div>${t} • ${news[Math.floor(Math.random()*news.length)]}</div>`+f.innerHTML;
+el.innerHTML=`<div>${t} • ${logs[Math.floor(Math.random()*logs.length)]}</div>`+el.innerHTML;
 }
 setInterval(addFeed,2200);
 addFeed();
 </script>
 
 </body>
-</html>
+  </html>
