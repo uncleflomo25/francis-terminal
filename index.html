@@ -3,332 +3,325 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V35000 CUSTOM INDICATOR LAB</title>
-<script src="https://s3.tradingview.com/tv.js"></script>
+<title>FLOW TERMINAL • V35000 PRO DOMINANCE MATRIX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#020814;
-color:#d8e8ff;
+background:#030b16;
 font-family:Arial,Helvetica,sans-serif;
-height:100vh;
+color:#d7ecff;
 overflow:hidden;
 }
-.wrap{
-display:grid;
-grid-template-columns:260px 1fr 270px;
-grid-template-rows:52px 1fr 185px;
-gap:6px;
-padding:6px;
+.wrapper{
 height:100vh;
-}
-.panel{
-background:linear-gradient(180deg,#041223,#03101d);
-border:1px solid #0c3049;
-border-radius:8px;
-padding:10px;
-overflow:hidden;
-}
-.top{
-grid-column:1/4;
 display:flex;
-justify-content:space-between;
+flex-direction:column;
+padding:8px;
+gap:8px;
+}
+.topbar{
+height:42px;
+display:flex;
 align-items:center;
-font-size:14px;
+justify-content:space-between;
+padding:0 14px;
+border:1px solid #12385f;
+background:linear-gradient(90deg,#051322,#071a2f,#08111c);
+box-shadow:0 0 10px rgba(0,140,255,.08) inset;
+}
+.title{
+font-size:18px;
 font-weight:700;
+color:#66b8ff;
 letter-spacing:1px;
 }
-.left,.right{display:flex;flex-direction:column;gap:6px}
-.box{
+.clock{
+font-size:13px;
+color:#7fd7ff;
+}
+.grid{
 flex:1;
-background:#041120;
-border:1px solid #0c3049;
-border-radius:8px;
-padding:10px;
-overflow:auto;
-}
-.main{padding:0}
-#chart{width:100%;height:100%}
-.bottom{grid-column:1/4;padding:0}
-.bottomGrid{
 display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:6px;
-height:100%;
+grid-template-columns: 1.1fr 2.2fr 1fr;
+grid-template-rows: 1fr 220px;
+gap:8px;
 }
-h3{
-font-size:12px;
-margin-bottom:8px;
-color:#6ab6ff;
+.panel{
+background:#04101c;
+border:1px solid #103353;
+border-radius:10px;
+padding:10px;
+box-shadow:0 0 12px rgba(0,120,255,.05), inset 0 0 20px rgba(0,120,255,.03);
+overflow:hidden;
+}
+.head{
+font-size:14px;
+font-weight:700;
+color:#63b4ff;
+margin-bottom:10px;
 text-transform:uppercase;
 }
-.row{
-display:flex;
-justify-content:space-between;
-font-size:12px;
-padding:4px 0;
-border-bottom:1px solid rgba(255,255,255,.03);
+.table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
 }
-.green{color:#00ff8a;font-weight:700}
-.red{color:#ff5468;font-weight:700}
-.gold{color:#ffc857;font-weight:700}
-.blue{color:#74baff;font-weight:700}
-.big{
-font-size:30px;
+.table th{
+text-align:left;
+padding:7px 4px;
+color:#8fb9d8;
+border-bottom:1px solid #0f2d49;
+font-weight:600;
+}
+.table td{
+padding:8px 4px;
+border-bottom:1px solid rgba(20,60,95,.45);
+}
+.green{color:#29ff8c;font-weight:700}
+.red{color:#ff5f6d;font-weight:700}
+.yellow{color:#ffd45e;font-weight:700}
+.blue{color:#67c7ff;font-weight:700}
+
+.arrow{
+font-size:15px;
 font-weight:900;
-line-height:1;
-margin:8px 0;
+padding-right:4px;
+}
+
+.chart{
+position:relative;
+height:100%;
+width:100%;
+background:
+linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+background-size:38px 38px;
+border-radius:8px;
+overflow:hidden;
+}
+canvas{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
 }
 .feed{
-font-size:11px;
-padding:4px 0;
-border-bottom:1px solid rgba(255,255,255,.03);
-white-space:nowrap;
-}
-select,input,button{
-width:100%;
-margin:4px 0;
-padding:7px;
-background:#07192b;
-color:#d8e8ff;
-border:1px solid #173f63;
-border-radius:6px;
+height:100%;
+overflow:auto;
 font-size:12px;
+line-height:1.7;
+padding-right:4px;
 }
-.inline{
+.feed div{
+border-bottom:1px solid rgba(30,70,110,.35);
+padding:4px 0;
+color:#8eb6d4;
+}
+.bottom{
 display:grid;
-grid-template-columns:1fr 1fr;
-gap:6px;
+grid-template-columns:1fr 1fr 1fr;
+gap:8px;
 }
-.topControls{
+.stat{
 display:flex;
-gap:6px;
-align-items:center;
+justify-content:space-between;
+padding:6px 0;
+font-size:13px;
+border-bottom:1px solid rgba(30,70,110,.35);
 }
-.topControls select,.topControls button{
-width:auto;
-margin:0;
-padding:6px 10px;
-}
-.badge{
-display:inline-block;
-padding:3px 6px;
-border-radius:5px;
-font-size:10px;
-background:#0c2438;
-margin-left:4px;
+.small{
+font-size:12px;
+color:#8db3d2;
 }
 </style>
 </head>
 <body>
+<div class="wrapper">
 
-<div class="wrap">
+<div class="topbar">
+<div class="title">FLOW TERMINAL • V35000 PRO DOMINANCE MATRIX</div>
+<div class="clock" id="clock">--:--:--</div>
+</div>
 
-<div class="panel top">
-<div>FLOW TERMINAL • V35000 CUSTOM INDICATOR LAB</div>
-<div class="topControls">
-<select id="tf">
-<option value="5">5m</option>
-<option value="15">15m</option>
-<option value="60">1h</option>
-<option value="240">4h</option>
-<option value="1D" selected>1D</option>
-<option value="1W">1W</option>
-</select>
-<button onclick="loadChart()">SYNC</button>
-<button onclick="location.reload()">RESET</button>
-</div>
-</div>
+<div class="grid">
 
 <!-- LEFT -->
-<div class="left">
-
-<div class="box">
-<h3>Indicator Lab</h3>
-
-<select id="indicator">
-<option value="EMA">EMA</option>
-<option value="RSI">RSI</option>
-<option value="MACD">MACD</option>
-<option value="BB">Bollinger Bands</option>
-<option value="VWAP">VWAP</option>
-<option value="ATR">ATR</option>
-<option value="SUPER">Supertrend</option>
-<option value="ROTATION">Rotation Strength</option>
-<option value="RISK">Risk Pressure</option>
-<option value="ALT">Altseason Score</option>
-</select>
-
-<div class="inline">
-<input id="len1" placeholder="Length 1" value="14">
-<input id="len2" placeholder="Length 2" value="50">
-</div>
-
-<button onclick="addIndicator()">ADD INDICATOR</button>
-<button onclick="clearIndicators()">CLEAR ALL</button>
-
-<div id="activeIndicators"></div>
-</div>
-
-<div class="box">
-<h3>AI Regime</h3>
-<div class="big green">ALT ROTATION</div>
-<div class="row"><span>Strength</span><span class="green">83%</span></div>
-<div class="row"><span>Signal</span><span class="green">BUY ETH</span></div>
-<div class="row"><span>Risk</span><span class="gold">LOW</span></div>
-</div>
-
-<div class="box">
-<h3>Custom Scores</h3>
-<div class="row"><span>Rotation Strength</span><span class="green">+7.2</span></div>
-<div class="row"><span>Risk Pressure</span><span class="red">-2.1</span></div>
-<div class="row"><span>Altseason Score</span><span class="green">74</span></div>
-<div class="row"><span>Master Bias</span><span class="green">LONG</span></div>
-</div>
-
+<div class="panel">
+<div class="head">Dominance Matrix</div>
+<table class="table">
+<thead>
+<tr>
+<th>Asset</th>
+<th>Dir</th>
+<th>Value</th>
+<th>Volume</th>
+</tr>
+</thead>
+<tbody id="domRows"></tbody>
+</table>
 </div>
 
 <!-- CENTER -->
-<div class="panel main">
-<div id="chart"></div>
+<div class="panel">
+<div class="head">Composite Rotation Engine</div>
+<div class="chart">
+<canvas id="cv"></canvas>
+</div>
 </div>
 
 <!-- RIGHT -->
-<div class="right">
-
-<div class="box">
-<h3>Live Feed</h3>
-<div id="feed"></div>
+<div class="panel">
+<div class="head">Live Intelligence Feed</div>
+<div class="feed" id="feed"></div>
 </div>
 
-<div class="box">
-<h3>Execution Board</h3>
-<div class="row"><span>BTCUSDT</span><span class="gold">WAIT</span></div>
-<div class="row"><span>ETHUSDT</span><span class="green">LONG</span></div>
-<div class="row"><span>ETHBTC</span><span class="green">LONG</span></div>
+<!-- BOTTOM LEFT -->
+<div class="panel">
+<div class="head">Execution Board</div>
+<div class="stat"><span>BTCUSDT</span><span class="green">LONG</span></div>
+<div class="stat"><span>ETHUSDT</span><span class="green">LONG</span></div>
+<div class="stat"><span>ETHBTC</span><span class="red">SHORT</span></div>
+<div class="stat"><span>ALTCOINS</span><span class="yellow">WATCH</span></div>
 </div>
 
-<div class="box">
-<h3>Dominance</h3>
-<div class="row"><span>BTC.D</span><span class="green">58.3%</span></div>
-<div class="row"><span>ETH.D</span><span class="red">10.1%</span></div>
-<div class="row"><span>USDT.D</span><span class="gold">6.9%</span></div>
+<!-- BOTTOM MID -->
+<div class="panel">
+<div class="head">Capital Rotation</div>
+<div class="stat"><span>USDT → BTC</span><span class="green">ACTIVE</span></div>
+<div class="stat"><span>BTC → ETH</span><span class="green">ACTIVE</span></div>
+<div class="stat"><span>ETH → ALTS</span><span class="yellow">BUILDING</span></div>
+<div class="stat"><span>ALTS → CASH</span><span class="blue">OFF</span></div>
 </div>
 
-</div>
-
-<!-- BOTTOM -->
-<div class="panel bottom">
-<div class="bottomGrid">
-
-<div class="box">
-<h3>Capital Flow</h3>
-<div class="row"><span>USDT → ETH</span><span class="green">ACTIVE</span></div>
-<div class="row"><span>BTC → ETH</span><span class="green">ROTATE</span></div>
-<div class="row"><span>ALTS → CASH</span><span class="red">OFF</span></div>
-</div>
-
-<div class="box">
-<h3>Probability Engine</h3>
-<div class="row"><span>Bull Odds</span><span class="green">76%</span></div>
-<div class="row"><span>Bear Odds</span><span class="red">24%</span></div>
-<div class="row"><span>Fakeout Risk</span><span class="gold">14%</span></div>
-</div>
-
-<div class="box">
-<h3>System Status</h3>
-<div class="row"><span>Version</span><span class="blue">V35000</span></div>
-<div class="row"><span>Mode</span><span class="blue">LAB</span></div>
-<div class="row"><span>Refresh</span><span class="blue">5s</span></div>
+<!-- BOTTOM RIGHT -->
+<div class="panel">
+<div class="head">System Status</div>
+<div class="stat"><span>Mode</span><span class="green">PRO</span></div>
+<div class="stat"><span>Refresh</span><span class="blue">LIVE</span></div>
+<div class="stat"><span>Latency</span><span class="green">12ms</span></div>
+<div class="stat"><span>Version</span><span class="yellow">V35000</span></div>
 </div>
 
 </div>
-</div>
-
 </div>
 
 <script>
-let widget;
-let studies=[];
-
-function loadChart(){
-document.getElementById("chart").innerHTML="";
-widget = new TradingView.widget({
-container_id:"chart",
-autosize:true,
-symbol:"BINANCE:ETHUSDT",
-interval:document.getElementById("tf").value,
-timezone:"Etc/UTC",
-theme:"dark",
-style:"1",
-locale:"en",
-toolbar_bg:"#041120",
-enable_publishing:false,
-hide_side_toolbar:false,
-allow_symbol_change:true,
-withdateranges:true,
-studies:studies,
-overrides:{
-"paneProperties.background":"#020814",
-"paneProperties.vertGridProperties.color":"#0b1f32",
-"paneProperties.horzGridProperties.color":"#0b1f32"
-}
-});
+function rand(a,b){return (Math.random()*(b-a)+a)}
+function dir(v){
+if(v>0.15)return ['▲','green','UP']
+if(v<-0.15)return ['▼','red','DOWN']
+return ['▶','yellow','SIDE']
 }
 
-function addIndicator(){
-const name=document.getElementById("indicator").value;
-let map={
-"EMA":"EMA@tv-basicstudies",
-"RSI":"RSI@tv-basicstudies",
-"MACD":"MACD@tv-basicstudies",
-"BB":"Bollinger Bands@tv-basicstudies",
-"VWAP":"VWAP@tv-basicstudies",
-"ATR":"ATR@tv-basicstudies",
-"SUPER":"Supertrend@tv-basicstudies"
-};
-
-if(map[name]){
-studies.push(map[name]);
-}
-
-let badge=document.createElement("div");
-badge.className="badge";
-badge.innerText=name+" Added";
-document.getElementById("activeIndicators").appendChild(badge);
-
-loadChart();
-}
-
-function clearIndicators(){
-studies=[];
-document.getElementById("activeIndicators").innerHTML="";
-loadChart();
-}
-
-loadChart();
-
-const msgs=[
-"ETH leadership active",
-"Rotation signal confirmed",
-"Stablecoin pressure falling",
-"Momentum breakout active",
-"Whale accumulation detected",
-"Alt breadth expanding",
-"Risk remains low",
-"Trend continuation active"
+const assets = [
+{name:'BTC.D',val:58.3,vol:6.42},
+{name:'ETH.D',val:10.1,vol:2.18},
+{name:'USDT.D',val:6.9,vol:1.34},
+{name:'ETHBTC',val:0.0552,vol:0.41},
+{name:'TOTAL',val:2.81,vol:18.7}
 ];
 
-function feed(){
-let html="";
-for(let i=0;i<14;i++){
-html+=`<div class="feed">${new Date().toLocaleTimeString()} • ${msgs[Math.floor(Math.random()*msgs.length)]}</div>`;
+function renderTable(){
+let html='';
+assets.forEach(a=>{
+let move=rand(-0.5,0.5);
+a.val += move*0.01;
+let d=dir(move);
+html += `
+<tr>
+<td>${a.name}</td>
+<td class="${d[1]}"><span class="arrow">${d[0]}</span>${d[2]}</td>
+<td class="${d[1]}">${a.name==='ETHBTC'?a.val.toFixed(4):a.val.toFixed(2)+(a.name.includes('TOTAL')?'T':'%')}</td>
+<td class="blue">$${a.vol.toFixed(2)}B</td>
+</tr>`;
+});
+document.getElementById('domRows').innerHTML=html;
 }
-document.getElementById("feed").innerHTML=html;
-}
-feed();
-setInterval(feed,5000);
-</script>
 
+function tickClock(){
+document.getElementById('clock').innerText=new Date().toLocaleTimeString();
+}
+setInterval(tickClock,1000); tickClock();
+
+const feed = document.getElementById('feed');
+function pushFeed(){
+const msgs=[
+'BTC dominance rising',
+'ETH relative strength improving',
+'USDT cooling',
+'TOTAL market expanding',
+'Rotation into majors',
+'Alt momentum weak',
+'Risk appetite positive',
+'Trend continuation active'
+];
+let d=document.createElement('div');
+d.textContent=new Date().toLocaleTimeString()+' • '+msgs[Math.floor(Math.random()*msgs.length)];
+feed.prepend(d);
+while(feed.children.length>22)feed.removeChild(feed.lastChild);
+}
+setInterval(pushFeed,1800); pushFeed();
+
+setInterval(renderTable,2500); renderTable();
+
+/* Chart */
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d');
+
+function resize(){
+canvas.width=canvas.offsetWidth;
+canvas.height=canvas.offsetHeight;
+}
+window.addEventListener('resize',resize);
+resize();
+
+let data=[];
+let price=50;
+for(let i=0;i<140;i++){
+price += rand(-2.5,2.5);
+data.push(price);
+}
+
+function draw(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+let min=Math.min(...data)-3;
+let max=Math.max(...data)+3;
+let step=canvas.width/data.length;
+
+for(let i=1;i<data.length;i++){
+let o=data[i-1];
+let c=data[i];
+let x=i*step;
+let yo=canvas.height-(o-min)/(max-min)*canvas.height;
+let yc=canvas.height-(c-min)/(max-min)*canvas.height;
+
+ctx.strokeStyle=c>=o?'#28ff93':'#8f57ff';
+ctx.lineWidth=3;
+ctx.beginPath();
+ctx.moveTo(x,yo);
+ctx.lineTo(x,yc);
+ctx.stroke();
+
+ctx.strokeStyle='rgba(255,255,255,.12)';
+ctx.lineWidth=1;
+ctx.beginPath();
+ctx.moveTo(x,Math.min(yo,yc)-rand(3,10));
+ctx.lineTo(x,Math.max(yo,yc)+rand(3,10));
+ctx.stroke();
+}
+
+ctx.beginPath();
+ctx.strokeStyle='#b79238';
+ctx.lineWidth=2;
+for(let i=0;i<data.length;i++){
+let x=i*step;
+let y=canvas.height-(data[i]-min)/(max-min)*canvas.height;
+if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
+}
+ctx.stroke();
+}
+draw();
+</script>
 </body>
 </html>
