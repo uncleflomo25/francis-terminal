@@ -3,349 +3,311 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V50000 QUANT GOD MODE</title>
+<title>FLOW TERMINAL • V100000 BLACKROCK GOD MODE</title>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
 body{
-background:#020914;
-font-family:Arial,Helvetica,sans-serif;
-color:#dbeeff;
-overflow:hidden;
+    background:#020b16;
+    color:#d8ecff;
+    overflow:hidden;
 }
-.wrap{
-height:100vh;
-display:grid;
-grid-template-rows:48px 1fr 160px;
-gap:8px;
-padding:8px;
-}
-.topbar,.panel{
-background:#04111f;
-border:1px solid #123a60;
-border-radius:10px;
-box-shadow:inset 0 0 18px rgba(0,120,255,.05),0 0 14px rgba(0,0,0,.4);
-}
-.topbar{
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 14px;
-}
-.title{
-font-size:18px;
-font-weight:800;
-color:#66bbff;
-letter-spacing:1px;
-}
-.controls{
-display:flex;
-gap:8px;
-align-items:center;
-}
-select,button,input{
-background:#071a2d;
-border:1px solid #1a4e79;
-color:#dff4ff;
-padding:6px 10px;
-border-radius:6px;
-font-size:12px;
-outline:none;
-}
-.main{
-display:grid;
-grid-template-columns:170px 1fr 220px;
-gap:8px;
-min-height:0;
-}
-.side,.right,.bottom{
-display:grid;
-gap:8px;
-min-height:0;
-}
-.side{grid-template-rows:220px 1fr}
-.right{grid-template-rows:1fr 200px}
-.bottom{
-grid-template-columns:1fr 1fr 1fr;
+.wrapper{
+    display:grid;
+    grid-template-columns:260px 1fr 260px;
+    grid-template-rows:58px 1fr 190px;
+    height:100vh;
+    gap:6px;
+    padding:6px;
 }
 .panel{
-padding:10px;
-overflow:hidden;
+    background:#031326;
+    border:1px solid #0b3158;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,120,255,.08) inset;
 }
-.head{
-font-size:13px;
-font-weight:800;
-color:#6ebcff;
-margin-bottom:10px;
-text-transform:uppercase;
+.header{
+    grid-column:1/4;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 14px;
 }
-.stat{
-display:flex;
-justify-content:space-between;
-padding:6px 0;
-font-size:12px;
-border-bottom:1px solid rgba(30,70,110,.35);
+.title{
+    font-size:20px;
+    font-weight:700;
+    color:#53b7ff;
+    letter-spacing:1px;
 }
-.green{color:#2dff93;font-weight:700}
-.red{color:#ff5f6f;font-weight:700}
-.yellow{color:#ffd75f;font-weight:700}
-.blue{color:#69c8ff;font-weight:700}
+.sub{
+    font-size:11px;
+    color:#7ca4c7;
+}
+.left,.right{
+    padding:10px;
+    overflow:auto;
+}
+.center{
+    position:relative;
+    padding:8px;
+}
+.bottom{
+    grid-column:1/4;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:6px;
+}
+.box{
+    padding:10px;
+}
+h3{
+    font-size:13px;
+    color:#7fc6ff;
+    margin-bottom:8px;
+    letter-spacing:.5px;
+}
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:5px 0;
+    font-size:13px;
+    border-bottom:1px solid rgba(255,255,255,.04);
+}
+.green{color:#00ff84;}
+.red{color:#ff4d61;}
+.yellow{color:#ffd24a;}
+.blue{color:#59b8ff;}
 
-.chartbox{
-position:relative;
-height:100%;
-background:
-linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
-linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
-background-size:42px 42px;
-border-radius:8px;
-overflow:hidden;
-}
-canvas{
-position:absolute;
-inset:0;
-width:100%;
-height:100%;
+.arrow{
+    font-weight:700;
+    padding-right:6px;
 }
 .feed{
-height:100%;
-overflow:auto;
-font-size:11px;
-line-height:1.6;
+    font-size:12px;
+    line-height:1.7;
+    color:#9ac6ef;
 }
-.feed div{
-padding:4px 0;
-border-bottom:1px solid rgba(30,70,110,.35);
+canvas{
+    width:100%;
+    height:100%;
+    background:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size:40px 40px;
+    border-radius:8px;
 }
-textarea{
-width:100%;
-height:100px;
-resize:none;
-background:#071a2d;
-border:1px solid #1a4e79;
-color:#dff4ff;
-padding:8px;
-border-radius:8px;
-font-size:12px;
+.toolbar{
+    position:absolute;
+    top:12px;
+    right:14px;
+    display:flex;
+    gap:6px;
+    z-index:5;
 }
-.small{font-size:11px;color:#8eb8d6}
+select,button{
+    background:#0a2342;
+    color:#d8ecff;
+    border:1px solid #214e7a;
+    padding:6px 8px;
+    border-radius:6px;
+    font-size:12px;
+}
+.big{
+    font-size:34px;
+    font-weight:800;
+    margin-bottom:6px;
+}
+.small{
+    font-size:12px;
+    color:#7aa6c9;
+}
 </style>
 </head>
+
 <body>
-<div class="wrap">
+<div class="wrapper">
 
-<div class="topbar">
-<div class="title">FLOW TERMINAL • V50000 QUANT GOD MODE</div>
-<div class="controls">
-<select id="tf">
-<option>1m</option>
-<option>5m</option>
-<option>15m</option>
-<option>1H</option>
-<option selected>4H</option>
-<option>1D</option>
-</select>
-<button onclick="fitChart()">FIT</button>
-<button onclick="resetChart()">RESET</button>
-<button onclick="toggleEMA()">EMA</button>
-<div id="clock" class="blue"></div>
-</div>
+<div class="panel header">
+    <div>
+        <div class="title">FLOW TERMINAL • V100000 QUANT BLACKROCK MASTER</div>
+        <div class="sub">AI Rotation • Dominance Matrix • Smart Money Engine</div>
+    </div>
+    <div id="clock" class="blue"></div>
 </div>
 
-<div class="main">
+<div class="panel left">
+    <h3>AI REGIME</h3>
+    <div class="big green" id="regime">BROAD BULL</div>
+    <div class="small">Strength: <span class="green">88%</span></div>
+    <div class="small">Volatility: LOW</div>
+    <div class="small">Signal: BUY</div>
 
-<!-- LEFT -->
-<div class="side">
-<div class="panel">
-<div class="head">AI Regime</div>
-<div class="stat"><span>Status</span><span id="regime" class="green">BROAD BULL</span></div>
-<div class="stat"><span>Strength</span><span class="green">88%</span></div>
-<div class="stat"><span>Volatility</span><span class="yellow">LOW</span></div>
-<div class="stat"><span>Signal</span><span class="green">BUY</span></div>
-<br>
-<div class="head">Dominance</div>
-<div class="stat"><span>BTC.D</span><span class="green">58.3%</span></div>
-<div class="stat"><span>ETH.D</span><span class="red">10.1%</span></div>
-<div class="stat"><span>USDT.D</span><span class="yellow">6.9%</span></div>
-<div class="stat"><span>TOTAL</span><span class="blue">2.81T</span></div>
-</div>
+    <br><h3>DOMINANCE MATRIX</h3>
 
-<div class="panel">
-<div class="head">Probability Engine</div>
-<div class="stat"><span>Bull Odds</span><span class="green">74%</span></div>
-<div class="stat"><span>Bear Odds</span><span class="red">26%</span></div>
-<div class="stat"><span>Fakeout Risk</span><span class="yellow">17%</span></div>
-<div class="stat"><span>Trend Quality</span><span class="green">81%</span></div>
-</div>
+    <div class="row"><span>BTC.D</span><span class="green"><span class="arrow">▲</span>58.4%</span></div>
+    <div class="row"><span>ETH.D</span><span class="green"><span class="arrow">▲</span>10.2%</span></div>
+    <div class="row"><span>USDT.D</span><span class="red"><span class="arrow">▼</span>6.8%</span></div>
+    <div class="row"><span>ETHBTC</span><span class="green"><span class="arrow">▲</span>0.0299</span></div>
+    <div class="row"><span>TOTAL</span><span class="green"><span class="arrow">▲</span>2.91T</span></div>
+
+    <br><h3>PROBABILITY</h3>
+    <div class="row"><span>Bull Odds</span><span class="green">76%</span></div>
+    <div class="row"><span>Bear Odds</span><span class="red">24%</span></div>
+    <div class="row"><span>Fakeout Risk</span><span class="yellow">18%</span></div>
 </div>
 
-<!-- CENTER -->
-<div class="panel">
-<div class="head">True Quant Chart Engine</div>
-<div class="chartbox">
-<canvas id="cv"></canvas>
-</div>
-</div>
-
-<!-- RIGHT -->
-<div class="right">
-<div class="panel">
-<div class="head">Live Feed</div>
-<div class="feed" id="feed"></div>
+<div class="panel center">
+    <div class="toolbar">
+        <select id="tf">
+            <option>1D</option>
+            <option>4H</option>
+            <option>1H</option>
+            <option>15M</option>
+        </select>
+        <button onclick="resetChart()">RESET</button>
+    </div>
+    <canvas id="chart"></canvas>
 </div>
 
-<div class="panel">
-<div class="head">Custom Indicator Builder</div>
-<textarea id="builder">Example:
-RSI(14)
-EMA(20)
-Breakout High</textarea>
-<div style="margin-top:8px;display:flex;gap:8px">
-<button onclick="applyIndicator()">Apply</button>
-<button onclick="clearIndicator()">Clear</button>
-</div>
-<div class="small" id="indicatorStatus" style="margin-top:8px">No custom indicator loaded</div>
-</div>
-</div>
+<div class="panel right">
+    <h3>LIVE FEED</h3>
+    <div class="feed" id="feed">
+        BTC dominance rising<br>
+        ETH leadership active<br>
+        Stablecoin pressure falling<br>
+        TOTAL market breakout<br>
+        Rotation into alts detected<br>
+        Whale bids active<br>
+        Momentum confirmation<br>
+    </div>
 
+    <br><h3>EXECUTION BOARD</h3>
+    <div class="row"><span>BTCUSDT</span><span class="green">LONG</span></div>
+    <div class="row"><span>ETHUSDT</span><span class="green">LONG</span></div>
+    <div class="row"><span>ETHBTC</span><span class="green">LONG ETH</span></div>
+    <div class="row"><span>ALTS</span><span class="yellow">WATCH</span></div>
 </div>
 
 <div class="bottom">
 
-<div class="panel">
-<div class="head">Execution Board</div>
-<div class="stat"><span>BTCUSDT</span><span class="green">LONG</span></div>
-<div class="stat"><span>ETHUSDT</span><span class="green">LONG</span></div>
-<div class="stat"><span>ETHBTC</span><span class="yellow">WAIT</span></div>
-<div class="stat"><span>ALTS</span><span class="green">ROTATE IN</span></div>
+<div class="panel box">
+<h3>CAPITAL FLOW</h3>
+<div class="row"><span>USDT → BTC</span><span class="green">ACTIVE</span></div>
+<div class="row"><span>BTC → ETH</span><span class="green">ACTIVE</span></div>
+<div class="row"><span>ETH → ALTS</span><span class="yellow">BUILDING</span></div>
+<div class="row"><span>ALTS → CASH</span><span class="red">OFF</span></div>
 </div>
 
-<div class="panel">
-<div class="head">Capital Flow</div>
-<div class="stat"><span>USDT → BTC</span><span class="green">ACTIVE</span></div>
-<div class="stat"><span>BTC → ETH</span><span class="green">ACTIVE</span></div>
-<div class="stat"><span>ETH → ALTS</span><span class="yellow">BUILDING</span></div>
-<div class="stat"><span>ALTS → CASH</span><span class="blue">OFF</span></div>
+<div class="panel box">
+<h3>RISK COMMITTEE</h3>
+<div class="row"><span>Trend</span><span class="green">STRONG</span></div>
+<div class="row"><span>Liquidity</span><span class="green">GOOD</span></div>
+<div class="row"><span>Leverage</span><span class="yellow">MEDIUM</span></div>
+<div class="row"><span>Crash Risk</span><span class="green">LOW</span></div>
 </div>
 
-<div class="panel">
-<div class="head">Risk Committee</div>
-<div class="stat"><span>Liquidity</span><span class="green">STRONG</span></div>
-<div class="stat"><span>Leverage</span><span class="yellow">MEDIUM</span></div>
-<div class="stat"><span>Crash Risk</span><span class="green">LOW</span></div>
-<div class="stat"><span>Version</span><span class="yellow">V50000</span></div>
+<div class="panel box">
+<h3>SYSTEM STATUS</h3>
+<div class="row"><span>Version</span><span class="blue">V100000</span></div>
+<div class="row"><span>Latency</span><span class="green">11ms</span></div>
+<div class="row"><span>Sync</span><span class="green">LIVE</span></div>
+<div class="row"><span>Mode</span><span class="blue">GOD MODE</span></div>
 </div>
 
 </div>
 </div>
 
 <script>
-function r(a,b){return Math.random()*(b-a)+a}
+const canvas=document.getElementById("chart");
+const ctx=canvas.getContext("2d");
 
-/* CLOCK */
-function clock(){
-document.getElementById('clock').innerText=new Date().toLocaleTimeString();
+function resize(){
+    canvas.width=canvas.clientWidth;
+    canvas.height=canvas.clientHeight;
+    draw();
 }
-setInterval(clock,1000); clock();
+window.addEventListener("resize",resize);
 
-/* FEED */
-const feed=document.getElementById('feed');
-const msgs=[
-'Whale accumulation detected',
-'BTC dominance rising',
-'ETH relative strength climbing',
-'Rotation into alts active',
-'Breakout watch enabled',
-'Funding neutral',
-'Momentum confirmation active',
-'Liquidity stable'
-];
-function addFeed(){
-let d=document.createElement('div');
-d.textContent=new Date().toLocaleTimeString()+' • '+msgs[Math.floor(Math.random()*msgs.length)];
-feed.prepend(d);
-while(feed.children.length>22)feed.removeChild(feed.lastChild);
+let bars=[];
+
+function generate(){
+    bars=[];
+    let price=100;
+    for(let i=0;i<170;i++){
+        let open=price;
+        let close=open+(Math.random()-0.42)*6;
+        let high=Math.max(open,close)+Math.random()*4;
+        let low=Math.min(open,close)-Math.random()*4;
+        bars.push({open,high,low,close});
+        price=close;
+    }
 }
-setInterval(addFeed,1600); addFeed();
-
-/* CHART */
-const cv=document.getElementById('cv');
-const ctx=cv.getContext('2d');
-let emaOn=true;
-
-function size(){
-cv.width=cv.offsetWidth;
-cv.height=cv.offsetHeight;
-}
-window.addEventListener('resize',size);
-size();
-
-let data=[];
-let p=45;
-for(let i=0;i<140;i++){
-p+=r(-2.2,2.4);
-data.push(p);
-}
+generate();
 
 function draw(){
-ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-let min=Math.min(...data)-5;
-let max=Math.max(...data)+5;
-let w=cv.width/data.length;
+    let max=Math.max(...bars.map(x=>x.high));
+    let min=Math.min(...bars.map(x=>x.low));
+    let range=max-min;
 
-for(let i=1;i<data.length;i++){
-let o=data[i-1],c=data[i];
-let x=i*w;
-let yo=cv.height-(o-min)/(max-min)*cv.height;
-let yc=cv.height-(c-min)/(max-min)*cv.height;
+    let w=canvas.width/bars.length;
 
-ctx.strokeStyle=c>=o?'#29ff93':'#8f59ff';
-ctx.lineWidth=4;
-ctx.beginPath();
-ctx.moveTo(x,yo);
-ctx.lineTo(x,yc);
-ctx.stroke();
+    bars.forEach((b,i)=>{
+        let x=i*w+w*.5;
+        let yo=canvas.height-(b.open-min)/range*canvas.height;
+        let yc=canvas.height-(b.close-min)/range*canvas.height;
+        let yh=canvas.height-(b.high-min)/range*canvas.height;
+        let yl=canvas.height-(b.low-min)/range*canvas.height;
 
-ctx.strokeStyle='rgba(255,255,255,.15)';
-ctx.lineWidth=1;
-ctx.beginPath();
-ctx.moveTo(x,Math.min(yo,yc)-r(4,12));
-ctx.lineTo(x,Math.max(yo,yc)+r(4,12));
-ctx.stroke();
+        let up=b.close>=b.open;
+        ctx.strokeStyle=up?"#00ff84":"#8f63ff";
+        ctx.fillStyle=up?"#00ff84":"#8f63ff";
+
+        ctx.beginPath();
+        ctx.moveTo(x,yh);
+        ctx.lineTo(x,yl);
+        ctx.stroke();
+
+        let top=Math.min(yo,yc);
+        let h=Math.max(Math.abs(yc-yo),2);
+        ctx.fillRect(x-w*.32,top,w*.64,h);
+    });
+
+    // EMA line
+    ctx.beginPath();
+    ctx.strokeStyle="#d9a84f";
+    ctx.lineWidth=2;
+
+    let ema=bars[0].close;
+    bars.forEach((b,i)=>{
+        ema=ema*0.9+b.close*0.1;
+        let y=canvas.height-(ema-min)/range*canvas.height;
+        let x=i*w+w*.5;
+        if(i===0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
 }
 
-if(emaOn){
-ctx.beginPath();
-ctx.strokeStyle='#b99235';
-ctx.lineWidth=2;
-for(let i=0;i<data.length;i++){
-let x=i*w;
-let y=cv.height-(data[i]-min)/(max-min)*cv.height;
-if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y);
-}
-ctx.stroke();
-}
-}
-draw();
-
-function fitChart(){draw()}
 function resetChart(){
-data=[];
-let p=45;
-for(let i=0;i<140;i++){p+=r(-2.2,2.4);data.push(p);}
-draw();
+    generate();
+    draw();
 }
-function toggleEMA(){emaOn=!emaOn;draw();}
 
-/* CUSTOM INDICATOR */
-function applyIndicator(){
-let txt=document.getElementById('builder').value.trim();
-document.getElementById('indicatorStatus').innerHTML='Loaded: <span class="green">'+txt.replace(/\n/g,", ")+'</span>';
+function clock(){
+    document.getElementById("clock").innerText=
+    new Date().toLocaleTimeString();
 }
-function clearIndicator(){
-document.getElementById('builder').value='';
-document.getElementById('indicatorStatus').innerText='No custom indicator loaded';
-}
+setInterval(clock,1000);
+clock();
+
+resize();
 </script>
 </body>
 </html>
