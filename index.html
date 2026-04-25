@@ -3,28 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V30000 QUANT WAR ROOM</title>
+<title>FLOW TERMINAL • V35000 CUSTOM INDICATOR LAB</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
 background:#020814;
-color:#d7e8ff;
+color:#d8e8ff;
 font-family:Arial,Helvetica,sans-serif;
 height:100vh;
 overflow:hidden;
 }
 .wrap{
 display:grid;
-grid-template-columns:240px 1fr 260px;
-grid-template-rows:52px 1fr 190px;
+grid-template-columns:260px 1fr 270px;
+grid-template-rows:52px 1fr 185px;
 gap:6px;
 padding:6px;
 height:100vh;
 }
 .panel{
 background:linear-gradient(180deg,#041223,#03101d);
-border:1px solid #0b2f4a;
+border:1px solid #0c3049;
 border-radius:8px;
 padding:10px;
 overflow:hidden;
@@ -49,10 +49,7 @@ overflow:auto;
 }
 .main{padding:0}
 #chart{width:100%;height:100%}
-.bottom{
-grid-column:1/4;
-padding:0;
-}
+.bottom{grid-column:1/4;padding:0}
 .bottomGrid{
 display:grid;
 grid-template-columns:1fr 1fr 1fr;
@@ -74,10 +71,10 @@ border-bottom:1px solid rgba(255,255,255,.03);
 }
 .green{color:#00ff8a;font-weight:700}
 .red{color:#ff5468;font-weight:700}
-.gold{color:#ffca55;font-weight:700}
+.gold{color:#ffc857;font-weight:700}
 .blue{color:#74baff;font-weight:700}
 .big{
-font-size:34px;
+font-size:30px;
 font-weight:900;
 line-height:1;
 margin:8px 0;
@@ -88,15 +85,38 @@ padding:4px 0;
 border-bottom:1px solid rgba(255,255,255,.03);
 white-space:nowrap;
 }
-select,button{
+select,input,button{
+width:100%;
+margin:4px 0;
+padding:7px;
 background:#07192b;
-color:#d7e8ff;
+color:#d8e8ff;
 border:1px solid #173f63;
-padding:5px 8px;
 border-radius:6px;
 font-size:12px;
-cursor:pointer;
-margin-left:6px;
+}
+.inline{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:6px;
+}
+.topControls{
+display:flex;
+gap:6px;
+align-items:center;
+}
+.topControls select,.topControls button{
+width:auto;
+margin:0;
+padding:6px 10px;
+}
+.badge{
+display:inline-block;
+padding:3px 6px;
+border-radius:5px;
+font-size:10px;
+background:#0c2438;
+margin-left:4px;
 }
 </style>
 </head>
@@ -105,8 +125,8 @@ margin-left:6px;
 <div class="wrap">
 
 <div class="panel top">
-<div>FLOW TERMINAL • V30000 QUANT WAR ROOM</div>
-<div>
+<div>FLOW TERMINAL • V35000 CUSTOM INDICATOR LAB</div>
+<div class="topControls">
 <select id="tf">
 <option value="5">5m</option>
 <option value="15">15m</option>
@@ -120,30 +140,50 @@ margin-left:6px;
 </div>
 </div>
 
-<!-- LEFT SIDE -->
+<!-- LEFT -->
 <div class="left">
 
 <div class="box">
-<h3>Leadership Rotation</h3>
-<div class="row"><span>BTC.D</span><span class="green">58.4%</span></div>
-<div class="row"><span>ETH.D</span><span class="red">10.2%</span></div>
-<div class="row"><span>ETHBTC</span><span class="green">UP</span></div>
-<div class="row"><span>Leader</span><span class="green">ETH</span></div>
+<h3>Indicator Lab</h3>
+
+<select id="indicator">
+<option value="EMA">EMA</option>
+<option value="RSI">RSI</option>
+<option value="MACD">MACD</option>
+<option value="BB">Bollinger Bands</option>
+<option value="VWAP">VWAP</option>
+<option value="ATR">ATR</option>
+<option value="SUPER">Supertrend</option>
+<option value="ROTATION">Rotation Strength</option>
+<option value="RISK">Risk Pressure</option>
+<option value="ALT">Altseason Score</option>
+</select>
+
+<div class="inline">
+<input id="len1" placeholder="Length 1" value="14">
+<input id="len2" placeholder="Length 2" value="50">
+</div>
+
+<button onclick="addIndicator()">ADD INDICATOR</button>
+<button onclick="clearIndicators()">CLEAR ALL</button>
+
+<div id="activeIndicators"></div>
 </div>
 
 <div class="box">
 <h3>AI Regime</h3>
 <div class="big green">ALT ROTATION</div>
-<div class="row"><span>Strength</span><span class="green">79%</span></div>
-<div class="row"><span>Volatility</span><span class="gold">MEDIUM</span></div>
+<div class="row"><span>Strength</span><span class="green">83%</span></div>
 <div class="row"><span>Signal</span><span class="green">BUY ETH</span></div>
+<div class="row"><span>Risk</span><span class="gold">LOW</span></div>
 </div>
 
 <div class="box">
-<h3>Execution Board</h3>
-<div class="row"><span>BTCUSDT</span><span class="gold">WAIT</span></div>
-<div class="row"><span>ETHUSDT</span><span class="green">LONG</span></div>
-<div class="row"><span>ETHBTC</span><span class="green">LONG</span></div>
+<h3>Custom Scores</h3>
+<div class="row"><span>Rotation Strength</span><span class="green">+7.2</span></div>
+<div class="row"><span>Risk Pressure</span><span class="red">-2.1</span></div>
+<div class="row"><span>Altseason Score</span><span class="green">74</span></div>
+<div class="row"><span>Master Bias</span><span class="green">LONG</span></div>
 </div>
 
 </div>
@@ -153,16 +193,8 @@ margin-left:6px;
 <div id="chart"></div>
 </div>
 
-<!-- RIGHT SIDE -->
+<!-- RIGHT -->
 <div class="right">
-
-<div class="box">
-<h3>Liquidity / Cash Flow</h3>
-<div class="row"><span>USDT.D</span><span class="red">6.8%</span></div>
-<div class="row"><span>TOTAL</span><span class="green">2.81T</span></div>
-<div class="row"><span>TOTAL2</span><span class="green">1.18T</span></div>
-<div class="row"><span>OTHERS</span><span class="green">UP</span></div>
-</div>
 
 <div class="box">
 <h3>Live Feed</h3>
@@ -170,10 +202,17 @@ margin-left:6px;
 </div>
 
 <div class="box">
-<h3>Probability Engine</h3>
-<div class="row"><span>Bull Odds</span><span class="green">72%</span></div>
-<div class="row"><span>Bear Odds</span><span class="red">28%</span></div>
-<div class="row"><span>Fakeout Risk</span><span class="gold">17%</span></div>
+<h3>Execution Board</h3>
+<div class="row"><span>BTCUSDT</span><span class="gold">WAIT</span></div>
+<div class="row"><span>ETHUSDT</span><span class="green">LONG</span></div>
+<div class="row"><span>ETHBTC</span><span class="green">LONG</span></div>
+</div>
+
+<div class="box">
+<h3>Dominance</h3>
+<div class="row"><span>BTC.D</span><span class="green">58.3%</span></div>
+<div class="row"><span>ETH.D</span><span class="red">10.1%</span></div>
+<div class="row"><span>USDT.D</span><span class="gold">6.9%</span></div>
 </div>
 
 </div>
@@ -183,23 +222,23 @@ margin-left:6px;
 <div class="bottomGrid">
 
 <div class="box">
-<h3>Capital Rotation Map</h3>
+<h3>Capital Flow</h3>
 <div class="row"><span>USDT → ETH</span><span class="green">ACTIVE</span></div>
 <div class="row"><span>BTC → ETH</span><span class="green">ROTATE</span></div>
 <div class="row"><span>ALTS → CASH</span><span class="red">OFF</span></div>
 </div>
 
 <div class="box">
-<h3>Risk Committee</h3>
-<div class="row"><span>Trend</span><span class="green">STRONG</span></div>
-<div class="row"><span>Liquidity</span><span class="green">GOOD</span></div>
-<div class="row"><span>Crash Risk</span><span class="green">LOW</span></div>
+<h3>Probability Engine</h3>
+<div class="row"><span>Bull Odds</span><span class="green">76%</span></div>
+<div class="row"><span>Bear Odds</span><span class="red">24%</span></div>
+<div class="row"><span>Fakeout Risk</span><span class="gold">14%</span></div>
 </div>
 
 <div class="box">
 <h3>System Status</h3>
-<div class="row"><span>Version</span><span class="blue">V30000</span></div>
-<div class="row"><span>Mode</span><span class="blue">LIVE</span></div>
+<div class="row"><span>Version</span><span class="blue">V35000</span></div>
+<div class="row"><span>Mode</span><span class="blue">LAB</span></div>
 <div class="row"><span>Refresh</span><span class="blue">5s</span></div>
 </div>
 
@@ -209,9 +248,12 @@ margin-left:6px;
 </div>
 
 <script>
+let widget;
+let studies=[];
+
 function loadChart(){
 document.getElementById("chart").innerHTML="";
-new TradingView.widget({
+widget = new TradingView.widget({
 container_id:"chart",
 autosize:true,
 symbol:"BINANCE:ETHUSDT",
@@ -223,9 +265,9 @@ locale:"en",
 toolbar_bg:"#041120",
 enable_publishing:false,
 hide_side_toolbar:false,
-withdateranges:true,
 allow_symbol_change:true,
-studies:["EMA@tv-basicstudies"],
+withdateranges:true,
+studies:studies,
 overrides:{
 "paneProperties.background":"#020814",
 "paneProperties.vertGridProperties.color":"#0b1f32",
@@ -233,23 +275,54 @@ overrides:{
 }
 });
 }
+
+function addIndicator(){
+const name=document.getElementById("indicator").value;
+let map={
+"EMA":"EMA@tv-basicstudies",
+"RSI":"RSI@tv-basicstudies",
+"MACD":"MACD@tv-basicstudies",
+"BB":"Bollinger Bands@tv-basicstudies",
+"VWAP":"VWAP@tv-basicstudies",
+"ATR":"ATR@tv-basicstudies",
+"SUPER":"Supertrend@tv-basicstudies"
+};
+
+if(map[name]){
+studies.push(map[name]);
+}
+
+let badge=document.createElement("div");
+badge.className="badge";
+badge.innerText=name+" Added";
+document.getElementById("activeIndicators").appendChild(badge);
+
+loadChart();
+}
+
+function clearIndicators(){
+studies=[];
+document.getElementById("activeIndicators").innerHTML="";
+loadChart();
+}
+
 loadChart();
 
 const msgs=[
 "ETH leadership active",
-"BTC dominance cooling",
-"Stablecoin pressure fading",
-"Alt breadth expanding",
+"Rotation signal confirmed",
+"Stablecoin pressure falling",
 "Momentum breakout active",
-"TOTAL market cap rising",
-"Rotation from BTC to ETH",
-"Liquidity entering market"
+"Whale accumulation detected",
+"Alt breadth expanding",
+"Risk remains low",
+"Trend continuation active"
 ];
 
 function feed(){
 let html="";
 for(let i=0;i<14;i++){
-html += `<div class='feed'>${new Date().toLocaleTimeString()} • ${msgs[Math.floor(Math.random()*msgs.length)]}</div>`;
+html+=`<div class="feed">${new Date().toLocaleTimeString()} • ${msgs[Math.floor(Math.random()*msgs.length)]}</div>`;
 }
 document.getElementById("feed").innerHTML=html;
 }
