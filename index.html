@@ -3,317 +3,171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V6000 TRUE TRADINGVIEW CHART ENGINE</title>
+<title>V6000 TRUE TRADINGVIEW ENGINE FIXED</title>
 
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-    background:#06111f;
-    color:#c7d5e0;
-    font-family:Arial,Helvetica,sans-serif;
-    overflow:hidden;
+html,body{
+margin:0;
+padding:0;
+width:100%;
+height:100%;
+background:#06111f;
+font-family:Arial,Helvetica,sans-serif;
+overflow:hidden;
+color:#dce8f5;
 }
-.wrap{
-    display:grid;
-    grid-template-columns:260px 1fr 280px;
-    grid-template-rows:70px 1fr 210px;
-    height:100vh;
-    gap:8px;
-    padding:8px;
-}
-.panel{
-    background:#071728;
-    border:1px solid #0d2a42;
-    border-radius:8px;
-    padding:10px;
-}
-.header{
-    grid-column:1 / 4;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-.title{
-    font-size:22px;
-    font-weight:700;
-    letter-spacing:1px;
-    color:#fff;
-}
-.sub{
-    font-size:12px;
-    color:#5d7e9a;
-}
-.left h2,.right h2,.bottom h2{
-    font-size:13px;
-    color:#7aa6c7;
-    margin-bottom:10px;
-}
-.stat{
-    display:flex;
-    justify-content:space-between;
-    margin:8px 0;
-    font-size:13px;
-}
-.green{color:#19d37a}
-.red{color:#ff5a5a}
-.gold{color:#ffcf5c}
-.chartBox{
-    position:relative;
-    padding:0;
-    overflow:hidden;
+#top{
+height:52px;
+display:flex;
+align-items:center;
+padding:0 14px;
+border-bottom:1px solid #0d2a42;
+font-weight:700;
+letter-spacing:.5px;
 }
 #chart{
-    width:100%;
-    height:100%;
-}
-.toolbar{
-    position:absolute;
-    top:10px;
-    left:10px;
-    z-index:5;
-    display:flex;
-    gap:6px;
-}
-button,select{
-    background:#0d2236;
-    border:1px solid #1b3b59;
-    color:#d7e8f6;
-    padding:6px 10px;
-    border-radius:6px;
-    font-size:12px;
-    cursor:pointer;
-}
-.bottom{
-    grid-column:1 / 4;
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:8px;
-}
-.log{
-    height:150px;
-    overflow:auto;
-    font-size:12px;
-    line-height:1.6;
+width:100%;
+height:calc(100vh - 52px);
 }
 </style>
 </head>
 <body>
 
-<div class="wrap">
-
-<div class="panel header">
-<div>
-<div class="title">FLOW TERMINAL • V6000 TRUE TRADINGVIEW CHART ENGINE</div>
-<div class="sub">Composite Candle = BTC.D + USDT.D + ETH.D + ETHBTC + TOTAL</div>
-</div>
-<div id="clock"></div>
-</div>
-
-<div class="panel left">
-<h2>AI REGIME ENGINE</h2>
-<div class="stat"><span>Status</span><span id="regime" class="green">BROAD BULL</span></div>
-<div class="stat"><span>Strength</span><span id="strength">78%</span></div>
-<div class="stat"><span>Volatility</span><span id="vol">LOW</span></div>
-<div class="stat"><span>Signal</span><span id="signal" class="green">BUY</span></div>
-
-<h2 style="margin-top:18px;">DOMINANCE</h2>
-<div class="stat"><span>BTC.D</span><span id="btcD">58.2%</span></div>
-<div class="stat"><span>ETH.D</span><span id="ethD">10.8%</span></div>
-<div class="stat"><span>USDT.D</span><span id="usdtD">6.7%</span></div>
-</div>
-
-<div class="panel chartBox">
-<div class="toolbar">
-<select id="tf">
-<option>1m</option>
-<option>5m</option>
-<option>15m</option>
-<option selected>1h</option>
-<option>4h</option>
-<option>1D</option>
-</select>
-<button onclick="fit()">Fit</button>
-<button onclick="resetData()">Reset</button>
-</div>
+<div id="top">FLOW TERMINAL • V6000 TRUE TRADINGVIEW CHART ENGINE</div>
 <div id="chart"></div>
-</div>
-
-<div class="panel right">
-<h2>LIVE FEED</h2>
-<div class="log" id="feed"></div>
-</div>
-
-<div class="bottom">
-<div class="panel">
-<h2>EXECUTION BOARD</h2>
-<div class="stat"><span>BTCUSDT</span><span id="b1" class="green">LONG</span></div>
-<div class="stat"><span>ETHUSDT</span><span id="b2" class="gold">WAIT</span></div>
-<div class="stat"><span>ETHBTC</span><span id="b3" class="red">SHORT</span></div>
-</div>
-
-<div class="panel">
-<h2>FLOW MATRIX</h2>
-<div class="stat"><span>USDT → ETH</span><span class="green">ACTIVE</span></div>
-<div class="stat"><span>BTC → ETH</span><span class="gold">ROTATE</span></div>
-<div class="stat"><span>ALTS → CASH</span><span class="red">EXIT</span></div>
-</div>
-
-<div class="panel">
-<h2>RISK COMMITTEE</h2>
-<div class="stat"><span>Trend</span><span class="green">STRONG</span></div>
-<div class="stat"><span>Liquidity</span><span class="gold">MEDIUM</span></div>
-<div class="stat"><span>Crash Risk</span><span class="green">LOW</span></div>
-</div>
-</div>
-
-</div>
 
 <script>
-const chart = LightweightCharts.createChart(document.getElementById('chart'),{
-    layout:{
-        background:{color:'#06111f'},
-        textColor:'#6e8aa5'
-    },
-    grid:{
-        vertLines:{color:'#0c2135'},
-        horzLines:{color:'#0c2135'}
-    },
-    crosshair:{
-        mode:1
-    },
-    rightPriceScale:{
-        borderColor:'#16324b'
-    },
-    timeScale:{
-        borderColor:'#16324b',
-        timeVisible:true
-    }
+const el = document.getElementById("chart");
+
+const chart = LightweightCharts.createChart(el,{
+width:el.clientWidth,
+height:el.clientHeight,
+layout:{
+background:{color:"#06111f"},
+textColor:"#7089a3"
+},
+grid:{
+vertLines:{color:"#0d2238"},
+horzLines:{color:"#0d2238"}
+},
+rightPriceScale:{
+borderColor:"#16324b"
+},
+timeScale:{
+borderColor:"#16324b",
+timeVisible:true,
+secondsVisible:false
+},
+crosshair:{mode:1}
 });
 
-const candleSeries = chart.addCandlestickSeries({
-    upColor:'#1ce783',
-    downColor:'#6e42ff',
-    borderUpColor:'#1ce783',
-    borderDownColor:'#6e42ff',
-    wickUpColor:'#1ce783',
-    wickDownColor:'#6e42ff'
+const candle = chart.addCandlestickSeries({
+upColor:"#15e27a",
+downColor:"#6e42ff",
+borderUpColor:"#15e27a",
+borderDownColor:"#6e42ff",
+wickUpColor:"#15e27a",
+wickDownColor:"#6e42ff"
 });
 
-const emaSeries = chart.addLineSeries({
-    color:'#b9862f',
-    lineWidth:2
+const ema = chart.addLineSeries({
+color:"#b98a2e",
+lineWidth:2
 });
 
-let bars = [];
-let price = 0;
+let data=[];
+let base=0;
+let time=Math.floor(Date.now()/1000)-300*3600;
 
-function seed(){
-    bars=[];
-    price=0;
-    let t=Math.floor(Date.now()/1000)-300*3600;
+for(let i=0;i<300;i++){
+let open=base;
+let move=(Math.random()-.5)*3 + Math.sin(i/10)*1.2;
+let close=open+move;
+let high=Math.max(open,close)+Math.random()*1.5;
+let low=Math.min(open,close)-Math.random()*1.5;
 
-    for(let i=0;i<300;i++){
-        let open=price;
-        let drift=(Math.sin(i/16)*0.7)+(Math.random()-0.5)*2.2;
-        let close=open+drift;
-        let high=Math.max(open,close)+Math.random()*1.2;
-        let low=Math.min(open,close)-Math.random()*1.2;
+data.push({
+time:time,
+open:open,
+high:high,
+low:low,
+close:close
+});
 
-        bars.push({time:t,open,high,low,close});
-        price=close;
-        t+=3600;
-    }
-
-    candleSeries.setData(bars);
-    buildEMA();
-    chart.timeScale().fitContent();
-}
-seed();
-
-function buildEMA(){
-    let k=2/(21+1);
-    let ema=[];
-    let prev=bars[0].close;
-
-    for(let i=0;i<bars.length;i++){
-        prev=bars[i].close*k + prev*(1-k);
-        ema.push({time:bars[i].time,value:prev});
-    }
-    emaSeries.setData(ema);
+base=close;
+time+=3600;
 }
 
-function tick(){
-    let last=bars[bars.length-1];
-    let move=(Math.random()-0.48)*1.4 + Math.sin(Date.now()/8000)*0.1;
+candle.setData(data);
 
-    let close=last.close+move;
-    let high=Math.max(last.open,close,last.high);
-    let low=Math.min(last.open,close,last.low);
+function calcEMA(){
+let out=[];
+let k=2/(21+1);
+let prev=data[0].close;
 
-    last.close=close;
-    last.high=high;
-    last.low=low;
+for(let i=0;i<data.length;i++){
+prev=data[i].close*k + prev*(1-k);
+out.push({time:data[i].time,value:prev});
+}
+ema.setData(out);
+}
+calcEMA();
 
-    candleSeries.update(last);
-    buildEMA();
-    updatePanels(move);
+chart.timeScale().fitContent();
+
+function updateBar(){
+
+let last=data[data.length-1];
+
+let move=(Math.random()-.5)*1.4;
+last.close+=move;
+
+if(last.close>last.high) last.high=last.close;
+if(last.close<last.low) last.low=last.close;
+
+candle.update(last);
+
+calcEMA();
 }
 
 function newBar(){
-    let last=bars[bars.length-1];
-    let t=last.time+3600;
-    let open=last.close;
-    let close=open+(Math.random()-0.5)*2;
-    let high=Math.max(open,close)+Math.random();
-    let low=Math.min(open,close)-Math.random();
 
-    let bar={time:t,open,high,low,close};
-    bars.push(bar);
-    if(bars.length>400) bars.shift();
+let prev=data[data.length-1];
 
-    candleSeries.setData(bars);
-    buildEMA();
+let t=prev.time+3600;
+let open=prev.close;
+let close=open+(Math.random()-.5)*2.5;
+let high=Math.max(open,close)+Math.random();
+let low=Math.min(open,close)-Math.random();
+
+let bar={
+time:t,
+open:open,
+high:high,
+low:low,
+close:close
+};
+
+data.push(bar);
+
+if(data.length>400) data.shift();
+
+candle.setData(data);
+calcEMA();
 }
 
-function updatePanels(move){
-    document.getElementById('regime').innerText =
-        move>0.35?'BROAD BULL':
-        move<-0.35?'RISK OFF':'SIDEWAYS';
+setInterval(updateBar,1000);
+setInterval(newBar,10000);
 
-    document.getElementById('signal').innerText =
-        move>0.35?'BUY':
-        move<-0.35?'SELL':'WAIT';
-
-    document.getElementById('signal').className =
-        move>0.35?'green':
-        move<-0.35?'red':'gold';
-
-    let f=document.getElementById('feed');
-    let row=document.createElement('div');
-    row.innerText=new Date().toLocaleTimeString()+" | "+document.getElementById('regime').innerText;
-    f.prepend(row);
-    while(f.children.length>18) f.removeChild(f.lastChild);
-}
-
-function fit(){
-    chart.timeScale().fitContent();
-}
-
-function resetData(){
-    seed();
-}
-
-setInterval(tick,1200);
-setInterval(newBar,12000);
-
-setInterval(()=>{
-    document.getElementById('clock').innerText=
-        new Date().toLocaleString();
-},1000);
-
-window.addEventListener('resize',()=>chart.applyOptions({width:document.getElementById('chart').clientWidth,height:document.getElementById('chart').clientHeight}));
+window.addEventListener("resize",()=>{
+chart.applyOptions({
+width:el.clientWidth,
+height:el.clientHeight
+});
+chart.timeScale().fitContent();
+});
 </script>
 
 </body>
