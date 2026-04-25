@@ -1,1 +1,320 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>V5500 BLACK DESK</title><style>body{margin:0;background:#020b16;color:#d8e6ff;font-family:Arial,sans-serif}header{height:46px;display:flex;align-items:center;padding:0 14px;border-bottom:1px solid #123;font-weight:700;letter-spacing:1px}.grid{display:grid;grid-template-columns:280px 1fr 320px;grid-template-rows:1fr 230px;gap:10px;padding:10px;height:calc(100vh - 46px)}.card{background:#061423;border:1px solid #123;border-radius:12px;padding:10px;overflow:auto}.title{font-size:12px;color:#7fb3ff;margin-bottom:8px}.big{font-size:38px;font-weight:800}.green{color:#31d17c}.red{color:#ff5b6e}.yellow{color:#ffd166}.chart{height:100%;display:flex;align-items:center;justify-content:center;color:#6d8bb3;font-size:22px}table{width:100%;border-collapse:collapse;font-size:12px}td,th{padding:6px;border-bottom:1px solid #10243c;text-align:left}</style></head><body><header>FLOW TERMINAL • V5500 BLACK DESK</header><div class='grid'><div class='card'><div class='title'>AI REGIME ENGINE</div><div class='big green'>BROAD BULL</div><p>Risk-on expansion</p><div class='title'>LIVE FEED</div><div>BTC strength rising<br>ETH lagging<br>Alt breadth stable</div></div><div class='card'><div class='title'>TRADING DESK CHART</div><div class='chart'><canvas id='cv' width='900' height='520' style='width:100%;height:100%;display:block'></canvas></div></div><div class='card'><div class='title'>SIGNALS + DOMINANCE</div><table><tr><td>BTC.D</td><td class='green'>58.3%</td></tr><tr><td>ETH.D</td><td class='red'>9.7%</td></tr><tr><td>USDT.D</td><td class='yellow'>7.1%</td></tr><tr><td>BTCUSDT</td><td class='green'>LONG</td></tr><tr><td>ETHUSDT</td><td class='yellow'>WAIT</td></tr><tr><td>ETHBTC</td><td class='red'>SHORT</td></tr></table></div><div class='card'><div class='title'>ROTATION MATRIX</div><table><tr><td>USDT → BTC</td><td class='green'>ACTIVE</td></tr><tr><td>BTC → ETH</td><td class='yellow'>WATCH</td></tr><tr><td>ALTS → CASH</td><td class='red'>EXIT</td></tr></table></div><div class='card'><div class='title'>RISK COMMITTEE</div><table><tr><td>Trend</td><td class='green'>Strong</td></tr><tr><td>Volatility</td><td class='yellow'>Medium</td></tr><tr><td>Liquidity</td><td class='green'>Healthy</td></tr></table></div><div class='card'><div class='title'>PORTFOLIO</div><table><tr><td>BTC</td><td>55%</td></tr><tr><td>ETH</td><td>20%</td></tr><tr><td>Alts</td><td>15%</td></tr><tr><td>Cash</td><td>10%</td></tr></table></div></div><script>const c=document.getElementById('cv');const x=c.getContext('2d');function draw(){x.fillStyle='#03101f';x.fillRect(0,0,c.width,c.height);for(let i=0;i<34;i++){let base=260+Math.sin(i/4)*35;let o=base+(Math.random()*20-10);let cl=o+(Math.random()*70-35);let hi=Math.max(o,cl)+Math.random()*18;let lo=Math.min(o,cl)-Math.random()*18;let px=18+i*25;x.strokeStyle=cl>=o?'#31d17c':'#ff5b6e';x.beginPath();x.moveTo(px+8,hi);x.lineTo(px+8,lo);x.stroke();x.fillStyle=cl>=o?'#31d17c':'#ff5b6e';x.fillRect(px,Math.min(o,cl),16,Math.max(4,Math.abs(cl-o)));}x.fillStyle='#7fb3ff';x.font='12px Arial';x.fillText('Composite Candle = BTC.D + ETH.D + USDT.D + ETHBTC + TOTAL',18,18);}draw();function updateLast(){draw();}setInterval(updateLast,2000);</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FLOW TERMINAL • V6000 TRUE TRADINGVIEW CHART ENGINE</title>
+
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    background:#06111f;
+    color:#c7d5e0;
+    font-family:Arial,Helvetica,sans-serif;
+    overflow:hidden;
+}
+.wrap{
+    display:grid;
+    grid-template-columns:260px 1fr 280px;
+    grid-template-rows:70px 1fr 210px;
+    height:100vh;
+    gap:8px;
+    padding:8px;
+}
+.panel{
+    background:#071728;
+    border:1px solid #0d2a42;
+    border-radius:8px;
+    padding:10px;
+}
+.header{
+    grid-column:1 / 4;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.title{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:1px;
+    color:#fff;
+}
+.sub{
+    font-size:12px;
+    color:#5d7e9a;
+}
+.left h2,.right h2,.bottom h2{
+    font-size:13px;
+    color:#7aa6c7;
+    margin-bottom:10px;
+}
+.stat{
+    display:flex;
+    justify-content:space-between;
+    margin:8px 0;
+    font-size:13px;
+}
+.green{color:#19d37a}
+.red{color:#ff5a5a}
+.gold{color:#ffcf5c}
+.chartBox{
+    position:relative;
+    padding:0;
+    overflow:hidden;
+}
+#chart{
+    width:100%;
+    height:100%;
+}
+.toolbar{
+    position:absolute;
+    top:10px;
+    left:10px;
+    z-index:5;
+    display:flex;
+    gap:6px;
+}
+button,select{
+    background:#0d2236;
+    border:1px solid #1b3b59;
+    color:#d7e8f6;
+    padding:6px 10px;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+}
+.bottom{
+    grid-column:1 / 4;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:8px;
+}
+.log{
+    height:150px;
+    overflow:auto;
+    font-size:12px;
+    line-height:1.6;
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<div class="panel header">
+<div>
+<div class="title">FLOW TERMINAL • V6000 TRUE TRADINGVIEW CHART ENGINE</div>
+<div class="sub">Composite Candle = BTC.D + USDT.D + ETH.D + ETHBTC + TOTAL</div>
+</div>
+<div id="clock"></div>
+</div>
+
+<div class="panel left">
+<h2>AI REGIME ENGINE</h2>
+<div class="stat"><span>Status</span><span id="regime" class="green">BROAD BULL</span></div>
+<div class="stat"><span>Strength</span><span id="strength">78%</span></div>
+<div class="stat"><span>Volatility</span><span id="vol">LOW</span></div>
+<div class="stat"><span>Signal</span><span id="signal" class="green">BUY</span></div>
+
+<h2 style="margin-top:18px;">DOMINANCE</h2>
+<div class="stat"><span>BTC.D</span><span id="btcD">58.2%</span></div>
+<div class="stat"><span>ETH.D</span><span id="ethD">10.8%</span></div>
+<div class="stat"><span>USDT.D</span><span id="usdtD">6.7%</span></div>
+</div>
+
+<div class="panel chartBox">
+<div class="toolbar">
+<select id="tf">
+<option>1m</option>
+<option>5m</option>
+<option>15m</option>
+<option selected>1h</option>
+<option>4h</option>
+<option>1D</option>
+</select>
+<button onclick="fit()">Fit</button>
+<button onclick="resetData()">Reset</button>
+</div>
+<div id="chart"></div>
+</div>
+
+<div class="panel right">
+<h2>LIVE FEED</h2>
+<div class="log" id="feed"></div>
+</div>
+
+<div class="bottom">
+<div class="panel">
+<h2>EXECUTION BOARD</h2>
+<div class="stat"><span>BTCUSDT</span><span id="b1" class="green">LONG</span></div>
+<div class="stat"><span>ETHUSDT</span><span id="b2" class="gold">WAIT</span></div>
+<div class="stat"><span>ETHBTC</span><span id="b3" class="red">SHORT</span></div>
+</div>
+
+<div class="panel">
+<h2>FLOW MATRIX</h2>
+<div class="stat"><span>USDT → ETH</span><span class="green">ACTIVE</span></div>
+<div class="stat"><span>BTC → ETH</span><span class="gold">ROTATE</span></div>
+<div class="stat"><span>ALTS → CASH</span><span class="red">EXIT</span></div>
+</div>
+
+<div class="panel">
+<h2>RISK COMMITTEE</h2>
+<div class="stat"><span>Trend</span><span class="green">STRONG</span></div>
+<div class="stat"><span>Liquidity</span><span class="gold">MEDIUM</span></div>
+<div class="stat"><span>Crash Risk</span><span class="green">LOW</span></div>
+</div>
+</div>
+
+</div>
+
+<script>
+const chart = LightweightCharts.createChart(document.getElementById('chart'),{
+    layout:{
+        background:{color:'#06111f'},
+        textColor:'#6e8aa5'
+    },
+    grid:{
+        vertLines:{color:'#0c2135'},
+        horzLines:{color:'#0c2135'}
+    },
+    crosshair:{
+        mode:1
+    },
+    rightPriceScale:{
+        borderColor:'#16324b'
+    },
+    timeScale:{
+        borderColor:'#16324b',
+        timeVisible:true
+    }
+});
+
+const candleSeries = chart.addCandlestickSeries({
+    upColor:'#1ce783',
+    downColor:'#6e42ff',
+    borderUpColor:'#1ce783',
+    borderDownColor:'#6e42ff',
+    wickUpColor:'#1ce783',
+    wickDownColor:'#6e42ff'
+});
+
+const emaSeries = chart.addLineSeries({
+    color:'#b9862f',
+    lineWidth:2
+});
+
+let bars = [];
+let price = 0;
+
+function seed(){
+    bars=[];
+    price=0;
+    let t=Math.floor(Date.now()/1000)-300*3600;
+
+    for(let i=0;i<300;i++){
+        let open=price;
+        let drift=(Math.sin(i/16)*0.7)+(Math.random()-0.5)*2.2;
+        let close=open+drift;
+        let high=Math.max(open,close)+Math.random()*1.2;
+        let low=Math.min(open,close)-Math.random()*1.2;
+
+        bars.push({time:t,open,high,low,close});
+        price=close;
+        t+=3600;
+    }
+
+    candleSeries.setData(bars);
+    buildEMA();
+    chart.timeScale().fitContent();
+}
+seed();
+
+function buildEMA(){
+    let k=2/(21+1);
+    let ema=[];
+    let prev=bars[0].close;
+
+    for(let i=0;i<bars.length;i++){
+        prev=bars[i].close*k + prev*(1-k);
+        ema.push({time:bars[i].time,value:prev});
+    }
+    emaSeries.setData(ema);
+}
+
+function tick(){
+    let last=bars[bars.length-1];
+    let move=(Math.random()-0.48)*1.4 + Math.sin(Date.now()/8000)*0.1;
+
+    let close=last.close+move;
+    let high=Math.max(last.open,close,last.high);
+    let low=Math.min(last.open,close,last.low);
+
+    last.close=close;
+    last.high=high;
+    last.low=low;
+
+    candleSeries.update(last);
+    buildEMA();
+    updatePanels(move);
+}
+
+function newBar(){
+    let last=bars[bars.length-1];
+    let t=last.time+3600;
+    let open=last.close;
+    let close=open+(Math.random()-0.5)*2;
+    let high=Math.max(open,close)+Math.random();
+    let low=Math.min(open,close)-Math.random();
+
+    let bar={time:t,open,high,low,close};
+    bars.push(bar);
+    if(bars.length>400) bars.shift();
+
+    candleSeries.setData(bars);
+    buildEMA();
+}
+
+function updatePanels(move){
+    document.getElementById('regime').innerText =
+        move>0.35?'BROAD BULL':
+        move<-0.35?'RISK OFF':'SIDEWAYS';
+
+    document.getElementById('signal').innerText =
+        move>0.35?'BUY':
+        move<-0.35?'SELL':'WAIT';
+
+    document.getElementById('signal').className =
+        move>0.35?'green':
+        move<-0.35?'red':'gold';
+
+    let f=document.getElementById('feed');
+    let row=document.createElement('div');
+    row.innerText=new Date().toLocaleTimeString()+" | "+document.getElementById('regime').innerText;
+    f.prepend(row);
+    while(f.children.length>18) f.removeChild(f.lastChild);
+}
+
+function fit(){
+    chart.timeScale().fitContent();
+}
+
+function resetData(){
+    seed();
+}
+
+setInterval(tick,1200);
+setInterval(newBar,12000);
+
+setInterval(()=>{
+    document.getElementById('clock').innerText=
+        new Date().toLocaleString();
+},1000);
+
+window.addEventListener('resize',()=>chart.applyOptions({width:document.getElementById('chart').clientWidth,height:document.getElementById('chart').clientHeight}));
+</script>
+
+</body>
+</html>
