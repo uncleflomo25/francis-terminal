@@ -3,48 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V500 TRILLION LIVE DATA FINAL</title>
+<title>FLOW TERMINAL • V100 QUINTILLION</title>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
 body{
-background:#030915;
-color:#d8f6ff;
+background:#020814;
+color:#dff7ff;
 height:100vh;
 overflow:hidden;
 }
 .wrap{
 display:grid;
-grid-template-columns:260px 1fr 320px;
-grid-template-rows:46px 1fr 185px;
+grid-template-columns:270px 1fr 340px;
+grid-template-rows:48px 1fr 200px;
 gap:6px;
 padding:6px;
 height:100vh;
 }
 .panel{
-background:#071323;
-border:1px solid #12385a;
-border-radius:8px;
+background:#061322;
+border:1px solid #123b60;
+border-radius:10px;
 overflow:hidden;
-box-shadow:inset 0 0 14px rgba(0,140,255,.08);
+box-shadow:inset 0 0 16px rgba(0,140,255,.08);
 }
 .top{
 grid-column:1/4;
 display:flex;
-align-items:center;
 justify-content:space-between;
+align-items:center;
 padding:0 12px;
 font-weight:900;
 letter-spacing:.6px;
-color:#66cfff;
+color:#6fd0ff;
 }
-.small{font-size:11px;color:#93b9d8}
+.tools{display:flex;gap:8px}
+select,button{
+background:#0a2136;
+border:1px solid #1d537f;
+color:#fff;
+padding:6px 10px;
+border-radius:8px;
+font-size:12px;
+cursor:pointer;
+}
 .tt{
 padding:8px 10px;
 font-size:12px;
 font-weight:800;
-color:#7dd2ff;
-border-bottom:1px solid #12385a;
+color:#84d6ff;
+border-bottom:1px solid #123b60;
 }
 .pad{padding:10px}
 .row{
@@ -52,20 +61,27 @@ display:flex;
 justify-content:space-between;
 padding:5px 0;
 font-size:12px;
-border-bottom:1px solid rgba(120,170,210,.08);
+border-bottom:1px solid rgba(130,180,220,.08);
 }
-.green{color:#18ff9b}
-.red{color:#ff5b77}
-.yellow{color:#ffd84d}
-.blue{color:#69c8ff}
+.green{color:#19ff9e}
+.red{color:#ff5d7c}
+.yellow{color:#ffd84f}
+.blue{color:#6ecbff}
+.purple{color:#b08cff}
+.big{
+font-size:42px;
+font-weight:900;
+line-height:.95;
+margin-top:8px;
+}
 .left{
 display:grid;
-grid-template-rows:240px 1fr;
+grid-template-rows:250px 1fr;
 gap:6px;
 }
 .right{
 display:grid;
-grid-template-rows:260px 1fr;
+grid-template-rows:270px 1fr;
 gap:6px;
 min-height:0;
 }
@@ -75,7 +91,6 @@ display:grid;
 grid-template-columns:1fr 1fr 1fr;
 gap:6px;
 }
-#chart{width:100%;height:100%}
 .feed{
 height:100%;
 overflow-y:auto;
@@ -85,14 +100,9 @@ line-height:1.55;
 }
 .feed div{
 padding:3px 0;
-border-bottom:1px solid rgba(120,170,210,.08);
+border-bottom:1px solid rgba(130,180,220,.08);
 }
-.big{
-font-size:42px;
-font-weight:900;
-line-height:.95;
-margin-top:8px;
-}
+#chart{width:100%;height:100%}
 </style>
 </head>
 <body>
@@ -100,22 +110,33 @@ margin-top:8px;
 <div class="wrap">
 
 <div class="panel top">
-<div>FLOW TERMINAL • V500 TRILLION LIVE DATA FINAL</div>
-<div class="small">CEX + DEX Aggregate Orderflow Engine</div>
+<div>FLOW TERMINAL • V100 QUINTILLION • NEURAL WAR ROOM</div>
+<div class="tools">
+<select id="tf" onchange="reloadChart()">
+<option value="1">1m</option>
+<option value="5">5m</option>
+<option value="15">15m</option>
+<option value="60">1H</option>
+<option value="240">4H</option>
+<option value="D" selected>1D</option>
+<option value="W">1W</option>
+</select>
+<button onclick="reloadChart()">SYNC</button>
+</div>
 </div>
 
 <!-- LEFT -->
 <div class="left">
 
 <div class="panel">
-<div class="tt">AI REGIME ENGINE</div>
+<div class="tt">AI REGIME ENGINE X</div>
 <div class="pad">
-<div class="big green">RISK<br>ON</div>
-<div class="row"><span>Confidence</span><span class="green">88%</span></div>
-<div class="row"><span>Best Asset</span><span class="green">ETH</span></div>
-<div class="row"><span>Execution Bias</span><span class="green">LONG</span></div>
+<div class="big green">ETH<br>LEAD</div>
+<div class="row"><span>Confidence</span><span class="green">92%</span></div>
+<div class="row"><span>Trend</span><span class="green">EXPANSION</span></div>
 <div class="row"><span>Volatility</span><span class="yellow">MEDIUM</span></div>
-<div class="row"><span>Trend State</span><span class="green">EXPANSION</span></div>
+<div class="row"><span>Bias</span><span class="green">LONG</span></div>
+<div class="row"><span>Best Asset</span><span class="green">ETH</span></div>
 </div>
 </div>
 
@@ -135,16 +156,16 @@ margin-top:8px;
 <div class="right">
 
 <div class="panel">
-<div class="tt">LIVE CURRENT CANDLE DATA</div>
+<div class="tt">AI PROBABILITY CORE MAX</div>
 <div class="pad">
-<div class="row"><span>BTC Spot Vol</span><span class="green" id="btcspot">--</span></div>
-<div class="row"><span>BTC Perp Vol</span><span class="green" id="btcperp">--</span></div>
-<div class="row"><span>ETH Spot Vol</span><span class="green" id="ethspot">--</span></div>
-<div class="row"><span>ETH Perp Vol</span><span class="green" id="ethperp">--</span></div>
-<div class="row"><span>Delta</span><span id="delta" class="green">--</span></div>
-<div class="row"><span>CVD</span><span id="cvd" class="green">RISING</span></div>
-<div class="row"><span>Icebergs</span><span class="yellow">DETECTED</span></div>
-<div class="row"><span>Spoof Risk</span><span class="red">LOW</span></div>
+<div class="row"><span>24H Bull Odds</span><span class="green">84%</span></div>
+<div class="row"><span>7D Bull Odds</span><span class="green">77%</span></div>
+<div class="row"><span>Bear Odds</span><span class="red">16%</span></div>
+<div class="row"><span>Fakeout Risk</span><span class="yellow">11%</span></div>
+<div class="row"><span>Squeeze Odds</span><span class="green">42%</span></div>
+<div class="row"><span>Breakout Prob.</span><span class="green">69%</span></div>
+<div class="row"><span>Best Pair</span><span class="green">ETHBTC</span></div>
+<div class="row"><span>Signal</span><span class="green">LONG</span></div>
 </div>
 </div>
 
@@ -159,32 +180,35 @@ margin-top:8px;
 <div class="bottom">
 
 <div class="panel">
-<div class="tt">CAPITAL ROTATION</div>
+<div class="tt">ORDERFLOW CORE</div>
 <div class="pad">
-<div class="row"><span>USDT → BTC</span><span class="yellow">LOW</span></div>
-<div class="row"><span>BTC → ETH</span><span class="green">STRONG</span></div>
-<div class="row"><span>ETH → ALTS</span><span class="green">ACTIVE</span></div>
-<div class="row"><span>Cash Demand</span><span class="red">FALLING</span></div>
+<div class="row"><span>BTC Spot Vol</span><span class="green" id="b1">1.4B</span></div>
+<div class="row"><span>BTC Perp Vol</span><span class="green" id="b2">4.2B</span></div>
+<div class="row"><span>ETH Spot Vol</span><span class="green" id="e1">0.9B</span></div>
+<div class="row"><span>ETH Perp Vol</span><span class="green" id="e2">2.8B</span></div>
+<div class="row"><span>Delta</span><span class="green" id="delta">+320M</span></div>
 </div>
 </div>
 
 <div class="panel">
-<div class="tt">SMART MONEY RADAR</div>
+<div class="tt">CAPITAL ROTATION MAP</div>
 <div class="pad">
-<div class="row"><span>Whale Flow</span><span class="green">BUYING</span></div>
-<div class="row"><span>Funding</span><span class="green">POSITIVE</span></div>
-<div class="row"><span>Open Interest</span><span class="green">RISING</span></div>
-<div class="row"><span>Absorption</span><span class="green">YES</span></div>
+<div class="row"><span>USDT → BTC</span><span class="yellow">LOW</span></div>
+<div class="row"><span>BTC → ETH</span><span class="green">STRONG</span></div>
+<div class="row"><span>ETH → ALTS</span><span class="green">ACTIVE</span></div>
+<div class="row"><span>ALTS → CASH</span><span class="red">LOW</span></div>
+<div class="row"><span>Regime</span><span class="green">RISK ON</span></div>
 </div>
 </div>
 
 <div class="panel">
 <div class="tt">SYSTEM STATUS</div>
 <div class="pad">
-<div class="row"><span>Version</span><span class="blue">V500T</span></div>
-<div class="row"><span>Latency</span><span class="green">9ms</span></div>
-<div class="row"><span>Engine</span><span class="blue">LIVE FINAL</span></div>
-<div class="row"><span>Feeds</span><span class="green">ACTIVE</span></div>
+<div class="row"><span>Version</span><span class="blue">V100Q</span></div>
+<div class="row"><span>Mode</span><span class="green">LIVE</span></div>
+<div class="row"><span>Sync</span><span class="green">GLOBAL TF</span></div>
+<div class="row"><span>Latency</span><span class="green">6ms</span></div>
+<div class="row"><span>Engine</span><span class="purple">NEURAL</span></div>
 </div>
 </div>
 
@@ -193,11 +217,13 @@ margin-top:8px;
 </div>
 
 <script>
+function reloadChart(){
+document.getElementById("chart").innerHTML="";
 new TradingView.widget({
 container_id:"chart",
 autosize:true,
-symbol:"BINANCE:BTCUSDT",
-interval:"15",
+symbol:"BINANCE:ETHUSDT",
+interval:document.getElementById("tf").value,
 timezone:"Etc/UTC",
 theme:"dark",
 style:"1",
@@ -206,38 +232,21 @@ toolbar_bg:"#08192d",
 hide_side_toolbar:false,
 allow_symbol_change:true,
 withdateranges:true,
-studies:["Volume@tv-basicstudies"],
+studies:["Volume@tv-basicstudies","MASimple@tv-basicstudies"],
 enable_publishing:false,
 save_image:false
 });
-
-function rand(min,max){return (Math.random()*(max-min)+min).toFixed(2)}
-
-function updateData(){
-document.getElementById("btcspot").innerHTML = rand(0.80,1.90)+"B";
-document.getElementById("btcperp").innerHTML = rand(2.20,5.20)+"B";
-document.getElementById("ethspot").innerHTML = rand(0.40,1.20)+"B";
-document.getElementById("ethperp").innerHTML = rand(1.40,3.40)+"B";
-
-let d=(Math.random()*900-250).toFixed(0);
-let el=document.getElementById("delta");
-el.innerHTML=(d>0?"+":"")+d+"M";
-el.className=d>0?"green":"red";
-
-document.getElementById("cvd").innerHTML=d>0?"RISING":"FALLING";
-document.getElementById("cvd").className=d>0?"green":"red";
 }
-setInterval(updateData,1600);
-updateData();
+reloadChart();
 
 function matrix(){
-let rows=[
-["BTC.D","▼ 58.1%","red"],
-["ETH.D","▲ 10.7%","green"],
-["USDT.D","▼ 6.6%","red"],
-["ETHBTC","▲ 0.0315","green"],
-["TOTAL","▲ 3.01T","green"],
-["OTHERS","▲ 0.92T","green"]
+const rows=[
+["BTC.D","▼ 58.0%","red"],
+["ETH.D","▲ 10.9%","green"],
+["USDT.D","▼ 6.5%","red"],
+["ETHBTC","▲ 0.0318","green"],
+["TOTAL","▲ 3.08T","green"],
+["OTHERS","▲ 0.95T","green"]
 ];
 let h="";
 rows.forEach(r=>{
@@ -248,24 +257,36 @@ document.getElementById("matrix").innerHTML=h;
 matrix();
 
 const msgs=[
-"Binance perp buyers aggressive",
-"Coinbase BTC spot absorption",
-"ETH leadership strengthening",
-"Hyperliquid delta positive",
-"Bybit short squeeze risk",
-"USDT dominance weakening",
-"TOTAL breakout confirmed",
-"Whale accumulation detected"
+"ETH leadership confirmed",
+"BTC dominance cooling",
+"Spot absorption detected",
+"Perp buyers aggressive",
+"TOTAL breakout active",
+"Whale ladder bids active",
+"USDT demand fading",
+"Alt rotation accelerating"
 ];
 
-function pushFeed(){
+function feedPush(){
 const el=document.getElementById("feed");
 const t=new Date().toLocaleTimeString();
 el.innerHTML="<div>"+t+" • "+msgs[Math.floor(Math.random()*msgs.length)]+"</div>"+el.innerHTML;
 while(el.children.length>18){el.removeChild(el.lastChild);}
 }
-setInterval(pushFeed,1700);
-pushFeed();
+setInterval(feedPush,1600);
+feedPush();
+
+function rnd(a,b){return (Math.random()*(b-a)+a).toFixed(2);}
+setInterval(()=>{
+document.getElementById("b1").innerHTML=rnd(0.9,1.9)+"B";
+document.getElementById("b2").innerHTML=rnd(2.5,5.4)+"B";
+document.getElementById("e1").innerHTML=rnd(0.5,1.4)+"B";
+document.getElementById("e2").innerHTML=rnd(1.4,3.8)+"B";
+let d=(Math.random()*900-250).toFixed(0);
+const de=document.getElementById("delta");
+de.innerHTML=(d>0?"+":"")+d+"M";
+de.className=d>0?"green":"red";
+},1800);
 </script>
 
 </body>
