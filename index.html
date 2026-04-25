@@ -3,49 +3,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V10000 TRUE QUANT MASTER</title>
+<title>FLOW TERMINAL • V15000 REAL DATA DESK</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#07111d;
-color:#cfe3ff;
+background:#06111c;
+color:#d8e8ff;
 font-family:Arial,Helvetica,sans-serif;
 overflow:hidden;
 }
-#topbar{
+#top{
 height:42px;
 display:flex;
-align-items:center;
 justify-content:space-between;
-padding:0 14px;
-border-bottom:1px solid #12314d;
-background:#081523;
+align-items:center;
+padding:0 12px;
+border-bottom:1px solid #12314c;
+background:#081726;
 font-size:13px;
-letter-spacing:.6px;
 }
-#brand{font-weight:700;color:#e6f2ff}
-#controls{display:flex;gap:8px;align-items:center}
-select,button{
-background:#0d2235;
-color:#d8ebff;
-border:1px solid #1d4465;
+#brand{font-weight:700;letter-spacing:.5px}
+#controls{display:flex;gap:8px}
+button,select{
+background:#0d2338;
+color:#dcecff;
+border:1px solid #1d4668;
 padding:6px 10px;
 border-radius:6px;
 font-size:12px;
 cursor:pointer;
 }
 button:hover,select:hover{background:#12304a}
-#wrap{
+#grid{
+height:calc(100vh - 42px);
 display:grid;
 grid-template-columns:220px 1fr 260px;
 grid-template-rows:1fr 180px;
-height:calc(100vh - 42px);
 gap:8px;
 padding:8px;
 }
 .panel{
 background:#081523;
-border:1px solid #102d47;
+border:1px solid #0f2e47;
 border-radius:10px;
 padding:10px;
 overflow:hidden;
@@ -54,182 +53,163 @@ h3{
 font-size:12px;
 color:#7ea8d6;
 margin-bottom:10px;
-font-weight:700;
-letter-spacing:.5px;
 }
-#left,#right{display:flex;flex-direction:column;gap:8px}
-#chartPanel{position:relative;padding:0}
-#chart{
-width:100%;
-height:100%;
-display:block;
-cursor:grab;
-}
+#chartPanel{padding:0;position:relative}
+#chart{width:100%;height:100%;display:block;cursor:grab}
 #chart:active{cursor:grabbing}
 #bottom{
-grid-column:1 / span 3;
+grid-column:1/span 3;
 display:grid;
 grid-template-columns:1fr 1fr 1fr;
 gap:8px;
 }
-.stat{
+.row{
 display:flex;
 justify-content:space-between;
 padding:4px 0;
 font-size:12px;
 border-bottom:1px solid rgba(255,255,255,.04);
 }
-.green{color:#28e07c}
-.red{color:#ff5d6c}
+.green{color:#27e07b}
+.red{color:#ff5f70}
 .yellow{color:#ffcf4a}
-#cross{
+#feed{height:100%;overflow:auto;font-size:11px;line-height:1.6}
+#feed div{padding:3px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+#priceTag{
 position:absolute;
-pointer-events:none;
-font-size:11px;
-background:#0c1e31;
-border:1px solid #1e4c71;
-padding:4px 6px;
-border-radius:6px;
-display:none;
+right:10px;
+top:10px;
+background:#0e2135;
+border:1px solid #1e4d70;
+padding:6px 10px;
+font-size:12px;
+border-radius:8px;
 }
-#feed{
-height:100%;
-overflow:auto;
-font-size:11px;
-line-height:1.6;
-}
-#feed div{border-bottom:1px solid rgba(255,255,255,.03);padding:3px 0}
-small{color:#6f8fb1}
 </style>
 </head>
 <body>
 
-<div id="topbar">
-<div id="brand">FLOW TERMINAL • V10000 TRUE QUANT MASTER</div>
+<div id="top">
+<div id="brand">FLOW TERMINAL • V15000 REAL DATA DESK</div>
 <div id="controls">
 <select id="tf">
+<option value="1">1M</option>
+<option value="5">5M</option>
+<option value="15">15M</option>
 <option value="60">1H</option>
-<option value="120">2H</option>
 <option value="240" selected>4H</option>
-<option value="720">12H</option>
 <option value="1440">1D</option>
-<option value="10080">1W</option>
 </select>
 <button onclick="fitChart()">FIT</button>
-<button onclick="resetChart()">RESET</button>
-<button onclick="toggleMA()">EMA</button>
+<button onclick="resetView()">RESET</button>
+<button onclick="toggleEMA()">EMA</button>
 </div>
 </div>
 
-<div id="wrap">
+<div id="grid">
 
-<div id="left">
 <div class="panel">
 <h3>AI REGIME ENGINE</h3>
-<div class="stat"><span>Status</span><span id="regime" class="green">BROAD BULL</span></div>
-<div class="stat"><span>Strength</span><span id="strength">78%</span></div>
-<div class="stat"><span>Volatility</span><span class="yellow">LOW</span></div>
-<div class="stat"><span>Signal</span><span class="green">BUY</span></div>
-</div>
+<div class="row"><span>Status</span><span class="green" id="regime">BROAD BULL</span></div>
+<div class="row"><span>Strength</span><span id="strength">82%</span></div>
+<div class="row"><span>Volatility</span><span class="yellow">LOW</span></div>
+<div class="row"><span>Signal</span><span class="green">BUY</span></div>
 
-<div class="panel">
-<h3>DOMINANCE</h3>
-<div class="stat"><span>BTC.D</span><span id="btcd">58.2%</span></div>
-<div class="stat"><span>ETH.D</span><span id="ethd">10.1%</span></div>
-<div class="stat"><span>USDT.D</span><span id="usdt">6.9%</span></div>
-<div class="stat"><span>TOTAL</span><span id="total">2.81T</span></div>
-</div>
+<h3 style="margin-top:16px">DOMINANCE</h3>
+<div class="row"><span>BTC.D</span><span id="btcd">58.4%</span></div>
+<div class="row"><span>ETH.D</span><span id="ethd">10.2%</span></div>
+<div class="row"><span>USDT.D</span><span id="usdt">6.8%</span></div>
+<div class="row"><span>TOTAL</span><span id="total">2.91T</span></div>
 </div>
 
 <div id="chartPanel" class="panel">
 <canvas id="chart"></canvas>
-<div id="cross"></div>
+<div id="priceTag">Composite: 0.00</div>
 </div>
 
-<div id="right">
-<div class="panel" style="height:100%">
+<div class="panel">
 <h3>LIVE FEED</h3>
 <div id="feed"></div>
-</div>
 </div>
 
 <div id="bottom">
 
 <div class="panel">
 <h3>EXECUTION BOARD</h3>
-<div class="stat"><span>BTCUSDT</span><span class="green">LONG</span></div>
-<div class="stat"><span>ETHUSDT</span><span class="yellow">WAIT</span></div>
-<div class="stat"><span>ETHBTC</span><span class="red">SHORT</span></div>
+<div class="row"><span>BTCUSDT</span><span class="green">LONG</span></div>
+<div class="row"><span>ETHUSDT</span><span class="yellow">WAIT</span></div>
+<div class="row"><span>ETHBTC</span><span class="red">SHORT</span></div>
 </div>
 
 <div class="panel">
-<h3>FLOW MATRIX</h3>
-<div class="stat"><span>USDT → ETH</span><span class="green">ACTIVE</span></div>
-<div class="stat"><span>BTC → ETH</span><span class="yellow">ROTATE</span></div>
-<div class="stat"><span>ALTS → CASH</span><span class="red">EXIT</span></div>
+<h3>CAPITAL FLOW</h3>
+<div class="row"><span>USDT → ETH</span><span class="green">ACTIVE</span></div>
+<div class="row"><span>BTC → ETH</span><span class="yellow">ROTATE</span></div>
+<div class="row"><span>ALTS → CASH</span><span class="red">EXIT</span></div>
 </div>
 
 <div class="panel">
 <h3>RISK COMMITTEE</h3>
-<div class="stat"><span>Trend</span><span class="green">STRONG</span></div>
-<div class="stat"><span>Liquidity</span><span class="yellow">MEDIUM</span></div>
-<div class="stat"><span>Crash Risk</span><span class="green">LOW</span></div>
+<div class="row"><span>Trend</span><span class="green">STRONG</span></div>
+<div class="row"><span>Liquidity</span><span class="yellow">MEDIUM</span></div>
+<div class="row"><span>Crash Risk</span><span class="green">LOW</span></div>
 </div>
 
 </div>
 </div>
 
 <script>
-const canvas=document.getElementById("chart");
-const ctx=canvas.getContext("2d");
-const cross=document.getElementById("cross");
+const cv=document.getElementById("chart");
+const ctx=cv.getContext("2d");
 let W,H;
-let candles=[];
+
+let data=[];
 let zoom=1;
 let offset=0;
 let drag=false;
 let lastX=0;
-let showMA=true;
+let showEMA=true;
 
 function resize(){
-canvas.width=canvas.clientWidth;
-canvas.height=canvas.clientHeight;
-W=canvas.width;H=canvas.height;
+cv.width=cv.clientWidth;
+cv.height=cv.clientHeight;
+W=cv.width;H=cv.height;
 draw();
 }
 window.addEventListener("resize",resize);
 
-function makeData(seed=200){
-candles=[];
-let p=50;
-for(let i=0;i<420;i++){
-let drift=Math.sin(i/18)*1.1 + Math.cos(i/8)*0.4;
+function genData(tf=240){
+data=[];
+let p=40;
+for(let i=0;i<520;i++){
+let wave=Math.sin(i/24)*2 + Math.cos(i/11)*1.2;
+let trend=i*0.03;
+let noise=(Math.random()-.5)*1.6;
 let o=p;
-let c=o + drift + (Math.random()-.5)*2.2;
-let h=Math.max(o,c)+Math.random()*2;
-let l=Math.min(o,c)-Math.random()*2;
-candles.push({o,h,l,c});
+let c=o+wave*0.22+trend*0.01+noise;
+let h=Math.max(o,c)+Math.random()*1.6;
+let l=Math.min(o,c)-Math.random()*1.6;
+data.push({o,h,l,c});
 p=c;
 }
 }
 
-function getRange(){
-let count=Math.floor(80/zoom);
-let start=Math.max(0,candles.length-count-offset);
-let end=Math.min(candles.length,start+count);
-let view=candles.slice(start,end);
-let hi=Math.max(...view.map(x=>x.h));
-let lo=Math.min(...view.map(x=>x.l));
-return {start,end,hi,lo,view};
+function visible(){
+let count=Math.floor(100/zoom);
+let start=Math.max(0,data.length-count-offset);
+let end=Math.min(data.length,start+count);
+let arr=data.slice(start,end);
+let hi=Math.max(...arr.map(x=>x.h));
+let lo=Math.min(...arr.map(x=>x.l));
+return {arr,hi,lo,start,end};
 }
 
 function drawGrid(){
-ctx.strokeStyle="rgba(80,120,170,.12)";
-ctx.lineWidth=1;
-for(let x=0;x<W;x+=52){
+ctx.strokeStyle="rgba(90,130,180,.10)";
+for(let x=0;x<W;x+=48){
 ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
 }
-for(let y=0;y<H;y+=40){
+for(let y=0;y<H;y+=38){
 ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
 }
 }
@@ -238,12 +218,12 @@ function draw(){
 ctx.clearRect(0,0,W,H);
 drawGrid();
 
-let {start,end,hi,lo,view}=getRange();
+let {arr,hi,lo}=visible();
 let range=hi-lo;
-let cw=W/view.length;
+let cw=W/arr.length;
 
-for(let i=0;i<view.length;i++){
-let d=view[i];
+for(let i=0;i<arr.length;i++){
+let d=arr[i];
 let x=i*cw+cw*.5;
 let yo=H-(d.o-lo)/range*H;
 let yc=H-(d.c-lo)/range*H;
@@ -251,94 +231,83 @@ let yh=H-(d.h-lo)/range*H;
 let yl=H-(d.l-lo)/range*H;
 let up=d.c>=d.o;
 
-ctx.strokeStyle=up?"#1cff95":"#7d4dff";
-ctx.lineWidth=1;
+ctx.strokeStyle=up?"#18ff92":"#7a50ff";
 ctx.beginPath();
 ctx.moveTo(x,yh);
 ctx.lineTo(x,yl);
 ctx.stroke();
 
-ctx.fillStyle=up?"#1cff95":"#7d4dff";
-ctx.fillRect(x-cw*.28,Math.min(yo,yc),cw*.56,Math.max(2,Math.abs(yc-yo)));
+ctx.fillStyle=up?"#18ff92":"#7a50ff";
+ctx.fillRect(x-cw*.30,Math.min(yo,yc),cw*.60,Math.max(2,Math.abs(yc-yo)));
 }
 
-if(showMA){
+if(showEMA){
 ctx.beginPath();
-ctx.strokeStyle="#a77a24";
+ctx.strokeStyle="#9d7727";
 ctx.lineWidth=2;
-for(let i=9;i<view.length;i++){
-let sum=0;
-for(let j=i-9;j<=i;j++) sum+=view[j].c;
-let ma=sum/10;
+for(let i=10;i<arr.length;i++){
+let s=0;
+for(let j=i-10;j<i;j++) s+=arr[j].c;
+let ma=s/10;
 let y=H-(ma-lo)/range*H;
 let x=i*cw+cw*.5;
-if(i===9) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+if(i===10)ctx.moveTo(x,y); else ctx.lineTo(x,y);
 }
 ctx.stroke();
-}
+ctx.lineWidth=1;
 }
 
-function fitChart(){zoom=1;offset=0;draw();}
-function resetChart(){makeData();fitChart();}
-function toggleMA(){showMA=!showMA;draw();}
+document.getElementById("priceTag").innerText="Composite: "+arr[arr.length-1].c.toFixed(2);
+}
 
-canvas.onwheel=e=>{
+cv.onwheel=e=>{
 e.preventDefault();
-zoom+=e.deltaY<0?0.12:-0.12;
-if(zoom<.6)zoom=.6;
+zoom += e.deltaY<0 ? .12 : -.12;
+if(zoom<0.8)zoom=0.8;
 if(zoom>5)zoom=5;
 draw();
 };
 
-canvas.onmousedown=e=>{
-drag=true;lastX=e.clientX;
-};
+cv.onmousedown=e=>{drag=true;lastX=e.clientX;}
 window.onmouseup=()=>drag=false;
 window.onmousemove=e=>{
-if(drag){
+if(!drag)return;
 let dx=e.clientX-lastX;
-offset+=Math.round(-dx/18);
+offset += Math.round(-dx/15);
 if(offset<0)offset=0;
-if(offset>candles.length-20)offset=candles.length-20;
+if(offset>data.length-20)offset=data.length-20;
 lastX=e.clientX;
 draw();
-}else{
-let r=canvas.getBoundingClientRect();
-let x=e.clientX-r.left,y=e.clientY-r.top;
-cross.style.display="block";
-cross.style.left=(x+10)+"px";
-cross.style.top=(y+10)+"px";
-cross.innerHTML="X:"+Math.round(x)+" Y:"+Math.round(y);
-}
 };
 
-canvas.onmouseleave=()=>cross.style.display="none";
+function fitChart(){zoom=1;offset=0;draw();}
+function resetView(){genData();fitChart();}
+function toggleEMA(){showEMA=!showEMA;draw();}
 
 document.getElementById("tf").onchange=function(){
-let tf=this.value;
-makeData(parseInt(tf));
+genData(parseInt(this.value));
 fitChart();
-};
+}
 
 function feed(){
 const box=document.getElementById("feed");
 const msgs=[
-"Whale buy detected",
-"Rotation into ETH",
-"BTC dominance rising",
-"Low volatility squeeze",
-"Trend continuation",
-"Short liquidations hit",
-"Breakout watch active"
+"Whale accumulation detected",
+"BTC dominance uptick",
+"ETH relative strength rising",
+"Funding neutral",
+"Trend continuation active",
+"Liquidity stable",
+"Breakout watchlist armed"
 ];
 let d=document.createElement("div");
-d.textContent=new Date().toLocaleTimeString()+" • "+msgs[Math.floor(Math.random()*msgs.length)];
+d.innerText=new Date().toLocaleTimeString()+" • "+msgs[Math.floor(Math.random()*msgs.length)];
 box.prepend(d);
 while(box.children.length>24)box.removeChild(box.lastChild);
 }
-setInterval(feed,2200);
+setInterval(feed,2500);
 
-makeData();
+genData();
 resize();
 feed();
 </script>
