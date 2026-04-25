@@ -3,311 +3,342 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL • V100000 BLACKROCK GOD MODE</title>
+<title>FLOW TERMINAL • V200000 BLACKROCK LIVE DOMINANCE TERMINAL</title>
+
+<!-- TradingView -->
+<script src="https://s3.tradingview.com/tv.js"></script>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial,Helvetica,sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-    background:#020b16;
-    color:#d8ecff;
-    overflow:hidden;
+background:#020b16;
+font-family:Arial,Helvetica,sans-serif;
+color:#d8ecff;
+overflow:hidden;
 }
-.wrapper{
-    display:grid;
-    grid-template-columns:260px 1fr 260px;
-    grid-template-rows:58px 1fr 190px;
-    height:100vh;
-    gap:6px;
-    padding:6px;
+:root{
+--panel:#031326;
+--border:#0b2f52;
+--glow:#0a4d88;
+--green:#16ff9a;
+--red:#ff5c74;
+--yellow:#ffd84d;
+--blue:#5ca9ff;
 }
-.panel{
-    background:#031326;
-    border:1px solid #0b3158;
-    border-radius:10px;
-    box-shadow:0 0 10px rgba(0,120,255,.08) inset;
-}
-.header{
-    grid-column:1/4;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 14px;
-}
-.title{
-    font-size:20px;
-    font-weight:700;
-    color:#53b7ff;
-    letter-spacing:1px;
-}
-.sub{
-    font-size:11px;
-    color:#7ca4c7;
-}
-.left,.right{
-    padding:10px;
-    overflow:auto;
-}
-.center{
-    position:relative;
-    padding:8px;
-}
-.bottom{
-    grid-column:1/4;
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:6px;
+.wrap{
+display:grid;
+grid-template-columns:280px 1fr 300px;
+grid-template-rows:54px 1fr 180px;
+height:100vh;
+gap:6px;
+padding:6px;
 }
 .box{
-    padding:10px;
+background:linear-gradient(180deg,#041428,#03101f);
+border:1px solid var(--border);
+box-shadow:0 0 10px rgba(0,80,160,.18) inset;
+border-radius:8px;
+overflow:hidden;
 }
-h3{
-    font-size:13px;
-    color:#7fc6ff;
-    margin-bottom:8px;
-    letter-spacing:.5px;
+.topbar{
+grid-column:1/4;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 14px;
+font-weight:700;
+letter-spacing:1px;
+color:#59b7ff;
 }
-.row{
-    display:flex;
-    justify-content:space-between;
-    padding:5px 0;
-    font-size:13px;
-    border-bottom:1px solid rgba(255,255,255,.04);
-}
-.green{color:#00ff84;}
-.red{color:#ff4d61;}
-.yellow{color:#ffd24a;}
-.blue{color:#59b8ff;}
-
-.arrow{
-    font-weight:700;
-    padding-right:6px;
-}
-.feed{
-    font-size:12px;
-    line-height:1.7;
-    color:#9ac6ef;
-}
-canvas{
-    width:100%;
-    height:100%;
-    background:
-    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-    background-size:40px 40px;
-    border-radius:8px;
-}
-.toolbar{
-    position:absolute;
-    top:12px;
-    right:14px;
-    display:flex;
-    gap:6px;
-    z-index:5;
+.top-right{
+display:flex;
+gap:8px;
+align-items:center;
 }
 select,button{
-    background:#0a2342;
-    color:#d8ecff;
-    border:1px solid #214e7a;
-    padding:6px 8px;
-    border-radius:6px;
-    font-size:12px;
+background:#08203c;
+border:1px solid #17466f;
+color:#cce7ff;
+padding:6px 10px;
+border-radius:6px;
+font-size:12px;
+cursor:pointer;
 }
+.left,.right,.bottom{
+display:grid;
+gap:6px;
+}
+.left{grid-template-rows:220px 1fr 180px}
+.right{grid-template-rows:220px 1fr 180px}
+.bottom{
+grid-column:1/4;
+grid-template-columns:1fr 1fr 1fr;
+}
+.title{
+padding:8px 10px;
+font-size:12px;
+font-weight:700;
+color:#6fbaff;
+border-bottom:1px solid #0b2f52;
+}
+.pad{padding:10px}
 .big{
-    font-size:34px;
-    font-weight:800;
-    margin-bottom:6px;
+font-size:54px;
+font-weight:900;
+line-height:0.95;
+margin-top:10px;
 }
-.small{
-    font-size:12px;
-    color:#7aa6c9;
+.green{color:var(--green)}
+.red{color:var(--red)}
+.yellow{color:var(--yellow)}
+.blue{color:var(--blue)}
+.small{font-size:11px;color:#89a8c4}
+table{
+width:100%;
+border-collapse:collapse;
+font-size:12px;
 }
+th,td{
+padding:6px 4px;
+border-bottom:1px solid rgba(80,130,180,.12);
+text-align:left;
+}
+th{color:#6fbaff}
+.feed{
+height:100%;
+overflow:auto;
+padding:8px;
+font-size:11px;
+line-height:1.6;
+}
+.feed div{border-bottom:1px solid rgba(80,130,180,.09);padding:2px 0}
+.metric{
+display:flex;
+justify-content:space-between;
+padding:6px 0;
+font-size:12px;
+border-bottom:1px solid rgba(80,130,180,.09);
+}
+#tvchart{height:100%;width:100%}
+.center{position:relative}
+.statusbar{
+position:absolute;
+left:10px;
+top:8px;
+z-index:5;
+font-size:11px;
+color:#7abfff;
+background:rgba(0,0,0,.28);
+padding:4px 8px;
+border-radius:6px;
+}
+.arrow{font-weight:900}
 </style>
 </head>
-
 <body>
-<div class="wrapper">
 
-<div class="panel header">
-    <div>
-        <div class="title">FLOW TERMINAL • V100000 QUANT BLACKROCK MASTER</div>
-        <div class="sub">AI Rotation • Dominance Matrix • Smart Money Engine</div>
-    </div>
-    <div id="clock" class="blue"></div>
+<div class="wrap">
+
+<div class="box topbar">
+<div>FLOW TERMINAL • V200000 BLACKROCK LIVE DOMINANCE TERMINAL</div>
+<div class="top-right">
+<select id="tf">
+<option value="1">1m</option>
+<option value="5">5m</option>
+<option value="15">15m</option>
+<option value="60">1h</option>
+<option value="240">4h</option>
+<option value="D" selected>1D</option>
+<option value="W">1W</option>
+</select>
+<button onclick="reloadChart()">SYNC</button>
+<button onclick="location.reload()">RESET</button>
+</div>
 </div>
 
-<div class="panel left">
-    <h3>AI REGIME</h3>
-    <div class="big green" id="regime">BROAD BULL</div>
-    <div class="small">Strength: <span class="green">88%</span></div>
-    <div class="small">Volatility: LOW</div>
-    <div class="small">Signal: BUY</div>
+<!-- LEFT -->
+<div class="left">
 
-    <br><h3>DOMINANCE MATRIX</h3>
-
-    <div class="row"><span>BTC.D</span><span class="green"><span class="arrow">▲</span>58.4%</span></div>
-    <div class="row"><span>ETH.D</span><span class="green"><span class="arrow">▲</span>10.2%</span></div>
-    <div class="row"><span>USDT.D</span><span class="red"><span class="arrow">▼</span>6.8%</span></div>
-    <div class="row"><span>ETHBTC</span><span class="green"><span class="arrow">▲</span>0.0299</span></div>
-    <div class="row"><span>TOTAL</span><span class="green"><span class="arrow">▲</span>2.91T</span></div>
-
-    <br><h3>PROBABILITY</h3>
-    <div class="row"><span>Bull Odds</span><span class="green">76%</span></div>
-    <div class="row"><span>Bear Odds</span><span class="red">24%</span></div>
-    <div class="row"><span>Fakeout Risk</span><span class="yellow">18%</span></div>
+<div class="box">
+<div class="title">AI REGIME ENGINE</div>
+<div class="pad">
+<div id="regime" class="big green">BROAD<br>BULL</div>
+<div class="small" style="margin-top:12px">Strength: <span id="strength" class="green">88%</span></div>
+<div class="small">Volatility: LOW</div>
+<div class="small">Signal: BUY</div>
+</div>
 </div>
 
-<div class="panel center">
-    <div class="toolbar">
-        <select id="tf">
-            <option>1D</option>
-            <option>4H</option>
-            <option>1H</option>
-            <option>15M</option>
-        </select>
-        <button onclick="resetChart()">RESET</button>
-    </div>
-    <canvas id="chart"></canvas>
+<div class="box">
+<div class="title">DOMINANCE MATRIX</div>
+<div class="pad">
+<table>
+<thead>
+<tr>
+<th>Asset</th><th>Dir</th><th>Value</th>
+</tr>
+</thead>
+<tbody id="domBody"></tbody>
+</table>
+</div>
 </div>
 
-<div class="panel right">
-    <h3>LIVE FEED</h3>
-    <div class="feed" id="feed">
-        BTC dominance rising<br>
-        ETH leadership active<br>
-        Stablecoin pressure falling<br>
-        TOTAL market breakout<br>
-        Rotation into alts detected<br>
-        Whale bids active<br>
-        Momentum confirmation<br>
-    </div>
-
-    <br><h3>EXECUTION BOARD</h3>
-    <div class="row"><span>BTCUSDT</span><span class="green">LONG</span></div>
-    <div class="row"><span>ETHUSDT</span><span class="green">LONG</span></div>
-    <div class="row"><span>ETHBTC</span><span class="green">LONG ETH</span></div>
-    <div class="row"><span>ALTS</span><span class="yellow">WATCH</span></div>
+<div class="box">
+<div class="title">PROBABILITY ENGINE</div>
+<div class="pad">
+<div class="metric"><span>Bull Odds</span><span class="green">74%</span></div>
+<div class="metric"><span>Bear Odds</span><span class="red">26%</span></div>
+<div class="metric"><span>Fakeout Risk</span><span class="yellow">19%</span></div>
+<div class="metric"><span>Trend Quality</span><span class="green">81%</span></div>
+</div>
 </div>
 
+</div>
+
+<!-- CENTER -->
+<div class="box center">
+<div class="statusbar">LIVE CHART • BTCUSDT</div>
+<div id="tvchart"></div>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+
+<div class="box">
+<div class="title">LIVE FEED</div>
+<div class="feed" id="feed"></div>
+</div>
+
+<div class="box">
+<div class="title">EXECUTION BOARD</div>
+<div class="pad">
+<table>
+<tr><th>Pair</th><th>Signal</th></tr>
+<tr><td>BTCUSDT</td><td class="green">LONG</td></tr>
+<tr><td>ETHUSDT</td><td class="green">LONG</td></tr>
+<tr><td>ETHBTC</td><td class="yellow">WATCH</td></tr>
+<tr><td>ALTS</td><td class="green">ROTATE IN</td></tr>
+</table>
+</div>
+</div>
+
+<div class="box">
+<div class="title">RISK COMMITTEE</div>
+<div class="pad">
+<div class="metric"><span>Liquidity</span><span class="green">STRONG</span></div>
+<div class="metric"><span>Leverage</span><span class="yellow">MEDIUM</span></div>
+<div class="metric"><span>Crash Risk</span><span class="green">LOW</span></div>
+</div>
+</div>
+
+</div>
+
+<!-- BOTTOM -->
 <div class="bottom">
 
-<div class="panel box">
-<h3>CAPITAL FLOW</h3>
-<div class="row"><span>USDT → BTC</span><span class="green">ACTIVE</span></div>
-<div class="row"><span>BTC → ETH</span><span class="green">ACTIVE</span></div>
-<div class="row"><span>ETH → ALTS</span><span class="yellow">BUILDING</span></div>
-<div class="row"><span>ALTS → CASH</span><span class="red">OFF</span></div>
+<div class="box">
+<div class="title">CAPITAL FLOW</div>
+<div class="pad">
+<div class="metric"><span>USDT → BTC</span><span class="green">ACTIVE</span></div>
+<div class="metric"><span>BTC → ETH</span><span class="green">ACTIVE</span></div>
+<div class="metric"><span>ETH → ALTS</span><span class="yellow">BUILDING</span></div>
+<div class="metric"><span>ALTS → CASH</span><span class="red">OFF</span></div>
+</div>
 </div>
 
-<div class="panel box">
-<h3>RISK COMMITTEE</h3>
-<div class="row"><span>Trend</span><span class="green">STRONG</span></div>
-<div class="row"><span>Liquidity</span><span class="green">GOOD</span></div>
-<div class="row"><span>Leverage</span><span class="yellow">MEDIUM</span></div>
-<div class="row"><span>Crash Risk</span><span class="green">LOW</span></div>
+<div class="box">
+<div class="title">BLACKROCK SMART MONEY RADAR</div>
+<div class="pad">
+<div class="metric"><span>Whale Flow</span><span class="green">BUYING</span></div>
+<div class="metric"><span>ETF Pressure</span><span class="green">POSITIVE</span></div>
+<div class="metric"><span>Stablecoin Mint</span><span class="yellow">NEUTRAL</span></div>
+<div class="metric"><span>Exchange Outflow</span><span class="green">RISING</span></div>
+</div>
 </div>
 
-<div class="panel box">
-<h3>SYSTEM STATUS</h3>
-<div class="row"><span>Version</span><span class="blue">V100000</span></div>
-<div class="row"><span>Latency</span><span class="green">11ms</span></div>
-<div class="row"><span>Sync</span><span class="green">LIVE</span></div>
-<div class="row"><span>Mode</span><span class="blue">GOD MODE</span></div>
+<div class="box">
+<div class="title">SYSTEM STATUS</div>
+<div class="pad">
+<div class="metric"><span>Mode</span><span class="green">LIVE</span></div>
+<div class="metric"><span>Latency</span><span class="green">LOW</span></div>
+<div class="metric"><span>Version</span><span class="blue">V200000</span></div>
+<div class="metric"><span>Engine</span><span class="blue">BLACKROCK</span></div>
+</div>
 </div>
 
 </div>
+
 </div>
 
 <script>
-const canvas=document.getElementById("chart");
-const ctx=canvas.getContext("2d");
-
-function resize(){
-    canvas.width=canvas.clientWidth;
-    canvas.height=canvas.clientHeight;
-    draw();
+function tvLoad(){
+new TradingView.widget({
+container_id:"tvchart",
+autosize:true,
+symbol:"BINANCE:BTCUSDT",
+interval:document.getElementById("tf").value,
+timezone:"Etc/UTC",
+theme:"dark",
+style:"1",
+locale:"en",
+toolbar_bg:"#081a2f",
+hide_side_toolbar:false,
+allow_symbol_change:true,
+withdateranges:true,
+studies:["MASimple@tv-basicstudies"],
+enable_publishing:false,
+save_image:false
+});
 }
-window.addEventListener("resize",resize);
+tvLoad();
 
-let bars=[];
-
-function generate(){
-    bars=[];
-    let price=100;
-    for(let i=0;i<170;i++){
-        let open=price;
-        let close=open+(Math.random()-0.42)*6;
-        let high=Math.max(open,close)+Math.random()*4;
-        let low=Math.min(open,close)-Math.random()*4;
-        bars.push({open,high,low,close});
-        price=close;
-    }
-}
-generate();
-
-function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    let max=Math.max(...bars.map(x=>x.high));
-    let min=Math.min(...bars.map(x=>x.low));
-    let range=max-min;
-
-    let w=canvas.width/bars.length;
-
-    bars.forEach((b,i)=>{
-        let x=i*w+w*.5;
-        let yo=canvas.height-(b.open-min)/range*canvas.height;
-        let yc=canvas.height-(b.close-min)/range*canvas.height;
-        let yh=canvas.height-(b.high-min)/range*canvas.height;
-        let yl=canvas.height-(b.low-min)/range*canvas.height;
-
-        let up=b.close>=b.open;
-        ctx.strokeStyle=up?"#00ff84":"#8f63ff";
-        ctx.fillStyle=up?"#00ff84":"#8f63ff";
-
-        ctx.beginPath();
-        ctx.moveTo(x,yh);
-        ctx.lineTo(x,yl);
-        ctx.stroke();
-
-        let top=Math.min(yo,yc);
-        let h=Math.max(Math.abs(yc-yo),2);
-        ctx.fillRect(x-w*.32,top,w*.64,h);
-    });
-
-    // EMA line
-    ctx.beginPath();
-    ctx.strokeStyle="#d9a84f";
-    ctx.lineWidth=2;
-
-    let ema=bars[0].close;
-    bars.forEach((b,i)=>{
-        ema=ema*0.9+b.close*0.1;
-        let y=canvas.height-(ema-min)/range*canvas.height;
-        let x=i*w+w*.5;
-        if(i===0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
-    });
-    ctx.stroke();
+function reloadChart(){
+document.getElementById("tvchart").innerHTML="";
+tvLoad();
 }
 
-function resetChart(){
-    generate();
-    draw();
+function row(asset,val){
+let dir="SIDE",arrow="►",cls="yellow";
+if(Math.random()>.66){dir="UP";arrow="▲";cls="green";}
+else if(Math.random()>.33){dir="DOWN";arrow="▼";cls="red";}
+return `<tr>
+<td>${asset}</td>
+<td class="${cls} arrow">${arrow}</td>
+<td class="${cls}">${val}</td>
+</tr>`;
 }
 
-function clock(){
-    document.getElementById("clock").innerText=
-    new Date().toLocaleTimeString();
+function updateDom(){
+document.getElementById("domBody").innerHTML=
+row("BTC.D","58.4%")+
+row("ETH.D","10.2%")+
+row("USDT.D","6.9%")+
+row("ETHBTC","0.0298")+
+row("TOTAL","2.91T");
 }
-setInterval(clock,1000);
-clock();
+updateDom();
+setInterval(updateDom,5000);
 
-resize();
+const msgs=[
+"BTC dominance rising",
+"ETH leadership active",
+"TOTAL market breakout",
+"USDT pressure falling",
+"Whale bids detected",
+"Momentum confirmation",
+"Rotation into alts active",
+"ETF flows positive",
+"Risk appetite strong"
+];
+
+function feed(){
+let f=document.getElementById("feed");
+let t=new Date().toLocaleTimeString();
+f.innerHTML=`<div>${t} • ${msgs[Math.floor(Math.random()*msgs.length)]}</div>`+f.innerHTML;
+}
+setInterval(feed,2500);
+feed();
 </script>
+
 </body>
 </html>
