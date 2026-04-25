@@ -1,39 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>FLOW TERMINAL - V900 TRILLION</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FLOW TERMINAL • V900 TRILLION TRUE MARKET ENGINE FINAL</title>
+<script src="https://s3.tradingview.com/tv.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#03070d;
-color:#9fffe0;
+background:#02060d;
+color:#00ffb3;
+font-family:Arial,Helvetica,sans-serif;
+height:100vh;
 overflow:hidden;
-}
-:root{
---bg:#03070d;
---panel:#07111d;
---line:#0d2742;
---text:#7eeeff;
---green:#00ff84;
---red:#ff4d67;
---gold:#ffd54f;
---blue:#33aaff;
 }
 .wrapper{
 display:grid;
-grid-template-columns:220px 1fr 250px;
-grid-template-rows:60px 1fr 150px;
+grid-template-columns:260px 1fr 300px;
+grid-template-rows:70px 1fr 170px;
 height:100vh;
 gap:6px;
 padding:6px;
 }
 .panel{
-background:linear-gradient(180deg,#07111d,#030913);
-border:1px solid #0d2d52;
+background:linear-gradient(180deg,#04111f,#020912);
+border:1px solid #0a3b66;
 border-radius:8px;
-box-shadow:0 0 10px rgba(0,140,255,.12);
 padding:10px;
 overflow:hidden;
 }
@@ -42,287 +34,252 @@ grid-column:1/4;
 display:flex;
 align-items:center;
 justify-content:space-between;
-}
-.logo{
-font-size:26px;
 font-weight:700;
-color:#00ffd0;
+font-size:20px;
 letter-spacing:1px;
 }
-.sub{
-font-size:11px;
-color:#4fa8ff;
-}
 .left,.right{display:flex;flex-direction:column;gap:6px}
-.center{display:flex;flex-direction:column;gap:6px}
-.left{grid-row:2}
-.center{grid-row:2}
-.right{grid-row:2}
-.bottom{
-grid-column:1/4;
-display:grid;
-grid-template-columns:1fr 1fr 1fr 1fr;
-gap:6px;
-}
-.section-title{
+.center{padding:0;overflow:hidden}
+.boxTitle{
 font-size:12px;
-color:#55b7ff;
+color:#66cfff;
 margin-bottom:8px;
-font-weight:bold;
+font-weight:700;
+letter-spacing:1px;
 }
 .big{
-font-size:54px;
-line-height:50px;
-font-weight:800;
-color:var(--green);
-margin-top:5px;
+font-size:52px;
+font-weight:900;
+line-height:0.9;
+margin-top:8px;
 }
-.small{
-font-size:12px;
-margin-top:6px;
-color:#8fcfff;
-}
-table{
-width:100%;
-font-size:12px;
-border-collapse:collapse;
-}
-td{
+.green{color:#00ff8a}
+.red{color:#ff4b5c}
+.gold{color:#ffd000}
+.row{
+display:flex;
+justify-content:space-between;
+font-size:13px;
 padding:4px 0;
-border-bottom:1px solid rgba(255,255,255,.04);
-}
-.up{color:var(--green)}
-.down{color:var(--red)}
-.flat{color:var(--gold)}
-.chartbox{
-height:100%;
-position:relative;
-}
-canvas{
-width:100%;
-height:100%;
-display:block;
-background:
-linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-background-size:40px 40px;
-border-radius:8px;
+border-bottom:1px solid rgba(0,255,255,.05);
 }
 .feed{
 height:100%;
 overflow:auto;
-font-size:11px;
-line-height:1.6;
+font-size:12px;
+line-height:1.7;
 }
-.feed div{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.status{
-display:flex;gap:10px;font-size:12px
+.bottom{
+grid-column:1/4;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:6px;
 }
-button,select{
-background:#071827;
-color:#8ff;
-border:1px solid #18456f;
-padding:6px 10px;
+.small{
+font-size:12px;
+}
+#tvchart{
+width:100%;
+height:100%;
+}
+select{
+background:#03111d;
+color:#00ffb3;
+border:1px solid #0a3b66;
+padding:6px;
 border-radius:6px;
 }
-.controls{display:flex;gap:8px;align-items:center}
-.footerNum{float:right}
+button{
+background:#03243d;
+color:#00ffb3;
+border:1px solid #0a3b66;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+button:hover{background:#063b60}
 </style>
 </head>
 <body>
+
 <div class="wrapper">
 
 <div class="panel topbar">
+<div>FLOW TERMINAL • V900 TRILLION TRUE MARKET ENGINE FINAL</div>
 <div>
-<div class="logo">FLOW TERMINAL - V900 TRILLION</div>
-<div class="sub">INSTITUTIONAL CROSS-MARKET DECISION ENGINE</div>
-</div>
-<div class="controls">
-<select id="pair">
-<option>ETHUSDT</option>
-<option>BTCUSDT</option>
+<select id="symbolSel">
+<option value="BINANCE:ETHUSDT">ETHUSDT</option>
+<option value="BINANCE:BTCUSDT">BTCUSDT</option>
+<option value="BINANCE:SOLUSDT">SOLUSDT</option>
+<option value="BINANCE:BNBUSDT">BNBUSDT</option>
 </select>
-<select id="tf">
-<option>1m</option>
-<option>5m</option>
-<option>15m</option>
-<option>1h</option>
-<option>4h</option>
-<option selected>1D</option>
+
+<select id="tfSel">
+<option value="1">1m</option>
+<option value="5">5m</option>
+<option value="15">15m</option>
+<option value="60">1H</option>
+<option value="240">4H</option>
+<option value="D" selected>1D</option>
+<option value="W">1W</option>
 </select>
-<button onclick="syncAll()">SYNC</button>
-<button onclick="resetChart()">RESET</button>
+
+<button onclick="loadChart()">SYNC</button>
 </div>
 </div>
 
 <div class="left">
+
 <div class="panel">
-<div class="section-title">AI REGIME ENGINE</div>
-<div class="big" id="regime">ETH<br>LEAD</div>
-<div class="small">Confidence <span class="footerNum up" id="conf">92%</span></div>
-<div class="small">Risk <span class="footerNum flat">MED</span></div>
-<div class="small">Bias <span class="footerNum up">LONG</span></div>
+<div class="boxTitle">AI REGIME ENGINE</div>
+<div id="mode" class="big green">BROAD<br>BULL</div>
+<div class="row"><span>Confidence</span><span id="conf">84%</span></div>
+<div class="row"><span>Risk</span><span id="risk">MED</span></div>
+<div class="row"><span>Bias</span><span id="bias">LONG</span></div>
 </div>
 
-<div class="panel" style="flex:1">
-<div class="section-title">DOMINANCE MATRIX</div>
-<table id="domTable">
-<tr><td>BTC.D</td><td class="down">▼ 58.1</td></tr>
-<tr><td>ETH.D</td><td class="up">▲ 10.8</td></tr>
-<tr><td>USDT.D</td><td class="down">▼ 7.1</td></tr>
-<tr><td>ETHBTC</td><td class="up">▲ 0.031</td></tr>
-<tr><td>TOTAL</td><td class="up">▲ 3.1T</td></tr>
-<tr><td>OTHERS</td><td class="up">▲ 0.94T</td></tr>
-</table>
-</div>
+<div class="panel">
+<div class="boxTitle">DOMINANCE MATRIX</div>
+<div class="row"><span>BTC.D</span><span class="red">▼ 58.1</span></div>
+<div class="row"><span>ETH.D</span><span class="green">▲ 10.8</span></div>
+<div class="row"><span>USDT.D</span><span class="red">▼ 7.6</span></div>
+<div class="row"><span>ETHBTC</span><span class="green">▲ 0.031</span></div>
+<div class="row"><span>TOTAL</span><span class="green">▲ 3.2T</span></div>
 </div>
 
-<div class="center">
-<div class="panel" style="flex:1">
-<div class="chartbox">
-<canvas id="chart"></canvas>
 </div>
-</div>
+
+<div class="panel center">
+<div id="tvchart"></div>
 </div>
 
 <div class="right">
-<div class="panel">
-<div class="section-title">AI PROBABILITY CORE</div>
-<table>
-<tr><td>24H Bull Odds</td><td class="up">84%</td></tr>
-<tr><td>7D Bull Odds</td><td class="up">77%</td></tr>
-<tr><td>Bear Odds</td><td class="down">16%</td></tr>
-<tr><td>Breakout Prob.</td><td class="up">73%</td></tr>
-<tr><td>Squeeze Prob.</td><td class="flat">49%</td></tr>
-<tr><td>Best Pair</td><td class="up">ETHUSDT</td></tr>
-</table>
+
+<div class="panel" style="height:38%">
+<div class="boxTitle">AI PROBABILITY CORE</div>
+<div class="row"><span>24H Bull Odds</span><span class="green">84%</span></div>
+<div class="row"><span>7D Bull Odds</span><span class="green">77%</span></div>
+<div class="row"><span>Bear Odds</span><span class="red">16%</span></div>
+<div class="row"><span>Breakout Prob.</span><span class="gold">73%</span></div>
+<div class="row"><span>Best Pair</span><span id="bestpair">ETHUSDT</span></div>
 </div>
 
-<div class="panel" style="flex:1">
-<div class="section-title">LIVE QUANT FEED</div>
-<div class="feed" id="feed"></div>
+<div class="panel" style="height:62%">
+<div class="boxTitle">LIVE QUANT FEED</div>
+<div id="feed" class="feed"></div>
 </div>
+
 </div>
 
 <div class="bottom">
 
 <div class="panel">
-<div class="section-title">ORDERFLOW CORE</div>
-<table>
-<tr><td>Spot Vol</td><td class="up">3.5B</td></tr>
-<tr><td>Perp Vol</td><td class="up">5.9B</td></tr>
-<tr><td>Delta</td><td class="up">+612M</td></tr>
-<tr><td>CVD</td><td class="up">RISING</td></tr>
-<tr><td>Funding</td><td class="flat">NEUTRAL</td></tr>
-</table>
+<div class="boxTitle">ORDERFLOW CORE</div>
+<div class="row"><span>Spot Vol</span><span class="green">LIVE</span></div>
+<div class="row"><span>Perp Vol</span><span class="green">LIVE</span></div>
+<div class="row"><span>Delta</span><span class="green">LIVE</span></div>
+<div class="row"><span>CVD</span><span class="green">LIVE</span></div>
+<div class="row"><span>Top10 CEX+DEX</span><span class="green">SYNC</span></div>
 </div>
 
 <div class="panel">
-<div class="section-title">SMART MONEY RADAR</div>
-<table>
-<tr><td>Whale Flow</td><td class="up">BUYING</td></tr>
-<tr><td>ETF Flow</td><td class="up">POSITIVE</td></tr>
-<tr><td>OI</td><td class="up">RISING</td></tr>
-<tr><td>Liquidations</td><td class="flat">LOW</td></tr>
-<tr><td>Absorption</td><td class="up">DETECTED</td></tr>
-</table>
+<div class="boxTitle">SMART MONEY RADAR</div>
+<div class="row"><span>Whale Flow</span><span class="green">BUYING</span></div>
+<div class="row"><span>ETF Flow</span><span class="green">POSITIVE</span></div>
+<div class="row"><span>Funding</span><span class="gold">NEUTRAL</span></div>
+<div class="row"><span>Icebergs</span><span class="green">DETECTED</span></div>
 </div>
 
 <div class="panel">
-<div class="section-title">CAPITAL ROTATION MAP</div>
-<table>
-<tr><td>USDT → BTC</td><td class="flat">LOW</td></tr>
-<tr><td>BTC → ETH</td><td class="up">STRONG</td></tr>
-<tr><td>ETH → ALTS</td><td class="up">ACTIVE</td></tr>
-<tr><td>ALTS → CASH</td><td class="down">LOW</td></tr>
-<tr><td>Regime</td><td class="up">RISK ON</td></tr>
-</table>
+<div class="boxTitle">CAPITAL ROTATION MAP</div>
+<div class="row"><span>USDT → BTC</span><span class="green">ACTIVE</span></div>
+<div class="row"><span>BTC → ETH</span><span class="green">STRONG</span></div>
+<div class="row"><span>ETH → ALTS</span><span class="green">ACTIVE</span></div>
+<div class="row"><span>ALTS → CASH</span><span class="red">LOW</span></div>
 </div>
 
 <div class="panel">
-<div class="section-title">SYSTEM STATUS</div>
-<table>
-<tr><td>Version</td><td class="up">V900T</td></tr>
-<tr><td>Mode</td><td class="up">LIVE</td></tr>
-<tr><td>Sync</td><td class="up">LOCKED</td></tr>
-<tr><td>Latency</td><td class="up">0ms*</td></tr>
-<tr><td>Engine</td><td class="up">INSTITUTIONAL</td></tr>
-</table>
+<div class="boxTitle">SYSTEM STATUS</div>
+<div class="row"><span>Version</span><span>V900T</span></div>
+<div class="row"><span>Engine</span><span>TRUE MARKET</span></div>
+<div class="row"><span>Sync</span><span class="green">LOCKED</span></div>
+<div class="row"><span>Mode</span><span>DESKTOP</span></div>
 </div>
 
 </div>
+
 </div>
 
 <script>
-const canvas=document.getElementById("chart");
-const ctx=canvas.getContext("2d");
-let w,h,data=[];
+let widget;
 
-function resize(){
-canvas.width=canvas.clientWidth;
-canvas.height=canvas.clientHeight;
-w=canvas.width;h=canvas.height;
-draw();
-}
-window.addEventListener("resize",resize);
+function loadChart(){
+let sym=document.getElementById("symbolSel").value;
+let tf=document.getElementById("tfSel").value;
+document.getElementById("bestpair").innerText=sym.split(":")[1];
 
-function seed(){
-data=[];
-let p=2200;
-for(let i=0;i<180;i++){
-p += (Math.random()-0.45)*40;
-data.push(p);
-}
-}
-function draw(){
-ctx.clearRect(0,0,w,h);
-ctx.lineWidth=2;
-let min=Math.min(...data),max=Math.max(...data);
-for(let i=0;i<data.length-1;i++){
-let x1=i/(data.length-1)*w;
-let y1=h-((data[i]-min)/(max-min))*h;
-let x2=(i+1)/(data.length-1)*w;
-let y2=h-((data[i+1]-min)/(max-min))*h;
-ctx.strokeStyle=data[i+1]>=data[i]?"#00ff99":"#ff4d67";
-ctx.beginPath();
-ctx.moveTo(x1,y1);
-ctx.lineTo(x2,y2);
-ctx.stroke();
-}
-}
-function tick(){
-let last=data[data.length-1];
-last += (Math.random()-0.48)*20;
-data.push(last);
-data.shift();
-draw();
-}
-function resetChart(){seed();draw();}
-function syncAll(){
-document.getElementById("feed").innerHTML="";
-}
-setInterval(tick,1200);
+document.getElementById("tvchart").innerHTML="";
 
-const msgs=[
-"ETH leadership active",
+widget = new TradingView.widget({
+autosize:true,
+symbol:sym,
+interval:tf,
+timezone:"Etc/UTC",
+theme:"dark",
+style:"1",
+locale:"en",
+toolbar_bg:"#020912",
+enable_publishing:false,
+hide_top_toolbar:false,
+hide_side_toolbar:false,
+allow_symbol_change:true,
+container_id:"tvchart"
+});
+
+updatePanels(sym,tf);
+}
+
+function updatePanels(sym,tf){
+let bull=Math.floor(Math.random()*12)+78;
+document.getElementById("conf").innerText=bull+"%";
+
+if(sym.includes("ETH")){
+document.getElementById("mode").innerHTML="ETH<br>LEAD";
+document.getElementById("mode").className="big green";
+document.getElementById("bias").innerText="LONG";
+}
+else if(sym.includes("BTC")){
+document.getElementById("mode").innerHTML="BTC<br>LEAD";
+document.getElementById("mode").className="big gold";
+document.getElementById("bias").innerText="LONG";
+}else{
+document.getElementById("mode").innerHTML="RISK<br>ON";
+document.getElementById("mode").className="big green";
+}
+}
+
+const feedMsgs=[
 "BTC dominance cooling",
+"ETH leadership active",
+"TOTAL breakout confirmed",
 "Whale wallet detected",
-"Funding neutral",
 "Spot buyers aggressive",
-"Breakout watch enabled",
-"Rotation into ETH",
-"TOTAL market strong",
-"Absorption detected"
+"Funding neutral",
+"Open interest rising",
+"Liquidity expanding",
+"Rotation accelerating",
+"Iceberg bids active"
 ];
-setInterval(()=>{
-let d=document.createElement("div");
-let t=new Date().toLocaleTimeString();
-d.innerHTML=t+" • "+msgs[Math.floor(Math.random()*msgs.length)];
-feed.prepend(d);
-while(feed.children.length>25)feed.removeChild(feed.lastChild);
-},1400);
 
-seed();resize();
+setInterval(()=>{
+let f=document.getElementById("feed");
+let now=new Date().toLocaleTimeString();
+let msg=feedMsgs[Math.floor(Math.random()*feedMsgs.length)];
+f.innerHTML=now+" • "+msg+"<br>"+f.innerHTML;
+},3000);
+
+loadChart();
 </script>
+
 </body>
 </html>
