@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>V6000 TRUE TRADINGVIEW ENGINE FIXED</title>
+<title>FLOW TERMINAL • V6000 MTF</title>
 
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 
@@ -13,19 +13,37 @@ margin:0;
 padding:0;
 width:100%;
 height:100%;
+overflow:hidden;
 background:#06111f;
 font-family:Arial,Helvetica,sans-serif;
-overflow:hidden;
-color:#dce8f5;
+color:#dfe8f1;
 }
-#top{
+#topbar{
 height:52px;
 display:flex;
 align-items:center;
-padding:0 14px;
-border-bottom:1px solid #0d2a42;
+justify-content:space-between;
+padding:0 12px;
+border-bottom:1px solid #0f2b45;
+}
+#title{
 font-weight:700;
-letter-spacing:.5px;
+font-size:14px;
+letter-spacing:.4px;
+}
+#controls{
+display:flex;
+gap:8px;
+align-items:center;
+}
+select,button{
+background:#0b1d30;
+border:1px solid #1a3a56;
+color:#dfe8f1;
+padding:6px 10px;
+border-radius:6px;
+font-size:12px;
+cursor:pointer;
 }
 #chart{
 width:100%;
@@ -35,15 +53,30 @@ height:calc(100vh - 52px);
 </head>
 <body>
 
-<div id="top">FLOW TERMINAL • V6000 TRUE TRADINGVIEW CHART ENGINE</div>
+<div id="topbar">
+<div id="title">FLOW TERMINAL • V6000 TRUE TRADINGVIEW ENGINE</div>
+
+<div id="controls">
+<select id="tf">
+<option value="60">1H</option>
+<option value="240">4H</option>
+<option value="1440" selected>1D</option>
+<option value="10080">1W</option>
+</select>
+
+<button onclick="fitChart()">FIT</button>
+<button onclick="reloadTF()">RESET</button>
+</div>
+</div>
+
 <div id="chart"></div>
 
 <script>
-const el = document.getElementById("chart");
+const wrap = document.getElementById("chart");
 
-const chart = LightweightCharts.createChart(el,{
-width:el.clientWidth,
-height:el.clientHeight,
+const chart = LightweightCharts.createChart(wrap,{
+width:wrap.clientWidth,
+height:wrap.clientHeight,
 layout:{
 background:{color:"#06111f"},
 textColor:"#7089a3"
@@ -57,116 +90,144 @@ borderColor:"#16324b"
 },
 timeScale:{
 borderColor:"#16324b",
-timeVisible:true,
-secondsVisible:false
-},
-crosshair:{mode:1}
+timeVisible:true
+}
 });
 
 const candle = chart.addCandlestickSeries({
-upColor:"#15e27a",
+upColor:"#19e37d",
 downColor:"#6e42ff",
-borderUpColor:"#15e27a",
+borderUpColor:"#19e37d",
 borderDownColor:"#6e42ff",
-wickUpColor:"#15e27a",
+wickUpColor:"#19e37d",
 wickDownColor:"#6e42ff"
 });
 
 const ema = chart.addLineSeries({
-color:"#b98a2e",
+color:"#b58a35",
 lineWidth:2
 });
 
-let data=[];
-let base=0;
-let time=Math.floor(Date.now()/1000)-300*3600;
+let bars=[];
 
-for(let i=0;i<300;i++){
-let open=base;
-let move=(Math.random()-.5)*3 + Math.sin(i/10)*1.2;
-let close=open+move;
-let high=Math.max(open,close)+Math.random()*1.5;
-let low=Math.min(open,close)-Math.random()*1.5;
+function generate(tfMin){
 
-data.push({
-time:time,
+bars=[];
+
+let now=Math.floor(Date.now()/1000);
+let step=tfMin*60;
+let t=now-(320*step);
+
+let price=10;
+
+for(let i=0;i<320;i++){
+
+let trend=Math.sin(i/18)*1.3;
+let noise=(Math.random()-.5)*1.8;
+
+let open=price;
+let close=open+trend+noise;
+let high=Math.max(open,close)+Math.random()*1.2;
+let low=Math.min(open,close)-Math.random()*1.2;
+
+bars.push({
+time:t,
 open:open,
 high:high,
 low:low,
 close:close
 });
 
-base=close;
-time+=3600;
+price=close;
+t+=step;
 }
 
-candle.setData(data);
+candle.setData(bars);
+buildEMA();
+chart.timeScale().fitContent();
+}
 
-function calcEMA(){
+function buildEMA(){
+
 let out=[];
 let k=2/(21+1);
-let prev=data[0].close;
+let prev=bars[0].close;
 
-for(let i=0;i<data.length;i++){
-prev=data[i].close*k + prev*(1-k);
-out.push({time:data[i].time,value:prev});
+for(let i=0;i<bars.length;i++){
+prev=bars[i].close*k + prev*(1-k);
+out.push({time:bars[i].time,value:prev});
 }
+
 ema.setData(out);
 }
-calcEMA();
 
-chart.timeScale().fitContent();
+function liveTick(){
 
-function updateBar(){
+if(!bars.length) return;
 
-let last=data[data.length-1];
+let tf=parseInt(document.getElementById("tf").value);
+let step=tf*60;
 
-let move=(Math.random()-.5)*1.4;
+let last=bars[bars.length-1];
+let move=(Math.random()-.5)*0.8;
+
 last.close+=move;
 
 if(last.close>last.high) last.high=last.close;
 if(last.close<last.low) last.low=last.close;
 
 candle.update(last);
-
-calcEMA();
+buildEMA();
 }
 
 function newBar(){
 
-let prev=data[data.length-1];
+let tf=parseInt(document.getElementById("tf").value);
+let step=tf*60;
 
-let t=prev.time+3600;
-let open=prev.close;
-let close=open+(Math.random()-.5)*2.5;
+let last=bars[bars.length-1];
+
+let open=last.close;
+let close=open+(Math.random()-.5)*2;
 let high=Math.max(open,close)+Math.random();
 let low=Math.min(open,close)-Math.random();
 
 let bar={
-time:t,
+time:last.time+step,
 open:open,
 high:high,
 low:low,
 close:close
 };
 
-data.push(bar);
+bars.push(bar);
 
-if(data.length>400) data.shift();
+if(bars.length>400) bars.shift();
 
-candle.setData(data);
-calcEMA();
+candle.setData(bars);
+buildEMA();
 }
 
-setInterval(updateBar,1000);
+function reloadTF(){
+generate(parseInt(document.getElementById("tf").value));
+}
+
+function fitChart(){
+chart.timeScale().fitContent();
+}
+
+document.getElementById("tf").addEventListener("change",reloadTF);
+
+generate(1440);
+
+setInterval(liveTick,1000);
 setInterval(newBar,10000);
 
 window.addEventListener("resize",()=>{
 chart.applyOptions({
-width:el.clientWidth,
-height:el.clientHeight
+width:wrap.clientWidth,
+height:wrap.clientHeight
 });
-chart.timeScale().fitContent();
 });
 </script>
 
