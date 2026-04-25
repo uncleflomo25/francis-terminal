@@ -1,215 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL V1200 MULTI-TF</title>
+<title>FLOW TERMINAL V7000</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#06111f;color:#d7e7ff;font-family:Segoe UI,Arial,sans-serif;height:100vh;overflow:hidden}
-.wrap{display:grid;grid-template-columns:40% 40% 20%;grid-template-rows:52% 48%;gap:10px;padding:10px;height:100vh}
-.panel{background:#07192c;border:1px solid #12304f;border-radius:10px;padding:10px;overflow:hidden}
-.title{font-size:12px;font-weight:700;color:#7fbfff;margin-bottom:8px;text-transform:uppercase}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th,td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.05);text-align:left}
-th{color:#7aa7d8;font-size:11px}
-.up{color:#00e676;font-weight:700}
-.down{color:#ff5252;font-weight:700}
-.side{color:#ffd54f;font-weight:700}
-.big{font-size:38px;font-weight:800;margin:10px 0}
-.tag{display:inline-block;padding:5px 8px;border-radius:6px;font-size:11px;font-weight:700}
-.green{background:#08391f;color:#00e676}
-.red{background:#3a1010;color:#ff7373}
-.yellow{background:#3f3205;color:#ffd54f}
-.feed{height:calc(100% - 110px);overflow:auto;margin-top:10px}
-.feed div{font-size:11px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04)}
-.rightcol{grid-row:1 / span 2;display:grid;grid-template-rows:55% 45%;gap:10px}
-.footer{position:fixed;top:8px;right:12px;font-size:11px;color:#8ea9c9}
-select{background:#0a2038;color:#d7e7ff;border:1px solid #183b62;padding:5px;border-radius:6px;font-size:11px;margin-left:6px}
+body{margin:0;background:#06111f;color:#d7e7ff;font-family:Segoe UI}
+.wrap{display:grid;grid-template-columns:60% 40%;height:100vh}
+.panel{padding:10px}
+.title{font-size:12px;color:#7fbfff;margin-bottom:6px}
+table{width:100%;font-size:12px}
+td{padding:4px}
+.bid{color:#00e676}
+.ask{color:#ff5252}
+canvas{background:#07192c;border:1px solid #12304f;border-radius:10px}
 </style>
 </head>
 <body>
 
-<div class="footer" id="clock">LIVE</div>
-
 <div class="wrap">
 
 <div class="panel">
-<div class="title">
-TRUE ASSET MATRIX
-<select id="tf">
-<option value="1d" selected>1 Day</option>
-<option value="4h">4 Hour</option>
-<option value="1h">1 Hour</option>
-<option value="15m">15 Min</option>
-<option value="5m">5 Min</option>
-</select>
-<select id="refresh">
-<option value="5000">5s</option>
-<option value="10000">10s</option>
-<option value="15000">15s</option>
-</select>
-</div>
-<table>
-<thead>
-<tr><th>Asset</th><th>Open</th><th>Live</th><th>%</th><th>Bias</th></tr>
-</thead>
-<tbody id="assetRows"></tbody>
-</table>
+<div class="title">ORDERBOOK HEATMAP</div>
+<canvas id="heatmap" width="700" height="500"></canvas>
 </div>
 
 <div class="panel">
-<div class="title">DOMINANCE TRUE INDEX ENGINE</div>
-<table>
-<thead>
-<tr><th>Metric</th><th>Open</th><th>Live</th><th>%</th><th>Bias</th></tr>
-</thead>
-<tbody id="domRows"></tbody>
-</table>
-</div>
-
-<div class="rightcol">
-
-<div class="panel">
-<div class="title">AI REGIME ENGINE</div>
-<div class="big" id="regime">SYNCING...</div>
-<div id="desc">Loading...</div><br>
-<div id="badge" class="tag yellow">WAIT</div>
-<div class="feed" id="feed"></div>
-</div>
-
-<div class="panel">
-<div class="title">SYNC STATUS</div>
-<table>
-<tr><td>Source</td><td>Binance</td></tr>
-<tr><td>Mode</td><td>Live Spot</td></tr>
-<tr><td>TF</td><td id="tfShow">1 Day</td></tr>
-<tr><td>Refresh</td><td id="rfShow">5s</td></tr>
-<tr><td>Version</td><td>V1200 TF</td></tr>
-</table>
-</div>
-
-</div>
-
-<div class="panel">
-<div class="title">EXECUTION BOARD</div>
-<table>
-<thead>
-<tr><th>Pair</th><th>Signal</th><th>Conf</th><th>Status</th></tr>
-</thead>
-<tbody id="execRows"></tbody>
-</table>
-</div>
-
-<div class="panel">
-<div class="title">CAPITAL FLOW MAP</div>
-<table>
-<tbody id="flowRows">
-<tr><td>USDT</td><td>ETH</td><td class="up">ACTIVE</td><td>Momentum</td></tr>
-<tr><td>BTC</td><td>ETH</td><td class="side">ROTATE</td><td>Relative Shift</td></tr>
-<tr><td>ALTS</td><td>CASH</td><td class="down">EXIT</td><td>Risk Filter</td></tr>
-</tbody>
-</table>
+<div class="title">DOM (DEPTH LADDER)</div>
+<table id="dom"></table>
 </div>
 
 </div>
 
 <script>
-let timer=null;
+const canvas=document.getElementById("heatmap");
+const ctx=canvas.getContext("2d");
 
-function c(v){if(v>0.03)return"up";if(v<-0.03)return"down";return"side";}
-function t(v){if(v>0.03)return"▲ UP";if(v<-0.03)return"▼ DOWN";return"▶ SIDE";}
-function f(n,d=2){return Number(n).toFixed(d);}
-function log(x){
-let box=document.getElementById("feed");
-box.innerHTML="<div>"+new Date().toLocaleTimeString()+" | "+x+"</div>"+box.innerHTML;
+let bids=[],asks=[];
+
+// DRAW HEATMAP
+function drawHeatmap(){
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+let levels=20;
+
+// normalize size
+let maxVol=Math.max(
+...bids.map(b=>b[1]),
+...asks.map(a=>a[1]),
+1
+);
+
+// draw bids (bottom half)
+bids.slice(0,levels).forEach((b,i)=>{
+let intensity=b[1]/maxVol;
+ctx.fillStyle=`rgba(0,255,150,${intensity})`;
+ctx.fillRect(0,canvas.height/2 + i*10,canvas.width,10);
+});
+
+// draw asks (top half)
+asks.slice(0,levels).forEach((a,i)=>{
+let intensity=a[1]/maxVol;
+ctx.fillStyle=`rgba(255,80,80,${intensity})`;
+ctx.fillRect(0,canvas.height/2 - (i+1)*10,canvas.width,10);
+});
 }
 
-function updateClock(){
-document.getElementById("clock").innerText=new Date().toLocaleTimeString()+" | LIVE";
-}
-setInterval(updateClock,1000);
+// UPDATE DOM TABLE
+function updateDOM(){
+let rows="";
 
-async function price(sym){
-let r=await fetch("https://api.binance.com/api/v3/ticker/price?symbol="+sym);
-let j=await r.json();
-return parseFloat(j.price);
-}
-
-async function klineOpen(sym,interval){
-let r=await fetch("https://api.binance.com/api/v3/klines?symbol="+sym+"&interval="+interval+"&limit=1");
-let j=await r.json();
-return parseFloat(j[0][1]);
+for(let i=19;i>=0;i--){
+let a=asks[i];
+if(!a)continue;
+rows+=`<tr><td class="ask">${a[0]}</td><td class="ask">${a[1]}</td></tr>`;
 }
 
-async function load(){
-try{
-let tf=document.getElementById("tf").value;
-document.getElementById("tfShow").innerText=document.getElementById("tf").selectedOptions[0].text;
-document.getElementById("rfShow").innerText=document.getElementById("refresh").selectedOptions[0].text;
+rows+=`<tr><td colspan="2" style="text-align:center">---</td></tr>`;
 
-const [btc,eth,ethbtc,btcO,ethO,ethbtcO]=await Promise.all([
-price("BTCUSDT"),
-price("ETHUSDT"),
-price("ETHBTC"),
-klineOpen("BTCUSDT",tf),
-klineOpen("ETHUSDT",tf),
-klineOpen("ETHBTC",tf)
-]);
-
-let btcCh=((btc-btcO)/btcO)*100;
-let ethCh=((eth-ethO)/ethO)*100;
-let ethbtcCh=((ethbtc-ethbtcO)/ethbtcO)*100;
-let totalCh=(btcCh*.55)+(ethCh*.30)+(ethbtcCh*.15);
-
-let btcD=58+(btcCh*.35)-(ethbtcCh*.25);
-let ethD=10+(ethCh*.25)+(ethbtcCh*.40);
-let usdtD=7-(btcCh*.12)-(ethCh*.12);
-
-document.getElementById("assetRows").innerHTML=`
-<tr><td>BTCUSDT</td><td>${f(btcO)}</td><td>${f(btc)}</td><td class="${c(btcCh)}">${f(btcCh)}%</td><td class="${c(btcCh)}">${t(btcCh)}</td></tr>
-<tr><td>ETHUSDT</td><td>${f(ethO)}</td><td>${f(eth)}</td><td class="${c(ethCh)}">${f(ethCh)}%</td><td class="${c(ethCh)}">${t(ethCh)}</td></tr>
-<tr><td>ETHBTC</td><td>${ethbtcO.toFixed(6)}</td><td>${ethbtc.toFixed(6)}</td><td class="${c(ethbtcCh)}">${f(ethbtcCh)}%</td><td class="${c(ethbtcCh)}">${t(ethbtcCh)}</td></tr>
-<tr><td>TOTAL</td><td>Open</td><td>Live</td><td class="${c(totalCh)}">${f(totalCh)}%</td><td class="${c(totalCh)}">${t(totalCh)}</td></tr>`;
-
-document.getElementById("domRows").innerHTML=`
-<tr><td>BTC.D</td><td>58.00</td><td>${f(btcD)}</td><td class="${c(btcD-58)}">${f(btcD-58)}%</td><td class="${c(btcD-58)}">${t(btcD-58)}</td></tr>
-<tr><td>ETH.D</td><td>10.00</td><td>${f(ethD)}</td><td class="${c(ethD-10)}">${f(ethD-10)}%</td><td class="${c(ethD-10)}">${t(ethD-10)}</td></tr>
-<tr><td>USDT.D</td><td>7.00</td><td>${f(usdtD)}</td><td class="${c(usdtD-7)}">${f(usdtD-7)}%</td><td class="${c(usdtD-7)}">${t(usdtD-7)}</td></tr>`;
-
-let regime="SIDEWAYS",desc="Mixed flow",badge="WAIT",bc="yellow";
-
-if(btcCh>0 && ethCh>0){regime="BROAD BULL";desc="Majors bullish";badge="BUY";bc="green";}
-if(btcCh<0 && ethCh<0){regime="RISK OFF";desc="Majors weak";badge="REDUCE";bc="red";}
-if(ethbtcCh>0.20 && ethCh>btcCh){regime="ALT ROTATION";desc="ETH leadership";badge="BUY ETH";bc="green";}
-
-document.getElementById("regime").innerText=regime;
-document.getElementById("desc").innerText=desc;
-document.getElementById("badge").className="tag "+bc;
-document.getElementById("badge").innerText=badge;
-
-document.getElementById("execRows").innerHTML=`
-<tr><td>BTCUSDT</td><td>${btcCh>0?"LONG":"SHORT"}</td><td>${Math.abs(btcCh*20).toFixed(0)}%</td><td class="${c(btcCh)}">${t(btcCh)}</td></tr>
-<tr><td>ETHUSDT</td><td>${ethCh>0?"LONG":"SHORT"}</td><td>${Math.abs(ethCh*20).toFixed(0)}%</td><td class="${c(ethCh)}">${t(ethCh)}</td></tr>
-<tr><td>ETHBTC</td><td>${ethbtcCh>0?"LONG ETH":"LONG BTC"}</td><td>${Math.abs(ethbtcCh*40).toFixed(0)}%</td><td class="${c(ethbtcCh)}">${t(ethbtcCh)}</td></tr>`;
-
-log(regime+" | "+document.getElementById("tf").selectedOptions[0].text);
-
-}catch(e){
-log("Feed error / retrying...");
-}
+for(let i=0;i<20;i++){
+let b=bids[i];
+if(!b)continue;
+rows+=`<tr><td class="bid">${b[0]}</td><td class="bid">${b[1]}</td></tr>`;
 }
 
-function start(){
-if(timer)clearInterval(timer);
-load();
-timer=setInterval(load,Number(document.getElementById("refresh").value));
+document.getElementById("dom").innerHTML=rows;
 }
 
-document.getElementById("tf").onchange=start;
-document.getElementById("refresh").onchange=start;
+// WEBSOCKET DEPTH STREAM
+let ws=new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@depth20@100ms");
 
-start();
+ws.onmessage=(e)=>{
+let data=JSON.parse(e.data);
+
+// parse
+bids=data.b.map(x=>[parseFloat(x[0]),parseFloat(x[1])]);
+asks=data.a.map(x=>[parseFloat(x[0]),parseFloat(x[1])]);
+
+updateDOM();
+drawHeatmap();
+};
+
 </script>
 
 </body>
