@@ -1,1 +1,215 @@
-export default function FlowTerminal(){return (<div className='min-h-screen bg-black text-green-400 p-6 font-mono'><div className='text-2xl font-bold mb-4'>FLOW TERMINAL V1 DESKTOP APP</div><div className='grid grid-cols-4 gap-4'><div className='col-span-1 space-y-4'><div className='rounded-2xl border border-green-700 p-4'><div className='text-sm text-gray-400'>REGIME ENGINE</div><div className='text-4xl font-bold mt-2'>BTC LEAD</div><div className='mt-2'>Confidence: 82%</div></div><div className='rounded-2xl border border-green-700 p-4'><div className='text-sm text-gray-400 mb-2'>FLOW MATRIX</div><div>BTC Spot Vol: LIVE</div><div>ETH Spot Vol: LIVE</div><div>Stablecoin Flow: POSITIVE</div><div>OI: RISING</div></div></div><div className='col-span-2 rounded-2xl border border-cyan-700 p-4'><div className='text-sm text-gray-400'>LIVE CHART</div><div className='h-96 mt-4 rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 flex items-center justify-center text-cyan-400'>Chart Area</div></div><div className='col-span-1 rounded-2xl border border-purple-700 p-4'><div className='text-sm text-gray-400'>LIVE FEED</div><div className='space-y-2 mt-3 text-sm'><div>USDT inflow +$230M</div><div>BTC breakout confirmed</div><div>ETHBTC weakening</div><div>TOTAL expansion detected</div><div>Whale bought 1,200 BTC</div></div></div></div></div>)}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FLOW TERMINAL V1</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+background:#05070b;
+font-family:Arial,Helvetica,sans-serif;
+color:#00ffcc;
+height:100vh;
+overflow:hidden;
+}
+.wrap{
+display:grid;
+grid-template-columns:260px 1fr 300px;
+grid-template-rows:60px 1fr 170px;
+gap:8px;
+padding:8px;
+height:100vh;
+}
+.panel{
+background:#0b1018;
+border:1px solid #13283a;
+border-radius:10px;
+padding:10px;
+box-shadow:0 0 12px rgba(0,255,180,.08);
+overflow:hidden;
+}
+.header{
+grid-column:1/4;
+display:flex;
+align-items:center;
+justify-content:space-between;
+font-size:22px;
+font-weight:bold;
+}
+.small{font-size:12px;color:#8ea3b5}
+.big{
+font-size:44px;
+font-weight:bold;
+color:#00ff88;
+margin-top:10px;
+}
+.chart{
+position:relative;
+height:100%;
+background:
+linear-gradient(to right,rgba(255,255,255,.03) 1px,transparent 1px),
+linear-gradient(to bottom,rgba(255,255,255,.03) 1px,transparent 1px);
+background-size:40px 40px;
+}
+svg{width:100%;height:100%}
+.feed div{
+padding:6px 0;
+font-size:13px;
+border-bottom:1px solid #12202d;
+}
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+td,th{
+padding:6px;
+border-bottom:1px solid #12202d;
+text-align:left;
+}
+.green{color:#00ff88}
+.red{color:#ff5f6d}
+.yellow{color:#ffd84d}
+.cyan{color:#00e5ff}
+.footer{
+grid-column:1/4;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="panel header">
+<div>FLOW TERMINAL V1</div>
+<div class="small" id="clock">Loading...</div>
+</div>
+
+<div class="panel">
+<div class="small">REGIME ENGINE</div>
+<div class="big" id="mode">BTC LEAD</div>
+<br>
+<div>Confidence: <span class="green" id="conf">82%</span></div>
+<div>Risk: <span class="yellow">MEDIUM</span></div>
+<div>Bias: <span class="green">BULLISH</span></div>
+<br>
+<table>
+<tr><th>Metric</th><th>Status</th></tr>
+<tr><td>BTC Vol</td><td class="green">LIVE</td></tr>
+<tr><td>ETH Vol</td><td class="green">LIVE</td></tr>
+<tr><td>Stable Flow</td><td class="green">POSITIVE</td></tr>
+<tr><td>OI</td><td class="green">RISING</td></tr>
+<tr><td>Funding</td><td class="yellow">NEUTRAL</td></tr>
+</table>
+</div>
+
+<div class="panel">
+<div class="small">LIVE FLOW CHART</div>
+<div class="chart">
+<svg viewBox="0 0 1000 500" preserveAspectRatio="none">
+<polyline id="line1" fill="none" stroke="#00ff88" stroke-width="2"/>
+<polyline id="line2" fill="none" stroke="#00e5ff" stroke-width="2"/>
+</svg>
+</div>
+</div>
+
+<div class="panel">
+<div class="small">LIVE FEED</div>
+<div class="feed" id="feed">
+<div>Loading signals...</div>
+</div>
+</div>
+
+<div class="footer">
+<div class="panel">
+<div class="small">ROTATION MAP</div><br>
+USDT → BTC <span class="green">ACTIVE</span><br>
+BTC → ETH <span class="yellow">WATCH</span><br>
+ETH → ALTS <span class="small">PENDING</span>
+</div>
+
+<div class="panel">
+<div class="small">WHALE RADAR</div><br>
+BTC Buy: <span class="green">+1,240</span><br>
+ETH Buy: <span class="green">+18,220</span><br>
+Exchange Outflow: <span class="green">HIGH</span>
+</div>
+
+<div class="panel">
+<div class="small">MARKET POWER</div>
+<div class="big" style="font-size:34px" id="power">78</div>
+</div>
+
+<div class="panel">
+<div class="small">SYSTEM STATUS</div><br>
+Engine: <span class="green">ONLINE</span><br>
+Latency: <span class="cyan">12ms</span><br>
+Mode: <span class="green">REALTIME</span>
+</div>
+</div>
+
+</div>
+
+<script>
+function clock(){
+document.getElementById("clock").innerText=
+new Date().toLocaleString();
+}
+setInterval(clock,1000); clock();
+
+function randomChart(){
+let p1="",p2="";
+let y1=260,y2=240;
+for(let x=0;x<=1000;x+=20){
+y1 += (Math.random()*40-20);
+y2 += (Math.random()*40-20);
+if(y1<50)y1=50;if(y1>450)y1=450;
+if(y2<50)y2=50;if(y2>450)y2=450;
+p1 += x+","+y1+" ";
+p2 += x+","+y2+" ";
+}
+document.getElementById("line1").setAttribute("points",p1);
+document.getElementById("line2").setAttribute("points",p2);
+}
+setInterval(randomChart,1500); randomChart();
+
+const msgs=[
+"BTC breakout confirmed",
+"USDT inflow +$210M",
+"ETHBTC weakening",
+"TOTAL market expanding",
+"Whale bought 950 BTC",
+"ETH spot demand rising",
+"BTC dominance cooling",
+"Risk-on momentum active"
+];
+
+function feed(){
+let html="";
+for(let i=0;i<8;i++){
+html+="<div>"+msgs[Math.floor(Math.random()*msgs.length)]+"</div>";
+}
+document.getElementById("feed").innerHTML=html;
+
+let score=Math.floor(Math.random()*30)+70;
+document.getElementById("power").innerText=score;
+
+if(score>80){
+document.getElementById("mode").innerText="FULL BULL";
+document.getElementById("conf").innerText="91%";
+}else if(score>74){
+document.getElementById("mode").innerText="BTC LEAD";
+document.getElementById("conf").innerText="82%";
+}else{
+document.getElementById("mode").innerText="NEUTRAL";
+document.getElementById("conf").innerText="61%";
+}
+}
+setInterval(feed,2500); feed();
+</script>
+
+</body>
+</html>
