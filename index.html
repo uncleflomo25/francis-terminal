@@ -1,251 +1,196 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>FLOW TERMINAL V100 QUANT CORE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FLOW TERMINAL V4 — EXECUTION DESK</title>
 <style>
 body{
 margin:0;
-background:#020814;
-color:#00ffc8;
-font-family:Arial;
-overflow:hidden;
+font-family:Arial,sans-serif;
+background:#05070c;
+color:#e5e7eb;
 }
-
-.wrap{
-display:grid;
-grid-template-columns:320px 1fr 360px;
-grid-template-rows:60px 1fr;
-height:100vh;
-gap:8px;
-padding:8px;
-}
-
-.panel{
-background:#071c2e;
-border:1px solid #0b3b5d;
-border-radius:10px;
-padding:10px;
-overflow:hidden;
-}
-
 .header{
-grid-column:1/4;
-display:flex;
-justify-content:space-between;
+padding:14px;
+text-align:center;
+font-size:20px;
 font-weight:bold;
-font-size:18px;
+background:#0b1220;
 }
-
-.big{font-size:28px;font-weight:bold;}
-
-table{
+.controls{
+display:flex;
+gap:10px;
+justify-content:center;
+padding:10px;
+background:#0b1220;
+flex-wrap:wrap;
+}
+select,button{
+padding:8px;
+border-radius:8px;
+border:none;
+background:#111827;
+color:white;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:10px;
+padding:12px;
+}
+.card{
+background:#0f172a;
+padding:10px;
+border-radius:12px;
+text-align:center;
+border:1px solid #1f2937;
+}
+.title{font-size:12px;opacity:0.7;}
+.value{font-size:16px;margin-top:5px;font-weight:bold;}
+.signal{margin-top:5px;font-size:13px;}
+.long{color:#22c55e;}
+.short{color:#ef4444;}
+.neutral{color:#facc15;}
+.panel{
+margin:12px;
+padding:14px;
+border-radius:12px;
+background:#0f172a;
+border:1px solid #1f2937;
+}
+.big{font-size:20px;font-weight:bold;}
+.small{font-size:12px;opacity:0.7;}
+canvas{
 width:100%;
-border-collapse:collapse;
-font-size:13px;
+height:200px;
+background:#0b1220;
+border-radius:10px;
+margin-top:10px;
 }
-
-td{
-padding:6px;
-border-bottom:1px solid rgba(255,255,255,0.05);
-}
-
-.center canvas{
-width:100%!important;
-height:100%!important;
-}
-
-.green{color:#00ff73}
-.red{color:#ff4d5a}
-.yellow{color:#ffd84d}
-.blue{color:#00eaff}
 </style>
 </head>
-
-<body>
-
-<div class="wrap">
-
-<div class="panel header">
-<div>FLOW TERMINAL V100 — REAL-TIME QUANT CORE</div>
-<div id="time"></div>
-</div>
-
-<!-- LEFT PANEL -->
-<div class="panel">
-<div class="big" id="regime">BOOTING ENGINE</div>
-
-<table>
-<tr><td>BTC</td><td id="btc">--</td></tr>
-<tr><td>ETH</td><td id="eth">--</td></tr>
-
-<tr><td>VELOCITY</td><td id="vel">--</td></tr>
-<tr><td>ACCEL</td><td id="acc">--</td></tr>
-<tr><td>FLOW SCORE</td><td id="flow">--</td></tr>
-<tr><td>RISK</td><td id="risk">--</td></tr>
-<tr><td>STATE</td><td id="state">--</td></tr>
-</table>
-</div>
-
-<!-- CENTER -->
-<div class="panel center">
+<body><div class="header">FLOW TERMINAL V4 — EXECUTION DESK</div><div class="controls">
+<select id="timeframe">
+<option value="1m">1 MIN</option>
+<option value="5m">5 MIN</option>
+<option value="15m">15 MIN</option>
+<option value="1h">1 HOUR</option>
+<option value="1d">DAILY</option>
+</select>
+<button onclick="run()">RUN ENGINE</button>
+</div><div class="grid">
+  <div class="card"><div class="title">USDT.D</div><div class="value" id="usdt">--</div></div>
+  <div class="card"><div class="title">TOTAL</div><div class="value" id="total">--</div></div>
+  <div class="card"><div class="title">BTC.D</div><div class="value" id="btcd">--</div></div>
+  <div class="card"><div class="title">ETH.D</div><div class="value" id="ethd">--</div></div>
+  <div class="card"><div class="title">ETHBTC</div><div class="value" id="ethbtc">--</div></div>
+</div><div class="panel">
+<div class="big" id="decision">MARKET: LOADING</div>
+<div class="small" id="reason">Initializing flow...</div>
 <canvas id="chart"></canvas>
-</div>
+</div><script>
 
-<!-- RIGHT -->
-<div class="panel">
-<div>INSTITUTIONAL FLOW STREAM</div>
-<div id="feed" style="font-size:12px;margin-top:10px;line-height:1.5"></div>
-</div>
+const cg="https://api.coingecko.com/api/v3";
+const binance="https://api.binance.com/api/v3/klines";
 
-</div>
-
-<script>
-
-// ================= CHART =================
-const chart = new Chart(document.getElementById("chart"),{
-type:"line",
-data:{
-labels:[],
-datasets:[
-{label:"BTC",data:[],borderColor:"#00eaff",pointRadius:0,tension:0.2},
-{label:"ETH",data:[],borderColor:"#00ff73",pointRadius:0,tension:0.2}
-]
-},
-options:{
-animation:false,
-responsive:true,
-maintainAspectRatio:false,
-plugins:{legend:{labels:{color:"#00ffc8"}}},
-scales:{
-x:{ticks:{color:"#666"}},
-y:{ticks:{color:"#666"}}
+function tfMap(tf){
+return {"1m":"1m","5m":"5m","15m":"15m","1h":"1h","1d":"1d"}[tf];
 }
+
+async function get(url){return (await fetch(url)).json();}
+
+function sma(data,p){
+let sum=0;for(let i=data.length-p;i<data.length;i++)sum+=data[i];
+return sum/p;
 }
+
+function trend(closes){
+let last=closes[closes.length-1];
+let avg=sma(closes,Math.min(20,closes.length));
+if(last>avg*1.002)return"UP";
+if(last<avg*0.998)return"DOWN";
+return"FLAT";
+}
+
+async function fetchK(symbol,tf){
+let d=await get(`${binance}?symbol=${symbol}&interval=${tf}&limit=50`);
+return d.map(x=>parseFloat(x[4]));
+}
+
+function draw(closes){
+let c=document.getElementById("chart");
+let ctx=c.getContext("2d");
+c.width=c.offsetWidth;
+c.height=200;
+ctx.clearRect(0,0,c.width,c.height);
+ctx.strokeStyle="#22c55e";
+ctx.beginPath();
+let max=Math.max(...closes),min=Math.min(...closes);
+closes.forEach((v,i)=>{
+let x=i*(c.width/closes.length);
+let y=c.height-((v-min)/(max-min))*c.height;
+if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
 });
-
-// ================= STATE =================
-let btc=0, eth=0;
-let prevBTC=0, prevETH=0;
-let prevVelBTC=0, prevVelETH=0;
-
-// ================= LOG =================
-function log(t){
-const d=document.createElement("div");
-d.innerText=t;
-document.getElementById("feed").prepend(d);
+ctx.stroke();
 }
 
-// ================= AI ENGINE =================
-function engine(){
+async function run(){
+let tf=tfMap(document.getElementById("timeframe").value);
 
-// velocity
-let vBTC = btc - prevBTC;
-let vETH = eth - prevETH;
+// MARKET DATA
+let g=await get(cg+"/global");
+let btc=await get(cg+"/simple/price?ids=bitcoin&vs_currencies=usd");
+let eth=await get(cg+"/simple/price?ids=ethereum&vs_currencies=usd");
 
-// acceleration (V100 upgrade)
-let aBTC = vBTC - prevVelBTC;
-let aETH = vETH - prevVelETH;
+let btcPrice=btc.bitcoin.usd;
+let ethPrice=eth.ethereum.usd;
 
-// flow metrics
-let velocity = (vBTC + vETH) * 100;
-let accel = (aBTC + aETH) * 100;
-let flow = (vETH - vBTC) * 100;
-let risk = Math.abs(flow) + Math.abs(accel);
+let total=g.data.total_market_cap.usd;
+let btcD=g.data.market_cap_percentage.btc;
+let ethD=g.data.market_cap_percentage.eth;
 
-// state engine
-let state =
-risk > 2 ? "EXPANSION VOLATILITY" :
-flow > 1 ? "ETH ROTATION" :
-flow < -1 ? "BTC DOMINANCE" :
-"BALANCED"
+let ethbtc=ethPrice/btcPrice;
 
-// store history
-prevBTC = btc;
-prevETH = eth;
-prevVelBTC = vBTC;
-prevVelETH = vETH;
+// REAL TIME TREND (BTC)
+let btcCloses=await fetchK("BTCUSDT",tf);
+let ethCloses=await fetchK("ETHUSDT",tf);
 
-return {velocity,accel,flow,risk,state};
+let btcTrend=trend(btcCloses);
+let ethTrend=trend(ethCloses);
+
+// DISPLAY
+usdt.innerText="--";
+totalEl.innerText=(total/1e12).toFixed(2)+"T";
+btcd.innerText=btcD.toFixed(2)+"%";
+ethd.innerText=ethD.toFixed(2)+"%";
+ethbtcEl.innerText=ethbtc.toFixed(5);
+
+draw(btcCloses);
+
+// ENGINE
+let long=0,short=0,r=[];
+
+if(g.data.total_market_cap_change_percentage_24h_usd>0){long+=25;r.push("Expansion");}
+if(btcD>ethD){long+=20;r.push("BTC leads");}
+if(ethTrend=="UP"){long+=20;r.push("ETH trend up");}
+if(btcTrend=="UP"){long+=25;r.push("BTC trend up");}
+if(ethbtc>0.05){long+=10;r.push("ETHBTC strength");}
+
+if(g.data.market_cap_change_percentage_24h_usd<0){short+=25;}
+if(btcTrend=="DOWN"){short+=25;}
+if(ethTrend=="DOWN"){short+=25;}
+if(btcD>55){short+=15;}
+
+let decision="NO TRADE";
+if(long>75)decision="LONG BTC/ETH EXECUTION";
+if(short>75)decision="SHORT / DEFENSIVE";
+
+decisionEl.innerText="MARKET: "+decision;
+reasonEl.innerText=r.join(" | ")||"Waiting flow alignment";
 }
 
-// ================= UI =================
-function updateUI(){
+run();
+setInterval(run,20000);
 
-let e = engine();
-
-document.getElementById("btc").innerText = btc.toFixed(2);
-document.getElementById("eth").innerText = eth.toFixed(2);
-
-document.getElementById("vel").innerText = e.velocity.toFixed(3);
-document.getElementById("acc").innerText = e.accel.toFixed(3);
-document.getElementById("flow").innerText = e.flow.toFixed(3);
-document.getElementById("risk").innerText = e.risk.toFixed(3);
-document.getElementById("state").innerText = e.state;
-
-// regime color
-if(e.state === "EXPANSION VOLATILITY"){
-setRegime("LIQUIDITY EXPANSION","#00ff73");
-}
-else if(e.state === "ETH ROTATION"){
-setRegime("RISK-ON ROTATION","#00eaff");
-}
-else if(e.state === "BTC DOMINANCE"){
-setRegime("RISK-OFF FLOW","#ff4d5a");
-}
-else{
-setRegime("NEUTRAL FLOW","#aaaaaa");
-}
-}
-
-function setRegime(t,c){
-document.getElementById("regime").innerText=t;
-document.getElementById("regime").style.color=c;
-}
-
-// ================= CHART =================
-function updateChart(){
-const t=new Date().toLocaleTimeString();
-
-chart.data.labels.push(t);
-chart.data.datasets[0].data.push(btc);
-chart.data.datasets[1].data.push(eth);
-
-if(chart.data.labels.length>100){
-chart.data.labels.shift();
-chart.data.datasets[0].data.shift();
-chart.data.datasets[1].data.shift();
-}
-
-chart.update("none");
-}
-
-// ================= REAL-TIME DATA =================
-const btcWS = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
-btcWS.onmessage=(e)=>{
-btc = +JSON.parse(e.data).p;
-updateUI();
-updateChart();
-};
-
-const ethWS = new WebSocket("wss://stream.binance.com:9443/ws/ethusdt@trade");
-ethWS.onmessage=(e)=>{
-eth = +JSON.parse(e.data).p;
-updateUI();
-updateChart();
-};
-
-// ================= CLOCK =================
-setInterval(()=>document.getElementById("time").innerText=new Date().toLocaleString(),1000);
-
-// ================= INIT =================
-btcWS.onopen=()=>log("BTC STREAM ONLINE");
-ethWS.onopen=()=>log("ETH STREAM ONLINE");
-
-</script>
-
-</body>
+</script></body>
 </html>
