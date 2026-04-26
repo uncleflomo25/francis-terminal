@@ -3,212 +3,271 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>FLOW TERMINAL V1</title>
+<title>FLOW TERMINAL V2 GOD MODE</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-background:#05070b;
+background:#02060f;
 font-family:Arial,Helvetica,sans-serif;
-color:#00ffcc;
-height:100vh;
+color:#00ffc8;
 overflow:hidden;
 }
 .wrap{
 display:grid;
-grid-template-columns:260px 1fr 300px;
-grid-template-rows:60px 1fr 170px;
+grid-template-columns:260px 1fr 320px;
+grid-template-rows:60px 1fr 180px;
 gap:8px;
 padding:8px;
 height:100vh;
 }
 .panel{
-background:#0b1018;
-border:1px solid #13283a;
+background:#03101d;
+border:1px solid #072e46;
 border-radius:10px;
-padding:10px;
 box-shadow:0 0 12px rgba(0,255,180,.08);
+padding:10px;
 overflow:hidden;
 }
 .header{
 grid-column:1/4;
 display:flex;
-align-items:center;
 justify-content:space-between;
-font-size:22px;
-font-weight:bold;
+align-items:center;
+font-size:26px;
+font-weight:700;
+color:#00ffb7;
 }
-.small{font-size:12px;color:#8ea3b5}
-.big{
-font-size:44px;
-font-weight:bold;
-color:#00ff88;
-margin-top:10px;
+.small{
+font-size:12px;
+color:#7df7d2;
 }
-.chart{
-position:relative;
-height:100%;
-background:
-linear-gradient(to right,rgba(255,255,255,.03) 1px,transparent 1px),
-linear-gradient(to bottom,rgba(255,255,255,.03) 1px,transparent 1px);
-background-size:40px 40px;
+.left h2{
+font-size:52px;
+line-height:0.95;
+color:#00ff73;
+margin:10px 0;
 }
-svg{width:100%;height:100%}
-.feed div{
-padding:6px 0;
+.metric{
+display:flex;
+justify-content:space-between;
+padding:4px 0;
 font-size:13px;
-border-bottom:1px solid #12202d;
+border-bottom:1px solid rgba(255,255,255,.03);
 }
-table{
-width:100%;
-border-collapse:collapse;
-font-size:13px;
-}
-td,th{
-padding:6px;
-border-bottom:1px solid #12202d;
-text-align:left;
-}
-.green{color:#00ff88}
-.red{color:#ff5f6d}
+.green{color:#00ff73}
+.red{color:#ff4d5a}
 .yellow{color:#ffd84d}
-.cyan{color:#00e5ff}
-.footer{
-grid-column:1/4;
+.center{
+position:relative;
+}
+.center canvas{
+width:100%!important;
+height:100%!important;
+}
+.right{
+font-size:12px;
+line-height:1.7;
+}
+.feed{
+height:100%;
+overflow:auto;
+padding-right:4px;
+}
+.bottom{
 display:grid;
-grid-template-columns:repeat(4,1fr);
+grid-template-columns:1fr 1fr 1fr 1fr;
+gap:8px;
+grid-column:1/4;
+}
+.big{
+font-size:42px;
+font-weight:700;
+margin-top:8px;
+}
+.btn{
+background:#05263a;
+border:1px solid #0b4f73;
+padding:8px 12px;
+border-radius:8px;
+color:#00ffc8;
+cursor:pointer;
+margin-left:8px;
+}
+.row{
+display:flex;
+align-items:center;
 gap:8px;
 }
 </style>
 </head>
 <body>
+
 <div class="wrap">
 
 <div class="panel header">
-<div>FLOW TERMINAL V1</div>
-<div class="small" id="clock">Loading...</div>
-</div>
-
-<div class="panel">
-<div class="small">REGIME ENGINE</div>
-<div class="big" id="mode">BTC LEAD</div>
-<br>
-<div>Confidence: <span class="green" id="conf">82%</span></div>
-<div>Risk: <span class="yellow">MEDIUM</span></div>
-<div>Bias: <span class="green">BULLISH</span></div>
-<br>
-<table>
-<tr><th>Metric</th><th>Status</th></tr>
-<tr><td>BTC Vol</td><td class="green">LIVE</td></tr>
-<tr><td>ETH Vol</td><td class="green">LIVE</td></tr>
-<tr><td>Stable Flow</td><td class="green">POSITIVE</td></tr>
-<tr><td>OI</td><td class="green">RISING</td></tr>
-<tr><td>Funding</td><td class="yellow">NEUTRAL</td></tr>
-</table>
-</div>
-
-<div class="panel">
-<div class="small">LIVE FLOW CHART</div>
-<div class="chart">
-<svg viewBox="0 0 1000 500" preserveAspectRatio="none">
-<polyline id="line1" fill="none" stroke="#00ff88" stroke-width="2"/>
-<polyline id="line2" fill="none" stroke="#00e5ff" stroke-width="2"/>
-</svg>
+<div>FLOW TERMINAL V2 GOD MODE</div>
+<div class="row">
+<div class="small" id="clock"></div>
+<button class="btn" onclick="refreshData()">Refresh</button>
 </div>
 </div>
 
-<div class="panel">
+<div class="panel left">
+<div class="small">AI REGIME ENGINE</div>
+<h2 id="modeText">BULL<br>FLOW</h2>
+
+<div class="metric"><span>Confidence</span><span class="green" id="conf">91%</span></div>
+<div class="metric"><span>Risk</span><span class="yellow">MEDIUM</span></div>
+<div class="metric"><span>BTC Volume</span><span id="btcVol">--</span></div>
+<div class="metric"><span>ETH Volume</span><span id="ethVol">--</span></div>
+<div class="metric"><span>Total MCap</span><span id="mcap">--</span></div>
+<div class="metric"><span>BTC Price</span><span id="btcPrice">--</span></div>
+<div class="metric"><span>ETH Price</span><span id="ethPrice">--</span></div>
+</div>
+
+<div class="panel center">
+<canvas id="chart"></canvas>
+</div>
+
+<div class="panel right">
 <div class="small">LIVE FEED</div>
-<div class="feed" id="feed">
-<div>Loading signals...</div>
+<div class="feed" id="feed"></div>
+</div>
+
+<div class="bottom">
+
+<div class="panel">
+<div class="small">ROTATION MAP</div>
+<div style="margin-top:10px;font-size:14px">
+USDT ➜ BTC <span class="green">ACTIVE</span><br>
+BTC ➜ ETH <span class="green">ACTIVE</span><br>
+ETH ➜ ALTS <span class="yellow">WATCH</span>
 </div>
 </div>
 
-<div class="footer">
 <div class="panel">
-<div class="small">ROTATION MAP</div><br>
-USDT → BTC <span class="green">ACTIVE</span><br>
-BTC → ETH <span class="yellow">WATCH</span><br>
-ETH → ALTS <span class="small">PENDING</span>
-</div>
-
-<div class="panel">
-<div class="small">WHALE RADAR</div><br>
-BTC Buy: <span class="green">+1,240</span><br>
-ETH Buy: <span class="green">+18,220</span><br>
+<div class="small">WHALE RADAR</div>
+<div style="margin-top:10px;font-size:14px">
+BTC Buy: <span class="green">$124M</span><br>
+ETH Buy: <span class="green">$61M</span><br>
 Exchange Outflow: <span class="green">HIGH</span>
+</div>
 </div>
 
 <div class="panel">
 <div class="small">MARKET POWER</div>
-<div class="big" style="font-size:34px" id="power">78</div>
+<div class="big green" id="power">96</div>
 </div>
 
 <div class="panel">
-<div class="small">SYSTEM STATUS</div><br>
+<div class="small">SYSTEM STATUS</div>
+<div style="margin-top:10px;font-size:14px">
 Engine: <span class="green">ONLINE</span><br>
-Latency: <span class="cyan">12ms</span><br>
-Mode: <span class="green">REALTIME</span>
+Mode: <span class="green">REAL API</span><br>
+Chart: <span class="green">STABLE</span>
 </div>
+</div>
+
 </div>
 
 </div>
 
 <script>
+const ctx=document.getElementById("chart").getContext("2d");
+
+const chart=new Chart(ctx,{
+type:"line",
+data:{
+labels:[],
+datasets:[
+{
+label:"BTC",
+data:[],
+borderColor:"#00eaff",
+borderWidth:3,
+tension:.3,
+pointRadius:0
+},
+{
+label:"ETH",
+data:[],
+borderColor:"#00ff73",
+borderWidth:3,
+tension:.3,
+pointRadius:0
+}
+]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{labels:{color:"#9fffe4"}}
+},
+scales:{
+x:{ticks:{color:"#4d8"},grid:{color:"rgba(255,255,255,.03)"}},
+y:{ticks:{color:"#4d8"},grid:{color:"rgba(255,255,255,.03)"}}
+}
+}
+});
+
+function addFeed(txt,color="green"){
+const d=document.createElement("div");
+d.className=color;
+d.innerText=txt;
+document.getElementById("feed").prepend(d);
+}
+
 function clock(){
-document.getElementById("clock").innerText=
-new Date().toLocaleString();
+document.getElementById("clock").innerText=new Date().toLocaleString();
 }
-setInterval(clock,1000); clock();
+setInterval(clock,1000);
+clock();
 
-function randomChart(){
-let p1="",p2="";
-let y1=260,y2=240;
-for(let x=0;x<=1000;x+=20){
-y1 += (Math.random()*40-20);
-y2 += (Math.random()*40-20);
-if(y1<50)y1=50;if(y1>450)y1=450;
-if(y2<50)y2=50;if(y2>450)y2=450;
-p1 += x+","+y1+" ";
-p2 += x+","+y2+" ";
-}
-document.getElementById("line1").setAttribute("points",p1);
-document.getElementById("line2").setAttribute("points",p2);
-}
-setInterval(randomChart,1500); randomChart();
+async function refreshData(){
+try{
+const btc=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT").then(r=>r.json());
+const eth=await fetch("https://api.binance.com/api/v3/ticker/24hr?symbol=ETHUSDT").then(r=>r.json());
 
-const msgs=[
-"BTC breakout confirmed",
-"USDT inflow +$210M",
-"ETHBTC weakening",
-"TOTAL market expanding",
-"Whale bought 950 BTC",
-"ETH spot demand rising",
-"BTC dominance cooling",
-"Risk-on momentum active"
-];
+document.getElementById("btcPrice").innerText="$"+Number(btc.lastPrice).toLocaleString();
+document.getElementById("ethPrice").innerText="$"+Number(eth.lastPrice).toLocaleString();
 
-function feed(){
-let html="";
-for(let i=0;i<8;i++){
-html+="<div>"+msgs[Math.floor(Math.random()*msgs.length)]+"</div>";
-}
-document.getElementById("feed").innerHTML=html;
+document.getElementById("btcVol").innerText=Math.round(btc.quoteVolume/1000000)+"M";
+document.getElementById("ethVol").innerText=Math.round(eth.quoteVolume/1000000)+"M";
 
-let score=Math.floor(Math.random()*30)+70;
-document.getElementById("power").innerText=score;
+const cap=(Number(btc.lastPrice)*19600000 + Number(eth.lastPrice)*120000000)/1000000000000;
+document.getElementById("mcap").innerText=cap.toFixed(2)+"T";
 
-if(score>80){
-document.getElementById("mode").innerText="FULL BULL";
-document.getElementById("conf").innerText="91%";
-}else if(score>74){
-document.getElementById("mode").innerText="BTC LEAD";
-document.getElementById("conf").innerText="82%";
+let bull=0;
+if(Number(btc.priceChangePercent)>0) bull++;
+if(Number(eth.priceChangePercent)>0) bull++;
+
+if(bull>=2){
+document.getElementById("modeText").innerHTML="FULL<br>BULL";
+document.getElementById("power").innerText="97";
+addFeed("Risk-on momentum active");
 }else{
-document.getElementById("mode").innerText="NEUTRAL";
-document.getElementById("conf").innerText="61%";
+document.getElementById("modeText").innerHTML="DEFENSIVE";
+document.getElementById("power").innerText="54";
+addFeed("Risk-off rotation detected","red");
+}
+
+chart.data.labels=["BTC","ETH"];
+chart.data.datasets[0].data=[btc.openPrice,btc.lastPrice];
+chart.data.datasets[1].data=[eth.openPrice,eth.lastPrice];
+chart.update();
+
+addFeed("BTC updated $" + Number(btc.lastPrice).toLocaleString());
+addFeed("ETH updated $" + Number(eth.lastPrice).toLocaleString());
+
+}catch(e){
+addFeed("API blocked / retry later","red");
 }
 }
-setInterval(feed,2500); feed();
+
+refreshData();
+setInterval(refreshData,30000);
 </script>
 
 </body>
