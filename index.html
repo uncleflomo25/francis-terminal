@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>FLOW TERMINAL V5 MACRO DESK</title>
+<title>FLOW TERMINAL V100 QUANT CORE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 body{
 margin:0;
-background:#050b14;
+background:#020814;
 color:#00ffc8;
 font-family:Arial;
 overflow:hidden;
@@ -17,7 +17,7 @@ overflow:hidden;
 
 .wrap{
 display:grid;
-grid-template-columns:280px 1fr 340px;
+grid-template-columns:320px 1fr 360px;
 grid-template-rows:60px 1fr;
 height:100vh;
 gap:8px;
@@ -25,8 +25,8 @@ padding:8px;
 }
 
 .panel{
-background:#07111f;
-border:1px solid #0c2a3a;
+background:#071c2e;
+border:1px solid #0b3b5d;
 border-radius:10px;
 padding:10px;
 overflow:hidden;
@@ -36,12 +36,11 @@ overflow:hidden;
 grid-column:1/4;
 display:flex;
 justify-content:space-between;
-align-items:center;
-font-size:18px;
 font-weight:bold;
+font-size:18px;
 }
 
-.big{font-size:34px;font-weight:bold;}
+.big{font-size:28px;font-weight:bold;}
 
 table{
 width:100%;
@@ -50,7 +49,7 @@ font-size:13px;
 }
 
 td{
-padding:7px;
+padding:6px;
 border-bottom:1px solid rgba(255,255,255,0.05);
 }
 
@@ -62,6 +61,7 @@ height:100%!important;
 .green{color:#00ff73}
 .red{color:#ff4d5a}
 .yellow{color:#ffd84d}
+.blue{color:#00eaff}
 </style>
 </head>
 
@@ -70,23 +70,23 @@ height:100%!important;
 <div class="wrap">
 
 <div class="panel header">
-<div>FLOW TERMINAL V5 — MACRO DOMINANCE DESK</div>
+<div>FLOW TERMINAL V100 — REAL-TIME QUANT CORE</div>
 <div id="time"></div>
 </div>
 
-<!-- LEFT -->
+<!-- LEFT PANEL -->
 <div class="panel">
-<div class="big" id="regime">SYNC</div>
+<div class="big" id="regime">BOOTING ENGINE</div>
 
 <table>
-<tr><td>BTC PRICE</td><td id="btc">--</td></tr>
-<tr><td>ETH PRICE</td><td id="eth">--</td></tr>
+<tr><td>BTC</td><td id="btc">--</td></tr>
+<tr><td>ETH</td><td id="eth">--</td></tr>
 
-<tr><td>USDT.D</td><td id="usdt">--</td></tr>
-<tr><td>BTC.D</td><td id="btcd">--</td></tr>
-<tr><td>ETH.D</td><td id="ethd">--</td></tr>
-<tr><td>ETHBTC</td><td id="ethbtc">--</td></tr>
-<tr><td>TOTAL</td><td id="total">--</td></tr>
+<tr><td>VELOCITY</td><td id="vel">--</td></tr>
+<tr><td>ACCEL</td><td id="acc">--</td></tr>
+<tr><td>FLOW SCORE</td><td id="flow">--</td></tr>
+<tr><td>RISK</td><td id="risk">--</td></tr>
+<tr><td>STATE</td><td id="state">--</td></tr>
 </table>
 </div>
 
@@ -97,7 +97,7 @@ height:100%!important;
 
 <!-- RIGHT -->
 <div class="panel">
-<div>MACRO FLOW INTEL</div>
+<div>INSTITUTIONAL FLOW STREAM</div>
 <div id="feed" style="font-size:12px;margin-top:10px;line-height:1.5"></div>
 </div>
 
@@ -105,6 +105,7 @@ height:100%!important;
 
 <script>
 
+// ================= CHART =================
 const chart = new Chart(document.getElementById("chart"),{
 type:"line",
 data:{
@@ -126,58 +127,83 @@ y:{ticks:{color:"#666"}}
 }
 });
 
+// ================= STATE =================
 let btc=0, eth=0;
+let prevBTC=0, prevETH=0;
+let prevVelBTC=0, prevVelETH=0;
 
-// log
+// ================= LOG =================
 function log(t){
 const d=document.createElement("div");
 d.innerText=t;
 document.getElementById("feed").prepend(d);
 }
 
-// ================= FLOW MODEL =================
-function calcFlows(){
+// ================= AI ENGINE =================
+function engine(){
 
-// relative strength engine (stable deterministic model)
-let ethbtc = eth / btc;
-let btcDominance = (btc / (btc + eth)) * 100;
+// velocity
+let vBTC = btc - prevBTC;
+let vETH = eth - prevETH;
 
-// proxy flows (not fake random, derived)
-let btcD = btcDominance;
-let ethD = 100 - btcDominance;
-let usdtD = 100 - (btcD + ethD) * 0.5;
-let total = btc + eth;
+// acceleration (V100 upgrade)
+let aBTC = vBTC - prevVelBTC;
+let aETH = vETH - prevVelETH;
 
-return {btcD,ethD,usdtD,ethbtc,total};
+// flow metrics
+let velocity = (vBTC + vETH) * 100;
+let accel = (aBTC + aETH) * 100;
+let flow = (vETH - vBTC) * 100;
+let risk = Math.abs(flow) + Math.abs(accel);
+
+// state engine
+let state =
+risk > 2 ? "EXPANSION VOLATILITY" :
+flow > 1 ? "ETH ROTATION" :
+flow < -1 ? "BTC DOMINANCE" :
+"BALANCED"
+
+// store history
+prevBTC = btc;
+prevETH = eth;
+prevVelBTC = vBTC;
+prevVelETH = vETH;
+
+return {velocity,accel,flow,risk,state};
 }
 
 // ================= UI =================
 function updateUI(){
 
-let f = calcFlows();
+let e = engine();
 
 document.getElementById("btc").innerText = btc.toFixed(2);
 document.getElementById("eth").innerText = eth.toFixed(2);
 
-document.getElementById("btcd").innerText = f.btcD.toFixed(2);
-document.getElementById("ethd").innerText = f.ethD.toFixed(2);
-document.getElementById("usdt").innerText = f.usdtD.toFixed(2);
-document.getElementById("ethbtc").innerText = f.ethbtc.toFixed(6);
-document.getElementById("total").innerText = f.total.toFixed(2);
+document.getElementById("vel").innerText = e.velocity.toFixed(3);
+document.getElementById("acc").innerText = e.accel.toFixed(3);
+document.getElementById("flow").innerText = e.flow.toFixed(3);
+document.getElementById("risk").innerText = e.risk.toFixed(3);
+document.getElementById("state").innerText = e.state;
 
-// regime
-if(f.btcD > 55){
-document.getElementById("regime").innerText="BTC DOMINANT";
-document.getElementById("regime").style.color="#00eaff";
+// regime color
+if(e.state === "EXPANSION VOLATILITY"){
+setRegime("LIQUIDITY EXPANSION","#00ff73");
 }
-else if(f.ethD > 55){
-document.getElementById("regime").innerText="ALT SEASON FLOW";
-document.getElementById("regime").style.color="#00ff73";
+else if(e.state === "ETH ROTATION"){
+setRegime("RISK-ON ROTATION","#00eaff");
+}
+else if(e.state === "BTC DOMINANCE"){
+setRegime("RISK-OFF FLOW","#ff4d5a");
 }
 else{
-document.getElementById("regime").innerText="BALANCED FLOW";
-document.getElementById("regime").style.color="#ffd84d";
+setRegime("NEUTRAL FLOW","#aaaaaa");
 }
+}
+
+function setRegime(t,c){
+document.getElementById("regime").innerText=t;
+document.getElementById("regime").style.color=c;
 }
 
 // ================= CHART =================
@@ -188,7 +214,7 @@ chart.data.labels.push(t);
 chart.data.datasets[0].data.push(btc);
 chart.data.datasets[1].data.push(eth);
 
-if(chart.data.labels.length>60){
+if(chart.data.labels.length>100){
 chart.data.labels.shift();
 chart.data.datasets[0].data.shift();
 chart.data.datasets[1].data.shift();
@@ -197,33 +223,27 @@ chart.data.datasets[1].data.shift();
 chart.update("none");
 }
 
-// ================= REAL TIME ENGINE =================
-
-// BTC
+// ================= REAL-TIME DATA =================
 const btcWS = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
 btcWS.onmessage=(e)=>{
-btc = parseFloat(JSON.parse(e.data).p);
+btc = +JSON.parse(e.data).p;
 updateUI();
 updateChart();
 };
 
-// ETH
 const ethWS = new WebSocket("wss://stream.binance.com:9443/ws/ethusdt@trade");
 ethWS.onmessage=(e)=>{
-eth = parseFloat(JSON.parse(e.data).p);
+eth = +JSON.parse(e.data).p;
 updateUI();
 updateChart();
 };
 
 // ================= CLOCK =================
-function clock(){
-document.getElementById("time").innerText=new Date().toLocaleString();
-}
-setInterval(clock,1000);
+setInterval(()=>document.getElementById("time").innerText=new Date().toLocaleString(),1000);
 
-// ================= LOGS =================
-btcWS.onopen=()=>log("BTC STREAM LIVE");
-ethWS.onopen=()=>log("ETH STREAM LIVE");
+// ================= INIT =================
+btcWS.onopen=()=>log("BTC STREAM ONLINE");
+ethWS.onopen=()=>log("ETH STREAM ONLINE");
 
 </script>
 
