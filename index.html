@@ -3,91 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>INSTITUTIONAL FOOTPRINT V4</title>
+<title>SMART MONEY TERMINAL V4.5</title>
 
 <style>
-*{box-sizing:border-box}
 body{margin:0;font-family:Arial;background:#020617;color:#e5e7eb}
+header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px solid #1e293b}
 
-header{
-display:flex;justify-content:space-between;
-padding:12px 16px;border-bottom:1px solid #1e293b;
-}
+.wrap{display:grid;grid-template-columns:260px 1fr 340px;gap:12px;padding:12px}
 
-.wrap{
-display:grid;
-grid-template-columns:260px 1fr 340px;
-gap:12px;padding:12px;
-}
+.panel{background:#07101d;border:1px solid #1e293b;border-radius:14px;padding:12px}
 
-.panel{
-background:#07101d;
-border:1px solid #1e293b;
-border-radius:16px;
-padding:12px;
-}
-
-.title{font-size:13px;font-weight:700;margin-bottom:8px}
+.title{font-size:13px;font-weight:700;margin:8px 0}
 
 .big{font-size:26px;font-weight:800}
+
+.tf{padding:6px 8px;margin:2px;background:#0f172a;border-radius:6px;display:inline-block;cursor:pointer;font-size:12px}
+.tf.active{background:#1d4ed8}
 
 .green{color:#22c55e}
 .red{color:#ef4444}
 .yellow{color:#eab308}
 
-.tf{
-padding:6px 8px;
-margin:2px;
-background:#0f172a;
-border-radius:6px;
-display:inline-block;
-cursor:pointer;
-font-size:12px;
-}
+.signal{font-size:34px;text-align:center;padding:10px}
 
-.tf.active{background:#1d4ed8}
+.table{width:100%;font-size:12px;border-collapse:collapse}
+.table td{padding:4px;border-bottom:1px solid #132033}
 
-.signal{
-font-size:34px;
-text-align:center;
-padding:10px;
-}
-
-.table{
-width:100%;
-font-size:12px;
-border-collapse:collapse;
-}
-
-.table td{
-padding:4px;
-border-bottom:1px solid #132033;
-}
-
-.heat{
-display:grid;
-grid-template-columns:repeat(20,1fr);
-gap:2px;
-}
-
+.heat{display:grid;grid-template-columns:repeat(20,1fr);gap:2px}
 .heat div{height:14px}
 
 .small{font-size:12px;color:#94a3b8}
-
 </style>
 </head>
 
 <body>
 
 <header>
-<div>INSTITUTIONAL FOOTPRINT V4</div>
+<div>SMART MONEY TERMINAL V4.5</div>
 <div id="status" class="yellow">CONNECTING...</div>
 </header>
 
 <div class="wrap">
 
-<!-- LEFT -->
+<!-- LEFT PANEL -->
 <div class="panel">
+
+<div class="title">Market Bias (Layer 1)</div>
+<div class="big yellow" id="bias">NEUTRAL</div>
 
 <div class="title">Timeframes</div>
 
@@ -99,9 +61,9 @@ gap:2px;
 <span class="tf" onclick="setTF('6h',this)">6H</span>
 <span class="tf" onclick="setTF('12h',this)">12H</span>
 <span class="tf" onclick="setTF('3d',this)">3D</span>
-<span class="tf" onclick="setTF('1w',this)">1W</span>
+<span class="tf" onclick="setTF('1w',this)">W</span>
 
-<div class="title" style="margin-top:12px">Price</div>
+<div class="title">Price</div>
 <div class="big" id="price">0</div>
 
 <div class="title">CVD</div>
@@ -111,8 +73,8 @@ gap:2px;
 <div class="big" id="delta">0</div>
 
 <div class="title">Buy / Sell</div>
-<div class="big green" id="buy">0</div>
-<div class="big red" id="sell">0</div>
+<div class="green big" id="buy">0</div>
+<div class="red big" id="sell">0</div>
 
 </div>
 
@@ -130,7 +92,7 @@ gap:2px;
 <!-- RIGHT -->
 <div class="panel">
 
-<div class="title">Signal Engine</div>
+<div class="title">Signal</div>
 <div class="signal yellow" id="signal">WAIT</div>
 
 <div class="title">Reason</div>
@@ -142,54 +104,114 @@ gap:2px;
 
 <script>
 
+/* =========================
+   STATE
+========================= */
+
 let ws;
 let trades=[];
 let tf='1m';
 let lastPrice=0;
 let cvd=0;
 
+/* =========================
+   TIMEFRAMES
+========================= */
+
 const tfSec={
 '1m':60,'5m':300,'15m':900,'1h':3600,'4h':14400,
 '6h':21600,'12h':43200,'3d':259200,'1w':604800
 };
 
-function now(){return Math.floor(Date.now()/1000);}
+/* =========================
+   MARKET BIAS (LAYER 1)
+   REAL DATA
+========================= */
 
-// CONNECT
+let bias="NEUTRAL";
+
+async function updateBias(){
+
+try{
+
+const res=await fetch("https://api.coingecko.com/api/v3/global");
+const data=await res.json();
+
+let btcDom=data.data.market_cap_percentage.btc;
+let ethDom=data.data.market_cap_percentage.eth;
+let usdtDom=data.data.market_cap_percentage.usdt||0;
+
+let score=0;
+
+// BTC dominance logic
+if(btcDom>52) score--;
+else score++;
+
+// USDT fear
+if(usdtDom>6) score--;
+
+// ETH strength proxy
+if(ethDom/btcDom>0.07) score++;
+
+// FINAL
+if(score>=2) bias="BULLISH";
+else if(score<=-1) bias="BEARISH";
+else bias="NEUTRAL";
+
+document.getElementById("bias").innerText=bias;
+document.getElementById("bias").className=
+bias==="BULLISH"?"big green":
+bias==="BEARISH"?"big red":"big yellow";
+
+}catch(e){}
+
+}
+
+setInterval(updateBias,15000);
+updateBias();
+
+/* =========================
+   WEBSOCKET (REAL TIME)
+========================= */
+
 function connect(){
-ws=new WebSocket('wss://stream.binance.com:9443/ws/btcusdt@aggTrade');
+
+ws=new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@aggTrade");
 
 ws.onopen=()=>{
-setStatus("LIVE","green");
+document.getElementById("status").innerText="LIVE";
+document.getElementById("status").className="green";
 };
 
 ws.onclose=()=>{
-setStatus("RECONNECTING","red");
+document.getElementById("status").innerText="RECONNECTING";
+document.getElementById("status").className="red";
 setTimeout(connect,2000);
 };
 
 ws.onmessage=(m)=>{
-const t=JSON.parse(m.data);
+let t=JSON.parse(m.data);
 process(t);
 update();
 };
+
 }
 
-function setStatus(t,c){
-let el=document.getElementById("status");
-el.innerText=t;
-el.className=c;
-}
+connect();
 
-// PROCESS FLOW
+/* =========================
+   PROCESS FLOW
+========================= */
+
 function process(t){
+
 let price=parseFloat(t.p);
 let qty=parseFloat(t.q);
 let sell=t.m;
 
 lastPrice=price;
 
-// CVD (institutional core)
+// CVD
 cvd += sell ? -qty : qty;
 
 trades.push({
@@ -198,18 +220,23 @@ price,
 qty,
 side:sell?'sell':'buy'
 });
+
 }
 
-// BUILD FOOTPRINT
+/* =========================
+   BUILD FOOTPRINT
+========================= */
+
 function build(){
-let cut=now()-tfSec[tf];
+
+let cut=Date.now()/1000 - tfSec[tf];
 
 let buy=0,sell=0;
 let ladder={};
 
 trades=trades.filter(t=>t.time>=cut);
 
-// memory control (VERY IMPORTANT for 3D/1W)
+// memory control
 if(trades.length>50000) trades=trades.slice(-30000);
 
 for(let t of trades){
@@ -218,37 +245,44 @@ let p=t.price.toFixed(1);
 
 if(!ladder[p]) ladder[p]={buy:0,sell:0};
 
-if(t.side==='buy'){
+if(t.side==="buy"){
 ladder[p].buy+=t.qty;
 buy+=t.qty;
 }else{
 ladder[p].sell+=t.qty;
 sell+=t.qty;
 }
+
 }
 
 return {ladder,buy,sell,delta:buy-sell};
+
 }
 
-// SIGNAL ENGINE (smart money logic)
+/* =========================
+   SIGNAL ENGINE
+========================= */
+
 function signal(d,buy,sell){
+
 let total=buy+sell;
 
 if(total<8) return ["WAIT","Low participation","yellow"];
 
-if(Math.abs(d)<total*0.1 && total>20)
-return ["ABSORPTION","Big passive absorption","yellow"];
+if(Math.abs(d)<total*0.1) return ["ABSORB","Absorption zone","yellow"];
 
-if(d>total*0.3)
-return ["LONG","Aggressive buying pressure","green"];
+if(d>total*0.3) return ["LONG","Buy dominance","green"];
 
-if(d<-total*0.3)
-return ["SHORT","Aggressive selling pressure","red"];
+if(d<-total*0.3) return ["SHORT","Sell dominance","red"];
 
-return ["CHOP","Balanced flow","yellow"];
+return ["CHOP","No edge","yellow"];
+
 }
 
-// UPDATE UI
+/* =========================
+   UI UPDATE
+========================= */
+
 function update(){
 
 let {ladder,buy,sell,delta}=build();
@@ -261,19 +295,21 @@ document.getElementById("delta").innerText=delta.toFixed(2);
 
 let [s,w,c]=signal(delta,buy,sell);
 
-let sig=document.getElementById("signal");
-sig.innerText=s;
-sig.className="signal "+c;
+let el=document.getElementById("signal");
+el.innerText=s;
+el.className="signal "+c;
 
 document.getElementById("why").innerText=w;
 
-// FOOTPRINT TABLE
+/* TABLE */
+
 let html="";
 
 Object.keys(ladder)
 .sort((a,b)=>b-a)
 .slice(0,25)
 .forEach(p=>{
+
 let b=ladder[p].buy;
 let s=ladder[p].sell;
 let d=b-s;
@@ -285,40 +321,46 @@ html+=`
 <td class="red">${s.toFixed(2)}</td>
 <td class="${d>0?'green':'red'}">${d.toFixed(2)}</td>
 </tr>`;
+
 });
 
 document.getElementById("tbl").innerHTML=html;
 
-// HEATMAP
+/* HEATMAP */
+
 let heat=document.getElementById("heat");
 heat.innerHTML="";
 
 for(let i=0;i<20;i++){
+
 let d=document.createElement("div");
 let inten=Math.min(Math.abs(delta)/60,1);
 
-d.style.background =
+d.style.background=
 delta>0
 ?`rgba(34,197,94,${inten})`
 :`rgba(239,68,68,${inten})`;
 
 heat.appendChild(d);
-}
 
 }
 
-// TF SWITCH
+}
+
+/* =========================
+   TF SWITCH
+========================= */
+
 function setTF(x,el){
+
 tf=x;
 
 document.querySelectorAll(".tf")
 .forEach(e=>e.classList.remove("active"));
 
 el.classList.add("active");
-}
 
-// START
-connect();
+}
 
 </script>
 
