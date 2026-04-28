@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SMART MONEY TERMINAL V4.5</title>
+<title>SMART MONEY TERMINAL V4.6</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#020617;color:#e5e7eb}
@@ -17,7 +17,16 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 
 .big{font-size:26px;font-weight:800}
 
-.tf{padding:6px 8px;margin:2px;background:#0f172a;border-radius:6px;display:inline-block;cursor:pointer;font-size:12px}
+.tf{
+padding:6px 8px;
+margin:2px;
+background:#0f172a;
+border-radius:6px;
+display:inline-block;
+cursor:pointer;
+font-size:12px;
+}
+
 .tf.active{background:#1d4ed8}
 
 .green{color:#22c55e}
@@ -34,18 +43,19 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 
 .small{font-size:12px;color:#94a3b8}
 </style>
+
 </head>
 
 <body>
 
 <header>
-<div>SMART MONEY TERMINAL V4.5</div>
+<div>SMART MONEY TERMINAL V4.6</div>
 <div id="status" class="yellow">CONNECTING...</div>
 </header>
 
 <div class="wrap">
 
-<!-- LEFT PANEL -->
+<!-- LEFT -->
 <div class="panel">
 
 <div class="title">Market Bias (Layer 1)</div>
@@ -60,6 +70,10 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 <span class="tf" onclick="setTF('4h',this)">4H</span>
 <span class="tf" onclick="setTF('6h',this)">6H</span>
 <span class="tf" onclick="setTF('12h',this)">12H</span>
+
+<!-- FIXED DAILY -->
+<span class="tf" onclick="setTF('1d',this)">1D</span>
+
 <span class="tf" onclick="setTF('3d',this)">3D</span>
 <span class="tf" onclick="setTF('1w',this)">W</span>
 
@@ -104,9 +118,9 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 
 <script>
 
-/* =========================
+/* ======================
    STATE
-========================= */
+====================== */
 
 let ws;
 let trades=[];
@@ -114,19 +128,20 @@ let tf='1m';
 let lastPrice=0;
 let cvd=0;
 
-/* =========================
-   TIMEFRAMES
-========================= */
+/* ======================
+   TIMEFRAMES (FIXED)
+====================== */
 
 const tfSec={
 '1m':60,'5m':300,'15m':900,'1h':3600,'4h':14400,
-'6h':21600,'12h':43200,'3d':259200,'1w':604800
+'6h':21600,'12h':43200,
+'1d':86400,     // ✅ DAILY FIXED
+'3d':259200,'1w':604800
 };
 
-/* =========================
-   MARKET BIAS (LAYER 1)
-   REAL DATA
-========================= */
+/* ======================
+   MARKET BIAS (L1)
+====================== */
 
 let bias="NEUTRAL";
 
@@ -143,23 +158,20 @@ let usdtDom=data.data.market_cap_percentage.usdt||0;
 
 let score=0;
 
-// BTC dominance logic
 if(btcDom>52) score--;
 else score++;
 
-// USDT fear
 if(usdtDom>6) score--;
 
-// ETH strength proxy
 if(ethDom/btcDom>0.07) score++;
 
-// FINAL
 if(score>=2) bias="BULLISH";
 else if(score<=-1) bias="BEARISH";
 else bias="NEUTRAL";
 
-document.getElementById("bias").innerText=bias;
-document.getElementById("bias").className=
+let el=document.getElementById("bias");
+el.innerText=bias;
+el.className=
 bias==="BULLISH"?"big green":
 bias==="BEARISH"?"big red":"big yellow";
 
@@ -170,9 +182,9 @@ bias==="BEARISH"?"big red":"big yellow";
 setInterval(updateBias,15000);
 updateBias();
 
-/* =========================
-   WEBSOCKET (REAL TIME)
-========================= */
+/* ======================
+   REAL-TIME STREAM
+====================== */
 
 function connect(){
 
@@ -199,9 +211,9 @@ update();
 
 connect();
 
-/* =========================
+/* ======================
    PROCESS FLOW
-========================= */
+====================== */
 
 function process(t){
 
@@ -223,9 +235,9 @@ side:sell?'sell':'buy'
 
 }
 
-/* =========================
-   BUILD FOOTPRINT
-========================= */
+/* ======================
+   FOOTPRINT ENGINE
+====================== */
 
 function build(){
 
@@ -236,8 +248,9 @@ let ladder={};
 
 trades=trades.filter(t=>t.time>=cut);
 
-// memory control
-if(trades.length>50000) trades=trades.slice(-30000);
+// safety for 3D/1W
+if(trades.length>50000)
+trades=trades.slice(-30000);
 
 for(let t of trades){
 
@@ -259,29 +272,33 @@ return {ladder,buy,sell,delta:buy-sell};
 
 }
 
-/* =========================
+/* ======================
    SIGNAL ENGINE
-========================= */
+====================== */
 
 function signal(d,buy,sell){
 
 let total=buy+sell;
 
-if(total<8) return ["WAIT","Low participation","yellow"];
+if(total<8)
+return ["WAIT","Low flow","yellow"];
 
-if(Math.abs(d)<total*0.1) return ["ABSORB","Absorption zone","yellow"];
+if(Math.abs(d)<total*0.1)
+return ["ABSORB","Absorption zone","yellow"];
 
-if(d>total*0.3) return ["LONG","Buy dominance","green"];
+if(d>total*0.3)
+return ["LONG","Buy dominance","green"];
 
-if(d<-total*0.3) return ["SHORT","Sell dominance","red"];
+if(d<-total*0.3)
+return ["SHORT","Sell dominance","red"];
 
 return ["CHOP","No edge","yellow"];
 
 }
 
-/* =========================
-   UI UPDATE
-========================= */
+/* ======================
+   UPDATE UI
+====================== */
 
 function update(){
 
@@ -295,9 +312,9 @@ document.getElementById("delta").innerText=delta.toFixed(2);
 
 let [s,w,c]=signal(delta,buy,sell);
 
-let el=document.getElementById("signal");
-el.innerText=s;
-el.className="signal "+c;
+let sig=document.getElementById("signal");
+sig.innerText=s;
+sig.className="signal "+c;
 
 document.getElementById("why").innerText=w;
 
@@ -347,9 +364,9 @@ heat.appendChild(d);
 
 }
 
-/* =========================
+/* ======================
    TF SWITCH
-========================= */
+====================== */
 
 function setTF(x,el){
 
