@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SMART MONEY TERMINAL V7 (FLOW + TF + DOMINANCE)</title>
+<title>SMART MONEY TERMINAL V8 (FULL TF + FLOW + DOMINANCE)</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#020617;color:#e5e7eb}
@@ -30,7 +30,7 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 <body>
 
 <header>
-<div>SMART MONEY TERMINAL V7 — FLOW + TF + DOMINANCE</div>
+<div>SMART MONEY TERMINAL V8 — FULL SYSTEM</div>
 <div id="status" class="yellow">CONNECTING...</div>
 </header>
 
@@ -48,7 +48,11 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 <span class="tf" onclick="setTF('15m',this)">15m</span>
 <span class="tf" onclick="setTF('1h',this)">1H</span>
 <span class="tf" onclick="setTF('4h',this)">4H</span>
+<span class="tf" onclick="setTF('6h',this)">6H</span>
+<span class="tf" onclick="setTF('12h',this)">12H</span>
 <span class="tf" onclick="setTF('1d',this)">1D</span>
+<span class="tf" onclick="setTF('3d',this)">3D</span>
+<span class="tf" onclick="setTF('1w',this)">W</span>
 
 <div class="title">Price</div>
 <div class="big" id="price">0</div>
@@ -117,7 +121,9 @@ let tf='1m';
 /* TIMEFRAMES */
 const tfSec={
  '1m':60,'5m':300,'15m':900,
- '1h':3600,'4h':14400,'1d':86400
+ '1h':3600,'4h':14400,
+ '6h':21600,'12h':43200,
+ '1d':86400,'3d':259200,'1w':604800
 };
 
 /* REGIME */
