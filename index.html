@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SMART MONEY TERMINAL V4.6</title>
+<title>SMART MONEY TERMINAL V5 (REGIME CORE)</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#020617;color:#e5e7eb}
@@ -26,12 +26,12 @@ display:inline-block;
 cursor:pointer;
 font-size:12px;
 }
-
 .tf.active{background:#1d4ed8}
 
 .green{color:#22c55e}
 .red{color:#ef4444}
 .yellow{color:#eab308}
+.purple{color:#a855f7}
 
 .signal{font-size:34px;text-align:center;padding:10px}
 
@@ -43,13 +43,12 @@ font-size:12px;
 
 .small{font-size:12px;color:#94a3b8}
 </style>
-
 </head>
 
 <body>
 
 <header>
-<div>SMART MONEY TERMINAL V4.6</div>
+<div>SMART MONEY TERMINAL V5 — REGIME CORE</div>
 <div id="status" class="yellow">CONNECTING...</div>
 </header>
 
@@ -58,8 +57,8 @@ font-size:12px;
 <!-- LEFT -->
 <div class="panel">
 
-<div class="title">Market Bias (Layer 1)</div>
-<div class="big yellow" id="bias">NEUTRAL</div>
+<div class="title">Market Regime (Layer 1)</div>
+<div class="big yellow" id="regime">NEUTRAL</div>
 
 <div class="title">Timeframes</div>
 
@@ -70,10 +69,7 @@ font-size:12px;
 <span class="tf" onclick="setTF('4h',this)">4H</span>
 <span class="tf" onclick="setTF('6h',this)">6H</span>
 <span class="tf" onclick="setTF('12h',this)">12H</span>
-
-<!-- FIXED DAILY -->
 <span class="tf" onclick="setTF('1d',this)">1D</span>
-
 <span class="tf" onclick="setTF('3d',this)">3D</span>
 <span class="tf" onclick="setTF('1w',this)">W</span>
 
@@ -118,9 +114,9 @@ font-size:12px;
 
 <script>
 
-/* ======================
+/* =========================
    STATE
-====================== */
+========================= */
 
 let ws;
 let trades=[];
@@ -128,63 +124,79 @@ let tf='1m';
 let lastPrice=0;
 let cvd=0;
 
-/* ======================
-   TIMEFRAMES (FIXED)
-====================== */
+/* =========================
+   TIMEFRAMES
+========================= */
 
 const tfSec={
 '1m':60,'5m':300,'15m':900,'1h':3600,'4h':14400,
 '6h':21600,'12h':43200,
-'1d':86400,     // ✅ DAILY FIXED
-'3d':259200,'1w':604800
+'1d':86400,'3d':259200,'1w':604800
 };
 
-/* ======================
-   MARKET BIAS (L1)
-====================== */
+/* =========================
+   REGIME ENGINE (LAYER 1)
+========================= */
 
-let bias="NEUTRAL";
+let regime="NEUTRAL";
 
-async function updateBias(){
+let btcDom=0,ethDom=0,usdtDom=0,totalCap=0,ethbtc=0;
+
+async function updateRegime(){
 
 try{
 
-const res=await fetch("https://api.coingecko.com/api/v3/global");
-const data=await res.json();
+const r=await fetch("https://api.coingecko.com/api/v3/global");
+const d=await r.json();
 
-let btcDom=data.data.market_cap_percentage.btc;
-let ethDom=data.data.market_cap_percentage.eth;
-let usdtDom=data.data.market_cap_percentage.usdt||0;
+btcDom=d.data.market_cap_percentage.btc;
+ethDom=d.data.market_cap_percentage.eth;
+usdtDom=d.data.market_cap_percentage.usdt||0;
+totalCap=d.data.total_market_cap.usd;
 
-let score=0;
+ethbtc=ethDom/btcDom;
 
-if(btcDom>52) score--;
-else score++;
+let btcScore=0,altScore=0,risk=0;
 
-if(usdtDom>6) score--;
+// BTC dominance
+if(btcDom>52) btcScore+=2;
+if(btcDom<48) altScore+=2;
 
-if(ethDom/btcDom>0.07) score++;
+// ETH strength
+if(ethbtc>0.07) altScore+=2;
 
-if(score>=2) bias="BULLISH";
-else if(score<=-1) bias="BEARISH";
-else bias="NEUTRAL";
+// USDT fear
+if(usdtDom>6) risk+=2;
 
-let el=document.getElementById("bias");
-el.innerText=bias;
+// market expansion
+if(totalCap>2e12){
+btcScore++;
+altScore++;
+}
+
+if(risk>=2) regime="RISK-OFF";
+else if(altScore>btcScore) regime="ALT-ROTATION";
+else if(btcScore>altScore) regime="BTC-LED";
+else regime="NEUTRAL";
+
+let el=document.getElementById("regime");
+el.innerText=regime;
+
 el.className=
-bias==="BULLISH"?"big green":
-bias==="BEARISH"?"big red":"big yellow";
+regime==="BTC-LED"?"big green":
+regime==="ALT-ROTATION"?"big purple":
+regime==="RISK-OFF"?"big red":"big yellow";
 
 }catch(e){}
 
 }
 
-setInterval(updateBias,15000);
-updateBias();
+setInterval(updateRegime,15000);
+updateRegime();
 
-/* ======================
-   REAL-TIME STREAM
-====================== */
+/* =========================
+   BINANCE STREAM
+========================= */
 
 function connect(){
 
@@ -196,7 +208,7 @@ document.getElementById("status").className="green";
 };
 
 ws.onclose=()=>{
-document.getElementById("status").innerText="RECONNECTING";
+document.getElementById("status").innerText="RECONNECT";
 document.getElementById("status").className="red";
 setTimeout(connect,2000);
 };
@@ -211,9 +223,9 @@ update();
 
 connect();
 
-/* ======================
+/* =========================
    PROCESS FLOW
-====================== */
+========================= */
 
 function process(t){
 
@@ -222,9 +234,7 @@ let qty=parseFloat(t.q);
 let sell=t.m;
 
 lastPrice=price;
-
-// CVD
-cvd += sell ? -qty : qty;
+cvd += sell?-qty:qty;
 
 trades.push({
 time:Math.floor(t.T/1000),
@@ -235,9 +245,9 @@ side:sell?'sell':'buy'
 
 }
 
-/* ======================
+/* =========================
    FOOTPRINT ENGINE
-====================== */
+========================= */
 
 function build(){
 
@@ -248,7 +258,6 @@ let ladder={};
 
 trades=trades.filter(t=>t.time>=cut);
 
-// safety for 3D/1W
 if(trades.length>50000)
 trades=trades.slice(-30000);
 
@@ -272,33 +281,35 @@ return {ladder,buy,sell,delta:buy-sell};
 
 }
 
-/* ======================
-   SIGNAL ENGINE
-====================== */
+/* =========================
+   SIGNAL ENGINE (REGIME-AWARE)
+========================= */
 
 function signal(d,buy,sell){
 
 let total=buy+sell;
 
-if(total<8)
-return ["WAIT","Low flow","yellow"];
+// regime filter
+if(regime==="RISK-OFF"){
+if(d>0) return ["WEAK LONG","counter-trend","yellow"];
+if(d<0) return ["SHORT OK","risk sell flow","red"];
+}
 
-if(Math.abs(d)<total*0.1)
-return ["ABSORB","Absorption zone","yellow"];
+if(regime==="BTC-LED"){
+if(d>total*0.25) return ["LONG","BTC dominance flow","green"];
+}
 
-if(d>total*0.3)
-return ["LONG","Buy dominance","green"];
+if(regime==="ALT-ROTATION"){
+return ["ALT FLOW","alt strength regime","purple"];
+}
 
-if(d<-total*0.3)
-return ["SHORT","Sell dominance","red"];
-
-return ["CHOP","No edge","yellow"];
+return ["WAIT","no edge","yellow"];
 
 }
 
-/* ======================
-   UPDATE UI
-====================== */
+/* =========================
+   UI UPDATE
+========================= */
 
 function update(){
 
@@ -312,9 +323,9 @@ document.getElementById("delta").innerText=delta.toFixed(2);
 
 let [s,w,c]=signal(delta,buy,sell);
 
-let sig=document.getElementById("signal");
-sig.innerText=s;
-sig.className="signal "+c;
+let el=document.getElementById("signal");
+el.innerText=s;
+el.className="signal "+c;
 
 document.getElementById("why").innerText=w;
 
@@ -364,9 +375,9 @@ heat.appendChild(d);
 
 }
 
-/* ======================
+/* =========================
    TF SWITCH
-====================== */
+========================= */
 
 function setTF(x,el){
 
