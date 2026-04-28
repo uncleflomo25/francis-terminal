@@ -1,196 +1,46 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FLOW TERMINAL V4 — EXECUTION DESK</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Composite Footprint Dashboard</title>
 <style>
-body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#05070c;
-color:#e5e7eb;
-}
-.header{
-padding:14px;
-text-align:center;
-font-size:20px;
-font-weight:bold;
-background:#0b1220;
-}
-.controls{
-display:flex;
-gap:10px;
-justify-content:center;
-padding:10px;
-background:#0b1220;
-flex-wrap:wrap;
-}
-select,button{
-padding:8px;
-border-radius:8px;
-border:none;
-background:#111827;
-color:white;
-}
-.grid{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:10px;
-padding:12px;
-}
-.card{
-background:#0f172a;
-padding:10px;
-border-radius:12px;
-text-align:center;
-border:1px solid #1f2937;
-}
-.title{font-size:12px;opacity:0.7;}
-.value{font-size:16px;margin-top:5px;font-weight:bold;}
-.signal{margin-top:5px;font-size:13px;}
-.long{color:#22c55e;}
-.short{color:#ef4444;}
-.neutral{color:#facc15;}
-.panel{
-margin:12px;
-padding:14px;
-border-radius:12px;
-background:#0f172a;
-border:1px solid #1f2937;
-}
-.big{font-size:20px;font-weight:bold;}
-.small{font-size:12px;opacity:0.7;}
-canvas{
-width:100%;
-height:200px;
-background:#0b1220;
-border-radius:10px;
-margin-top:10px;
-}
+body{margin:0;background:#05080d;color:#e5e7eb;font-family:Arial,sans-serif}header{padding:12px 16px;border-bottom:1px solid #1f2937;display:flex;justify-content:space-between;align-items:center}.grid{display:grid;grid-template-columns:280px 1fr 320px;gap:12px;padding:12px}.panel{background:#0b1220;border:1px solid #1f2937;border-radius:16px;padding:12px}.title{font-weight:700;margin-bottom:10px}.controls label{display:block;font-size:12px;margin-top:8px}.controls select,.controls input{width:100%;padding:8px;border-radius:10px;background:#111827;color:#fff;border:1px solid #374151}.table{width:100%;border-collapse:collapse;font-size:12px}.table td,.table th{padding:6px;border-bottom:1px solid #1f2937;text-align:right}.buy{color:#22c55e}.sell{color:#ef4444}.bars div{height:16px;margin:6px 0;background:#111827;position:relative;border-radius:8px;overflow:hidden}.bars span{position:absolute;top:0;bottom:0;left:0;background:#22c55e}.gauge{height:180px;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#22c55e}.small{font-size:12px;color:#9ca3af}.heat{display:grid;grid-template-columns:repeat(30,1fr);gap:2px}.heat div{height:18px;background:#111827;border-radius:3px}.footer{padding:0 12px 12px}.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 </style>
 </head>
-<body><div class="header">FLOW TERMINAL V4 — EXECUTION DESK</div><div class="controls">
-<select id="timeframe">
-<option value="1m">1 MIN</option>
-<option value="5m">5 MIN</option>
-<option value="15m">15 MIN</option>
-<option value="1h">1 HOUR</option>
-<option value="1d">DAILY</option>
-</select>
-<button onclick="run()">RUN ENGINE</button>
-</div><div class="grid">
-  <div class="card"><div class="title">USDT.D</div><div class="value" id="usdt">--</div></div>
-  <div class="card"><div class="title">TOTAL</div><div class="value" id="total">--</div></div>
-  <div class="card"><div class="title">BTC.D</div><div class="value" id="btcd">--</div></div>
-  <div class="card"><div class="title">ETH.D</div><div class="value" id="ethd">--</div></div>
-  <div class="card"><div class="title">ETHBTC</div><div class="value" id="ethbtc">--</div></div>
-</div><div class="panel">
-<div class="big" id="decision">MARKET: LOADING</div>
-<div class="small" id="reason">Initializing flow...</div>
-<canvas id="chart"></canvas>
-</div><script>
-
-const cg="https://api.coingecko.com/api/v3";
-const binance="https://api.binance.com/api/v3/klines";
-
-function tfMap(tf){
-return {"1m":"1m","5m":"5m","15m":"15m","1h":"1h","1d":"1d"}[tf];
-}
-
-async function get(url){return (await fetch(url)).json();}
-
-function sma(data,p){
-let sum=0;for(let i=data.length-p;i<data.length;i++)sum+=data[i];
-return sum/p;
-}
-
-function trend(closes){
-let last=closes[closes.length-1];
-let avg=sma(closes,Math.min(20,closes.length));
-if(last>avg*1.002)return"UP";
-if(last<avg*0.998)return"DOWN";
-return"FLAT";
-}
-
-async function fetchK(symbol,tf){
-let d=await get(`${binance}?symbol=${symbol}&interval=${tf}&limit=50`);
-return d.map(x=>parseFloat(x[4]));
-}
-
-function draw(closes){
-let c=document.getElementById("chart");
-let ctx=c.getContext("2d");
-c.width=c.offsetWidth;
-c.height=200;
-ctx.clearRect(0,0,c.width,c.height);
-ctx.strokeStyle="#22c55e";
-ctx.beginPath();
-let max=Math.max(...closes),min=Math.min(...closes);
-closes.forEach((v,i)=>{
-let x=i*(c.width/closes.length);
-let y=c.height-((v-min)/(max-min))*c.height;
-if(i==0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
-});
-ctx.stroke();
-}
-
-async function run(){
-let tf=tfMap(document.getElementById("timeframe").value);
-
-// MARKET DATA
-let g=await get(cg+"/global");
-let btc=await get(cg+"/simple/price?ids=bitcoin&vs_currencies=usd");
-let eth=await get(cg+"/simple/price?ids=ethereum&vs_currencies=usd");
-
-let btcPrice=btc.bitcoin.usd;
-let ethPrice=eth.ethereum.usd;
-
-let total=g.data.total_market_cap.usd;
-let btcD=g.data.market_cap_percentage.btc;
-let ethD=g.data.market_cap_percentage.eth;
-
-let ethbtc=ethPrice/btcPrice;
-
-// REAL TIME TREND (BTC)
-let btcCloses=await fetchK("BTCUSDT",tf);
-let ethCloses=await fetchK("ETHUSDT",tf);
-
-let btcTrend=trend(btcCloses);
-let ethTrend=trend(ethCloses);
-
-// DISPLAY
-usdt.innerText="--";
-totalEl.innerText=(total/1e12).toFixed(2)+"T";
-btcd.innerText=btcD.toFixed(2)+"%";
-ethd.innerText=ethD.toFixed(2)+"%";
-ethbtcEl.innerText=ethbtc.toFixed(5);
-
-draw(btcCloses);
-
-// ENGINE
-let long=0,short=0,r=[];
-
-if(g.data.total_market_cap_change_percentage_24h_usd>0){long+=25;r.push("Expansion");}
-if(btcD>ethD){long+=20;r.push("BTC leads");}
-if(ethTrend=="UP"){long+=20;r.push("ETH trend up");}
-if(btcTrend=="UP"){long+=25;r.push("BTC trend up");}
-if(ethbtc>0.05){long+=10;r.push("ETHBTC strength");}
-
-if(g.data.market_cap_change_percentage_24h_usd<0){short+=25;}
-if(btcTrend=="DOWN"){short+=25;}
-if(ethTrend=="DOWN"){short+=25;}
-if(btcD>55){short+=15;}
-
-let decision="NO TRADE";
-if(long>75)decision="LONG BTC/ETH EXECUTION";
-if(short>75)decision="SHORT / DEFENSIVE";
-
-decisionEl.innerText="MARKET: "+decision;
-reasonEl.innerText=r.join(" | ")||"Waiting flow alignment";
-}
-
-run();
-setInterval(run,20000);
-
-</script></body>
-</html>
+<body>
+<header><div><strong>COMPOSITE FOOTPRINT PRO</strong><div class='small'>BTC + ETHBTC + USDT.D + BTC.D</div></div><div id='clock'></div></header>
+<div class='grid'>
+<div class='panel controls'>
+<div class='title'>Settings</div>
+<label>Timeframe</label><select id='tf'><option>1m</option><option>5m</option><option>15m</option><option>1H</option><option>4H</option><option>1D</option></select>
+<label>Refresh Speed</label><select><option>1s</option><option>3s</option><option>5s</option></select>
+<label>BTC Weight</label><input type='range' min='0' max='100' value='40'>
+<label>ETHBTC Weight</label><input type='range' min='0' max='100' value='25'>
+<label>BTC.D Weight</label><input type='range' min='0' max='100' value='20'>
+<label>USDT.D Weight</label><input type='range' min='0' max='100' value='15'>
+<label>Theme</label><select><option>Dark</option><option>Midnight</option><option>Terminal</option></select>
+<label>Signal Sensitivity</label><select><option>Low</option><option>Normal</option><option>High</option></select>
+</div>
+<div class='panel'>
+<div class='title'>Footprint Matrix</div>
+<table class='table' id='tbl'><tr><th>Price</th><th>Buy</th><th>Sell</th><th>Delta</th></tr></table>
+</div>
+<div class='panel'>
+<div class='title'>Composite Summary</div>
+<div class='gauge' id='flow'>+0</div>
+<div class='small' id='signal'>NEUTRAL</div>
+<div class='title' style='margin-top:12px'>Delta Bars</div>
+<div class='bars' id='bars'></div>
+</div>
+</div>
+<div class='footer row2'>
+<div class='panel'><div class='title'>Heatmap</div><div class='heat' id='heat'></div></div>
+<div class='panel'><div class='title'>Customization Options</div><div class='small'>Columns on/off • Number format • Sound alerts • Auto scale • Symbol source • Export CSV • Compact mode • Multi-monitor mode</div></div>
+</div>
+<script>
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function render(){let t=document.getElementById('tbl');t.innerHTML='<tr><th>Price</th><th>Buy</th><th>Sell</th><th>Delta</th></tr>';let bars='';let net=0;for(let i=0;i<12;i++){let p=69000-i*25,b=rnd(200,3900),s=rnd(200,3900),d=b-s;net+=d;t.innerHTML+=`<tr><td>${p}</td><td class='buy'>${b}</td><td class='sell'>${s}</td><td class='${d>=0?'buy':'sell'}'>${d}</td></tr>`;bars+=`<div><span style='width:${Math.min(Math.abs(d)/40,100)}%;background:${d>=0?'#22c55e':'#ef4444'}'></span></div>`}document.getElementById('bars').innerHTML=bars;document.getElementById('flow').textContent=(net>0?'+':'')+net;document.getElementById('flow').style.color=net>=0?'#22c55e':'#ef4444';document.getElementById('signal').textContent=net>1500?'STRONG BUY':net<-1500?'STRONG SELL':'MIXED';let h='';for(let i=0;i<30;i++){let v=rnd(-10,10);h+=`<div style='background:${v>0?'#16a34a':v<0?'#b91c1c':'#a16207'}'></div>`}document.getElementById('heat').innerHTML=h;document.getElementById('clock').textContent=new Date().toLocaleTimeString();}
+render();setInterval(render,2000);
+</script>
+</body></html>
