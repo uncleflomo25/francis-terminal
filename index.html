@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SMART MONEY TERMINAL V6 (FLOW + DOMINANCE)</title>
+<title>SMART MONEY TERMINAL V7 (FLOW + TF + DOMINANCE)</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#020617;color:#e5e7eb}
@@ -30,7 +30,7 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 <body>
 
 <header>
-<div>SMART MONEY TERMINAL V6 — FLOW + DOMINANCE</div>
+<div>SMART MONEY TERMINAL V7 — FLOW + TF + DOMINANCE</div>
 <div id="status" class="yellow">CONNECTING...</div>
 </header>
 
@@ -41,6 +41,14 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 
 <div class="title">Regime</div>
 <div class="big yellow" id="regime">NEUTRAL</div>
+
+<div class="title">Timeframes</div>
+<span class="tf active" onclick="setTF('1m',this)">1m</span>
+<span class="tf" onclick="setTF('5m',this)">5m</span>
+<span class="tf" onclick="setTF('15m',this)">15m</span>
+<span class="tf" onclick="setTF('1h',this)">1H</span>
+<span class="tf" onclick="setTF('4h',this)">4H</span>
+<span class="tf" onclick="setTF('1d',this)">1D</span>
 
 <div class="title">Price</div>
 <div class="big" id="price">0</div>
@@ -93,7 +101,6 @@ header{display:flex;justify-content:space-between;padding:12px;border-bottom:1px
 <script>
 
 /* STATE */
-
 let ws;
 let trades=[];
 let lastPrice=0;
@@ -105,8 +112,15 @@ let prevBTC=0, prevETH=0;
 let rotation="NEUTRAL";
 let rotationStrength="WEAK";
 
-/* REGIME */
+let tf='1m';
 
+/* TIMEFRAMES */
+const tfSec={
+ '1m':60,'5m':300,'15m':900,
+ '1h':3600,'4h':14400,'1d':86400
+};
+
+/* REGIME */
 let regime="NEUTRAL";
 
 async function updateRegime(){
@@ -132,7 +146,6 @@ setInterval(updateRegime,15000);
 updateRegime();
 
 /* CONNECT */
-
 function connect(){
 
 ws=new WebSocket("wss://stream.binance.com:9443/stream?streams=btcusdt@aggTrade/ethusdt@aggTrade");
@@ -176,7 +189,6 @@ ws.onmessage=(m)=>{
 connect();
 
 /* ROTATION */
-
 function updateRotation(){
 
  if(!prevBTC || !prevETH){
@@ -203,10 +215,10 @@ function updateRotation(){
 }
 
 /* BUILD */
-
 function build(){
 
- let cut=Date.now()/1000-60;
+ let cut=Date.now()/1000 - tfSec[tf];
+
  let buy=0,sell=0,ladder={};
 
  trades=trades.filter(t=>t.time>=cut);
@@ -228,7 +240,6 @@ function build(){
 }
 
 /* BIAS */
-
 function getBias(delta,total){
 
  if(regime==="RISK-OFF") return "SHORT";
@@ -245,21 +256,19 @@ function getBias(delta,total){
 }
 
 /* SIGNAL */
-
 function signal(delta,buy,sell){
 
  let total=buy+sell;
  let bias=getBias(delta,total);
 
  if(bias==="SHORT") return ["SHORT","risk-off","red"];
- if(bias==="LONG BTC") return ["LONG","btc flow","green"];
- if(bias==="AVOID") return ["NO TRADE","alt rotation","purple"];
+ if(bias==="LONG BTC") return ["LONG","btc flow aligned","green"];
+ if(bias==="AVOID") return ["NO TRADE","alt rotation strong","purple"];
 
  return ["WAIT","no edge","yellow"];
 }
 
 /* UPDATE */
-
 function update(){
 
  let {ladder,buy,sell,delta}=build();
@@ -283,7 +292,6 @@ function update(){
  document.getElementById("bias").innerText=getBias(delta,buy+sell);
 
 /* TABLE */
-
  let html="";
  Object.keys(ladder).sort((a,b)=>b-a).slice(0,20).forEach(p=>{
   let b=ladder[p].buy;
@@ -301,7 +309,6 @@ function update(){
  document.getElementById("tbl").innerHTML=html;
 
 /* HEAT */
-
  let heat=document.getElementById("heat");
  heat.innerHTML="";
 
@@ -316,6 +323,13 @@ function update(){
   heat.appendChild(d);
  }
 
+}
+
+/* TF SWITCH */
+function setTF(x,el){
+ tf=x;
+ document.querySelectorAll(".tf").forEach(e=>e.classList.remove("active"));
+ el.classList.add("active");
 }
 
 </script>
