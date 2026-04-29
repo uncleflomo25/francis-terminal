@@ -1,232 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Composite Footprint Terminal</title>
+// ==========================================
+// CRYPTO MARKET CONTROL ENGINE V3 (ALL-IN-ONE)
+// ==========================================
 
-<style>
-body{margin:0;font-family:Arial;background:#020617;color:#e5e7eb}
-header{padding:10px;border-bottom:1px solid #1e293b}
-.wrap{padding:10px}
-.panel{background:#07101d;border-radius:10px;padding:10px}
-button{margin:2px;padding:6px 8px;background:#0f172a;color:white;border:none;border-radius:6px;cursor:pointer}
-button.active{background:#1d4ed8}
-.table{width:100%;font-size:12px;border-collapse:collapse}
-.table td{padding:4px;border-bottom:1px solid #132033;position:relative}
-.green{color:#22c55e}
-.red{color:#ef4444}
-.blue{color:#60a5fa}
-</style>
-</head>
+const MarketEngine = (function(){
 
-<body>
+  // ------------------------------
+  // STATE
+  // ------------------------------
+  let marketBias = "NEUTRAL";
+  let lastBias = "NEUTRAL";
 
-<header>
-<b>Composite Candle Footprint (Real-Time)</b>
-</header>
+  let btcDom = 0;
+  let ethDom = 0;
+  let usdtDom = 0;
+  let totalCap = 0;
 
-<div class="wrap">
+  let prevTotalCap = 0;
+  let prevBtcDom = 0;
 
-<div id="tfButtons"></div>
+  let biasPersistence = 0; // anti-noise counter
 
-<div class="panel">
-<table class="table" id="tbl"></table>
-</div>
+  // ------------------------------
+  // CORE ENGINE
+  // ------------------------------
+  async function run(){
 
-</div>
+    try {
 
-<script>
+      const res = await fetch("https://api.coingecko.com/api/v3/global");
+      const json = await res.json();
 
-/* ================= CONFIG ================= */
+      const market = json.data.market_cap_percentage;
 
-const CLUSTER_SIZE = 5;
+      // ------------------------------
+      // DATA UPDATE
+      // ------------------------------
+      prevTotalCap = totalCap;
+      prevBtcDom = btcDom;
 
-const TF_MAP = {
- '1m':60,
- '5m':300,
- '15m':900,
- '1h':3600,
- '4h':14400,
- '6h':21600,
- '12h':43200,
- '1d':86400,
- '1w':604800
-};
+      btcDom = market.btc;
+      ethDom = market.eth;
+      usdtDom = market.usdt || 0;
+      totalCap = json.data.total_market_cap.usd;
 
-let tf = '1m';
+      // ------------------------------
+      // DERIVED METRICS
+      // ------------------------------
+      const ethStrength = btcDom ? (ethDom / btcDom) : 0;
 
-/* ================= STATE ================= */
+      const capChange = prevTotalCap
+        ? ((totalCap - prevTotalCap) / prevTotalCap) * 100
+        : 0;
 
-let candles = [];
-let current = null;
+      const btcDomChange = prevBtcDom
+        ? btcDom - prevBtcDom
+        : 0;
 
-/* ================= UI ================= */
+      // ------------------------------
+      // SCORING SYSTEM (SMART FLOW)
+      // ------------------------------
+      let score = 0;
 
-const tfContainer = document.getElementById("tfButtons");
+      // BTC DOM LEVEL + TREND
+      if (btcDom > 52) score -= 2;
+      else if (btcDom < 48) score += 2;
 
-Object.keys(TF_MAP).forEach(t=>{
- let btn=document.createElement("button");
- btn.innerText=t;
- if(t===tf) btn.classList.add("active");
+      if (btcDomChange > 0.2) score -= 1;     // rising dominance = risk off
+      if (btcDomChange < -0.2) score += 1;    // falling dominance = alt rotation
 
- btn.onclick=()=>{
-  tf=t;
-  candles=[];
-  current=null;
+      // USDT DOM (FEAR / SIDELINE MONEY)
+      if (usdtDom > 6.5) score -= 2;
+      else if (usdtDom < 5) score += 1;
 
-  document.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
- };
+      // ETH VS BTC (ALT STRENGTH)
+      if (ethStrength > 0.08) score += 2;
+      else if (ethStrength < 0.06) score -= 1;
 
- tfContainer.appendChild(btn);
-});
+      // TOTAL MARKET FLOW (LIQUIDITY TREND)
+      if (capChange > 1) score += 2;
+      else if (capChange < -1) score -= 2;
 
-/* ================= WEBSOCKET ================= */
+      // ------------------------------
+      // RAW BIAS
+      // ------------------------------
+      let newBias = "NEUTRAL";
 
-let ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@aggTrade");
+      if (score >= 3) newBias = "BULLISH";
+      else if (score <= -2) newBias = "BEARISH";
 
-ws.onmessage = (m)=>{
+      // ------------------------------
+      // ANTI-NOISE (PERSISTENCE FILTER)
+      // ------------------------------
+      if (newBias === lastBias) {
+        biasPersistence++;
+      } else {
+        biasPersistence = 0;
+      }
 
- let data = JSON.parse(m.data);
+      // only confirm after stability
+      if (biasPersistence >= 2) {
+        marketBias = newBias;
+      }
 
- let trade = {
-  time: Date.now()/1000,
-  price: parseFloat(data.p),
-  qty: parseFloat(data.q),
-  side: data.m ? 'sell':'buy'
- };
+      lastBias = newBias;
 
- buildCandle(trade);
- render();
+      // ------------------------------
+      // UI + DEBUG
+      // ------------------------------
+      const el = document.getElementById("bias");
 
-};
+      if (el) {
+        el.innerText = marketBias;
 
-/* ================= BUILD ================= */
+        el.style.color =
+          marketBias === "BULLISH" ? "#22c55e" :
+          marketBias === "BEARISH" ? "#ef4444" :
+          "#eab308";
+      }
 
-function buildCandle(trade){
+      console.log(
+        "BIAS:", marketBias,
+        "| SCORE:", score,
+        "| BTC.D:", btcDom.toFixed(2),
+        "| ΔBTC.D:", btcDomChange.toFixed(2),
+        "| ETH/BTC:", ethStrength.toFixed(4),
+        "| USDT.D:", usdtDom.toFixed(2),
+        "| ΔTOTAL%:", capChange.toFixed(2),
+        "| PERSIST:", biasPersistence
+      );
 
- let tfSec = TF_MAP[tf];
- let bucket = Math.floor(trade.time / tfSec) * tfSec;
-
- if(!current || current.time !== bucket){
-
-  if(current){
-   candles.push(current);
-   if(candles.length > 50) candles.shift();
+    } catch (err) {
+      console.log("Engine error:", err);
+    }
   }
 
-  current = {
-   time: bucket,
-   open: trade.price,
-   high: trade.price,
-   low: trade.price,
-   close: trade.price,
-   buy:0,
-   sell:0,
-   ladder:{}
-  };
- }
+  // ------------------------------
+  // START LOOP
+  // ------------------------------
+  function start(interval = 15000){
+    run();
+    setInterval(run, interval);
+  }
 
- current.high = Math.max(current.high, trade.price);
- current.low  = Math.min(current.low, trade.price);
- current.close = trade.price;
+  // ------------------------------
+  // EXPORT
+  // ------------------------------
+  return { start };
 
- let cluster = Math.round(trade.price / CLUSTER_SIZE) * CLUSTER_SIZE;
+})();
 
- if(!current.ladder[cluster]){
-  current.ladder[cluster] = {buy:0,sell:0};
- }
-
- if(trade.side==="buy"){
-  current.ladder[cluster].buy += trade.qty;
-  current.buy += trade.qty;
- } else {
-  current.ladder[cluster].sell += trade.qty;
-  current.sell += trade.qty;
- }
-
-}
-
-/* ================= RENDER ================= */
-
-function render(){
-
- let html="";
-
- candles.slice().reverse().forEach(c=>{
-
-  let delta = c.buy - c.sell;
-
-  let maxVol = 0;
-  Object.values(c.ladder).forEach(v=>{
-   let t=v.buy+v.sell;
-   if(t>maxVol) maxVol=t;
-  });
-
-  html += `
-  <tr>
-   <td colspan="5" class="blue">
-    ${new Date(c.time*1000).toLocaleString()} |
-    O:${c.open.toFixed(0)} H:${c.high.toFixed(0)} 
-    L:${c.low.toFixed(0)} C:${c.close.toFixed(0)} 
-    Δ:${delta.toFixed(2)}
-   </td>
-  </tr>`;
-
-  Object.keys(c.ladder)
-  .sort((a,b)=>b-a)
-  .forEach(p=>{
-
-   let b=c.ladder[p].buy;
-   let s=c.ladder[p].sell;
-   let d=b-s;
-   let t=b+s;
-
-   let width = maxVol ? (t/maxVol)*100 : 0;
-   let intensity = t ? Math.min(Math.abs(d)/t,1) : 0;
-
-   html += `
-   <tr>
-
-    <td>${p}</td>
-
-    <td class="green">${b.toFixed(2)}</td>
-    <td class="red">${s.toFixed(2)}</td>
-
-    <td>
-     <div style="
-      position:absolute;
-      left:0;top:0;height:100%;
-      width:${width}%;
-      background:rgba(59,130,246,0.25);
-     "></div>
-
-     <span class="${d>0?'green':'red'}">
-      ${d.toFixed(2)}
-     </span>
-    </td>
-
-    <td>
-     <div style="
-      height:6px;
-      background:${d>0
-        ? `rgba(34,197,94,${intensity})`
-        : `rgba(239,68,68,${intensity})`
-      };
-     "></div>
-    </td>
-
-   </tr>`;
-  });
-
- });
-
- document.getElementById("tbl").innerHTML = html;
-
-}
-
-</script>
-
-</body>
-</html>
+// ==========================================
+// RUN ENGINE
+// ==========================================
+MarketEngine.start(15000);
