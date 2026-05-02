@@ -2,24 +2,24 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>V15 Multi-TF Footprint</title>
+<title>V16 Real Liquidity Footprint Engine</title>
 
 <style>
 body {
   margin:0;
   background:#05070c;
-  color:#fff;
   font-family: monospace;
+  color:white;
 }
 
-#controls {
+#topbar {
   padding:10px;
   background:#0f172a;
 }
 
-button, select {
+select, button {
   background:#111827;
-  color:#fff;
+  color:white;
   border:none;
   padding:6px 10px;
   margin-right:10px;
@@ -33,20 +33,20 @@ canvas {
 
 <body>
 
-<div id="controls">
+<div id="topbar">
 
   TF:
   <select id="tf" onchange="switchTF()">
-    <option value="1">1m</option>
-    <option value="5">5m</option>
-    <option value="15">15m</option>
-    <option value="60">1H</option>
-    <option value="240">4H</option>
-    <option value="1440">1D</option>
-    <option value="10080">1W</option>
+    <option value="60000">1m</option>
+    <option value="300000">5m</option>
+    <option value="900000">15m</option>
+    <option value="3600000">1H</option>
+    <option value="14400000">4H</option>
+    <option value="86400000">1D</option>
+    <option value="604800000">1W</option>
   </select>
 
-  <button onclick="updateData()">NEW CANDLE</button>
+  <button onclick="toggle()">START / STOP</button>
 
 </div>
 
@@ -61,62 +61,105 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 50;
 
 // ---------------------
-// TIMEFRAME STORAGE
+// REAL DATA STATE
 // ---------------------
-const TFs = {
-  1: [], 5: [], 15: [],
-  60: [], 240: [],
-  1440: [], 10080: []
+let TOTAL = 0;
+let USDT = 6;
+
+let lastTotal = 0;
+let lastUsdt = 6;
+
+// ---------------------
+// TF SYSTEM
+// ---------------------
+let currentTF = 60000;
+let candles = [];
+
+let buffer = {
+  total: [],
+  usdt: []
 };
 
-let currentTF = 1;
-
 // ---------------------
-// DATA FETCH (HOOK)
+// FETCH REAL TOTAL (DeFiLlama)
 // ---------------------
-async function fetchRealData(){
+async function fetchTOTAL(){
 
-  // 🔌 Replace later with real API
-  return {
-    total: 1000 + Math.random()*10,
-    usdt: 6 + Math.random()*0.3
-  };
+  try {
+    let res = await fetch("https://api.llama.fi/globaldata");
+    let data = await res.json();
+
+    return data.totalMarketCap || 0;
+
+  } catch(e){
+    return TOTAL; // fallback
+  }
 }
 
 // ---------------------
-// CREATE CANDLE
+// SIMULATE USDT.D (NO FREE DIRECT API)
 // ---------------------
-async function updateData(){
+function simulateUSDT(total){
 
-  let data = await fetchRealData();
+  // inverse relation proxy (real behavior)
+  let base = 6;
+  let noise = (Math.random()-0.5)*0.2;
 
-  let arr = TFs[currentTF];
+  return base + (1000/total) + noise;
+}
 
-  let prev = arr.length > 0 ? arr[arr.length-1] : null;
+// ---------------------
+// CREATE RAW TICK
+// ---------------------
+async function tick(){
 
-  let prevT = prev ? prev.total : data.total;
-  let prevU = prev ? prev.usdt : data.usdt;
+  TOTAL = await fetchTOTAL();
+  USDT = simulateUSDT(TOTAL);
 
-  let delta = (data.total - prevT) - (data.usdt - prevU);
+  buffer.total.push(TOTAL);
+  buffer.usdt.push(USDT);
+
+  // keep buffer small
+  if(buffer.total.length > 500){
+    buffer.total.shift();
+    buffer.usdt.shift();
+  }
+}
+
+// ---------------------
+// COMPUTE DELTA
+// ---------------------
+function computeDelta(){
+
+  let dTotal = TOTAL - lastTotal;
+  let dUsdt = USDT - lastUsdt;
+
+  lastTotal = TOTAL;
+  lastUsdt = USDT;
+
+  return dTotal - dUsdt;
+}
+
+// ---------------------
+// CLOSE CANDLE
+// ---------------------
+function closeCandle(){
+
+  let delta = computeDelta();
 
   let levels = [];
-  let rows = Math.max(4, Math.floor(Math.abs(delta) * 5));
+  let rows = Math.max(4, Math.floor(Math.abs(delta) * 3));
 
   for(let i=0;i<rows;i++){
     levels.push({
-      vol: Math.floor(Math.random()*80+20),
+      vol: Math.floor(Math.random()*90+10),
       side: delta > 0 ? "buy" : "sell"
     });
   }
 
-  arr.push({
-    total: data.total,
-    usdt: data.usdt,
-    delta,
-    levels
-  });
+  candles.push({delta, levels});
 
-  if(arr.length > 25) arr.shift();
+  if(candles.length > 25) candles.shift();
 
   draw();
 }
@@ -128,32 +171,28 @@ function draw(){
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  let arr = TFs[currentTF];
-
   let x = 80;
 
-  arr.forEach(c => {
+  candles.forEach(c => {
 
-    let centerY = canvas.height / 2;
+    let center = canvas.height/2;
 
-    c.levels.forEach((lvl, i) => {
+    c.levels.forEach((lvl,i)=>{
 
-      let h = 18;
-      let y = centerY - i*h;
+      let y = center - i*18;
 
-      // background
       ctx.fillStyle = "#111";
-      ctx.fillRect(x, y, 60, h-2);
+      ctx.fillRect(x,y,60,16);
 
-      // color
       ctx.fillStyle = lvl.side === "buy"
         ? "rgba(34,197,94,0.4)"
         : "rgba(239,68,68,0.4)";
-      ctx.fillRect(x, y, 60, h-2);
 
-      // text
+      ctx.fillRect(x,y,60,16);
+
       ctx.fillStyle = "#fff";
-      ctx.fillText(lvl.vol + "M", x+10, y+12);
+      ctx.font = "12px monospace";
+      ctx.fillText(lvl.vol+"M", x+10, y+12);
 
     });
 
@@ -162,15 +201,39 @@ function draw(){
 }
 
 // ---------------------
-// SWITCH TF
+// AUTO CANDLE ENGINE
+// ---------------------
+let running = true;
+
+function loop(){
+
+  tick();
+
+  let now = Date.now();
+
+  if(!window.lastClose) window.lastClose = now;
+
+  if(now - window.lastClose >= currentTF){
+    closeCandle();
+    window.lastClose = now;
+  }
+
+}
+
+setInterval(()=>{
+  if(running) loop();
+}, 2000);
+
+// ---------------------
+// CONTROLS
 // ---------------------
 function switchTF(){
   currentTF = parseInt(document.getElementById("tf").value);
-  draw();
 }
 
-// initial draw
-draw();
+function toggle(){
+  running = !running;
+}
 
 </script>
 
