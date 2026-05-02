@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>V10 Multi-Timeframe Liquidity Footprint</title>
+<title>V11 Stable Liquidity Footprint</title>
 
 <style>
 body {
@@ -14,8 +14,7 @@ body {
 
 #topbar {
   display:flex;
-  flex-wrap:wrap;
-  gap:8px;
+  gap:10px;
   padding:10px;
   background:#0f172a;
 }
@@ -26,10 +25,11 @@ body {
   border-radius:6px;
 }
 
-select {
+button, select {
   background:#111827;
   color:#cbd5e1;
   border:none;
+  padding:5px;
 }
 
 #chart {
@@ -56,8 +56,10 @@ select {
     </select>
   </div>
 
-  <div class="box">FLOW: <span id="flow">--</span></div>
   <div class="box">DELTA: <span id="delta">0</span></div>
+  <div class="box">CUMULATIVE: <span id="cum">0</span></div>
+
+  <button onclick="toggle()">START / STOP</button>
 
 </div>
 
@@ -88,14 +90,19 @@ let currentTF = 1;
 let TOTAL = 1000;
 let USDT = 6;
 
+let tick = 0;
+
+// -------------------------
+// SIMULATION
+// -------------------------
 function rand(){
   return (Math.random()-0.5)*2;
 }
 
 // -------------------------
-// COMPUTE DELTA PER TF
+// COMPUTE DELTA
 // -------------------------
-function computeTF(tfArr){
+function compute(){
 
   let prevTOTAL = TOTAL;
   let prevUSDT = USDT;
@@ -106,37 +113,54 @@ function computeTF(tfArr){
   let dTOTAL = TOTAL - prevTOTAL;
   let dUSDT = USDT - prevUSDT;
 
-  let DELTA = dTOTAL - dUSDT;
-
-  tfArr.push({DELTA});
-
-  if(tfArr.length > 120) tfArr.shift();
-
-  return DELTA;
+  return dTOTAL - dUSDT;
 }
 
 // -------------------------
-// GLOBAL UPDATE
+// UPDATE PER TIMEFRAME
+// -------------------------
+function updateTF(tf){
+
+  let delta = compute();
+
+  let arr = TFs[tf];
+
+  let cum = arr.length > 0 ? arr[arr.length-1].cum + delta : delta;
+
+  arr.push({delta, cum});
+
+  if(arr.length > 120) arr.shift();
+}
+
+// -------------------------
+// GLOBAL UPDATE LOOP
 // -------------------------
 function update(){
 
+  tick++;
+
+  // timeframe logic
+  updateTF(1);
+
+  if(tick % 5 === 0) updateTF(5);
+  if(tick % 15 === 0) updateTF(15);
+  if(tick % 60 === 0) updateTF(60);
+  if(tick % 240 === 0) updateTF(240);
+  if(tick % 1440 === 0) updateTF(1440);
+  if(tick % 10080 === 0) updateTF(10080);
+
   let tfArr = TFs[currentTF];
 
-  let delta = computeTF(tfArr);
+  if(tfArr.length === 0) return;
 
-  let flow = "NEUTRAL";
+  let last = tfArr[tfArr.length-1];
 
-  if(delta > 0) flow = "LIQUIDITY RISK-ON";
-  else if(delta < 0) flow = "LIQUIDITY RISK-OFF";
-
-  document.getElementById("delta").innerText = delta.toFixed(2);
-  document.getElementById("flow").innerText = flow;
-
-  return delta;
+  document.getElementById("delta").innerText = last.delta.toFixed(2);
+  document.getElementById("cum").innerText = last.cum.toFixed(2);
 }
 
 // -------------------------
-// DRAW FOOTPRINT
+// DRAW CHART (SCROLLING)
 // -------------------------
 function draw(){
 
@@ -144,12 +168,14 @@ function draw(){
 
   let tfArr = TFs[currentTF];
 
+  let visible = tfArr.slice(-100);
+
   let x = 50;
-  let scale = 25;
+  let scale = 15;
 
-  for(let i=0;i<tfArr.length;i++){
+  for(let i=0;i<visible.length;i++){
 
-    let d = tfArr[i].DELTA;
+    let d = visible[i].delta;
 
     ctx.fillStyle = d > 0 ? "#22c55e" : "#ef4444";
 
@@ -159,22 +185,53 @@ function draw(){
 
     x += 8;
   }
+
+  // cumulative line
+  ctx.beginPath();
+  ctx.strokeStyle = "#3b82f6";
+
+  for(let i=0;i<visible.length;i++){
+
+    let y = canvas.height/2 - visible[i].cum * 0.3;
+
+    if(i === 0) ctx.moveTo(50, y);
+    else ctx.lineTo(50 + i*8, y);
+  }
+
+  ctx.stroke();
 }
 
 // -------------------------
-// SWITCH TF
+// CONTROLS
 // -------------------------
+let running = true;
+let loop;
+
+function start(){
+  loop = setInterval(()=>{
+    update();
+    draw();
+  }, 500);
+}
+
+function stop(){
+  clearInterval(loop);
+}
+
+function toggle(){
+  if(running) stop();
+  else start();
+  running = !running;
+}
+
 function switchTF(){
   currentTF = parseInt(document.getElementById("tf").value);
 }
 
 // -------------------------
-// LOOP
+// START
 // -------------------------
-setInterval(()=>{
-  update();
-  draw();
-}, 250);
+start();
 
 </script>
 
