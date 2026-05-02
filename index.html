@@ -2,19 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>V16 Real Liquidity Footprint Engine</title>
+<title>V17 Institutional Liquidity Footprint Desk</title>
 
 <style>
 body {
   margin:0;
   background:#05070c;
   font-family: monospace;
-  color:white;
+  color:#e5e7eb;
 }
 
 #topbar {
   padding:10px;
   background:#0f172a;
+  display:flex;
+  gap:10px;
+  align-items:center;
 }
 
 select, button {
@@ -22,7 +25,10 @@ select, button {
   color:white;
   border:none;
   padding:6px 10px;
-  margin-right:10px;
+}
+
+#stats {
+  margin-left:10px;
 }
 
 canvas {
@@ -48,6 +54,10 @@ canvas {
 
   <button onclick="toggle()">START / STOP</button>
 
+  <div id="stats">
+    FLOW: <span id="flow">--</span>
+  </div>
+
 </div>
 
 <canvas id="chart"></canvas>
@@ -60,113 +70,87 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 50;
 
-// ---------------------
-// REAL DATA STATE
-// ---------------------
-let TOTAL = 0;
-let USDT = 6;
-
-let lastTotal = 0;
-let lastUsdt = 6;
-
-// ---------------------
-// TF SYSTEM
-// ---------------------
+// ----------------------
+// STATE
+// ----------------------
 let currentTF = 60000;
+let running = true;
+
 let candles = [];
 
-let buffer = {
-  total: [],
-  usdt: []
-};
+let lastTOTAL = 0;
+let lastUSDT = 0;
+let lastBTC = 0;
 
-// ---------------------
-// FETCH REAL TOTAL (DeFiLlama)
-// ---------------------
+// ----------------------
+// REAL DATA
+// ----------------------
 async function fetchTOTAL(){
 
   try {
     let res = await fetch("https://api.llama.fi/globaldata");
-    let data = await res.json();
-
-    return data.totalMarketCap || 0;
-
+    let d = await res.json();
+    return d.totalMarketCap || 0;
   } catch(e){
-    return TOTAL; // fallback
+    return 1000;
   }
 }
 
-// ---------------------
-// SIMULATE USDT.D (NO FREE DIRECT API)
-// ---------------------
-function simulateUSDT(total){
+async function fetchBTC(){
 
-  // inverse relation proxy (real behavior)
-  let base = 6;
-  let noise = (Math.random()-0.5)*0.2;
-
-  return base + (1000/total) + noise;
-}
-
-// ---------------------
-// CREATE RAW TICK
-// ---------------------
-async function tick(){
-
-  TOTAL = await fetchTOTAL();
-  USDT = simulateUSDT(TOTAL);
-
-  buffer.total.push(TOTAL);
-  buffer.usdt.push(USDT);
-
-  // keep buffer small
-  if(buffer.total.length > 500){
-    buffer.total.shift();
-    buffer.usdt.shift();
+  try {
+    let res = await fetch("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+    let d = await res.json();
+    return parseFloat(d.price);
+  } catch(e){
+    return 40000;
   }
 }
 
-// ---------------------
-// COMPUTE DELTA
-// ---------------------
-function computeDelta(){
-
-  let dTotal = TOTAL - lastTotal;
-  let dUsdt = USDT - lastUsdt;
-
-  lastTotal = TOTAL;
-  lastUsdt = USDT;
-
-  return dTotal - dUsdt;
+// ----------------------
+// USDT.D PROXY MODEL
+// ----------------------
+function calcUSDTD(total){
+  return 6 + (1000 / total);
 }
 
-// ---------------------
-// CLOSE CANDLE
-// ---------------------
-function closeCandle(){
+// ----------------------
+// LIQUIDITY DELTA
+// ----------------------
+function computeFlow(total, usdt){
 
-  let delta = computeDelta();
+  let dT = total - lastTOTAL;
+  let dU = usdt - lastUSDT;
+
+  lastTOTAL = total;
+  lastUSDT = usdt;
+
+  return dT - dU;
+}
+
+// ----------------------
+// CANDLE BUILDER
+// ----------------------
+function buildCandle(flow){
 
   let levels = [];
-  let rows = Math.max(4, Math.floor(Math.abs(delta) * 3));
+  let rows = Math.max(4, Math.floor(Math.abs(flow) * 3));
 
   for(let i=0;i<rows;i++){
     levels.push({
       vol: Math.floor(Math.random()*90+10),
-      side: delta > 0 ? "buy" : "sell"
+      side: flow > 0 ? "buy" : "sell"
     });
   }
 
-  candles.push({delta, levels});
+  candles.push({flow, levels});
 
   if(candles.length > 25) candles.shift();
-
-  draw();
 }
 
-// ---------------------
+// ----------------------
 // DRAW FOOTPRINT
-// ---------------------
+// ----------------------
 function draw(){
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -185,8 +169,8 @@ function draw(){
       ctx.fillRect(x,y,60,16);
 
       ctx.fillStyle = lvl.side === "buy"
-        ? "rgba(34,197,94,0.4)"
-        : "rgba(239,68,68,0.4)";
+        ? "rgba(34,197,94,0.45)"
+        : "rgba(239,68,68,0.45)";
 
       ctx.fillRect(x,y,60,16);
 
@@ -200,42 +184,36 @@ function draw(){
   });
 }
 
-// ---------------------
-// AUTO CANDLE ENGINE
-// ---------------------
-let running = true;
+// ----------------------
+// ENGINE LOOP (CONTROLLED)
+// ----------------------
+async function engine(){
 
-function loop(){
+  let total = await fetchTOTAL();
+  let btc = await fetchBTC();
+  let usdt = calcUSDTD(total);
 
-  tick();
+  let flow = computeFlow(total, usdt);
 
-  let now = Date.now();
+  // confirmation logic
+  let btcDelta = btc - lastBTC;
+  lastBTC = btc;
 
-  if(!window.lastClose) window.lastClose = now;
+  let confirmedFlow = flow * Math.sign(btcDelta || 1);
 
-  if(now - window.lastClose >= currentTF){
-    closeCandle();
-    window.lastClose = now;
-  }
+  document.getElementById("flow").innerText = confirmedFlow.toFixed(2);
 
+  buildCandle(confirmedFlow);
+  draw();
 }
+
+// ----------------------
+// TIMEFRAME CONTROL
+// ----------------------
+let lastClose = Date.now();
 
 setInterval(()=>{
-  if(running) loop();
-}, 2000);
 
-// ---------------------
-// CONTROLS
-// ---------------------
-function switchTF(){
-  currentTF = parseInt(document.getElementById("tf").value);
-}
+  if(!running) return;
 
-function toggle(){
-  running = !running;
-}
-
-</script>
-
-</body>
-</html>
+  let
