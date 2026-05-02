@@ -2,13 +2,27 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Footprint Ladder Style</title>
+<title>V15 Multi-TF Footprint</title>
 
 <style>
 body {
   margin:0;
   background:#05070c;
+  color:#fff;
   font-family: monospace;
+}
+
+#controls {
+  padding:10px;
+  background:#0f172a;
+}
+
+button, select {
+  background:#111827;
+  color:#fff;
+  border:none;
+  padding:6px 10px;
+  margin-right:10px;
 }
 
 canvas {
@@ -19,6 +33,23 @@ canvas {
 
 <body>
 
+<div id="controls">
+
+  TF:
+  <select id="tf" onchange="switchTF()">
+    <option value="1">1m</option>
+    <option value="5">5m</option>
+    <option value="15">15m</option>
+    <option value="60">1H</option>
+    <option value="240">4H</option>
+    <option value="1440">1D</option>
+    <option value="10080">1W</option>
+  </select>
+
+  <button onclick="updateData()">NEW CANDLE</button>
+
+</div>
+
 <canvas id="chart"></canvas>
 
 <script>
@@ -27,53 +58,67 @@ const canvas = document.getElementById("chart");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.height = window.innerHeight - 50;
 
 // ---------------------
-// MARKET STATE
+// TIMEFRAME STORAGE
 // ---------------------
-let TOTAL = 1000;
-let USDT = 6;
+const TFs = {
+  1: [], 5: [], 15: [],
+  60: [], 240: [],
+  1440: [], 10080: []
+};
 
-function rand(){
-  return (Math.random()-0.5)*2;
+let currentTF = 1;
+
+// ---------------------
+// DATA FETCH (HOOK)
+// ---------------------
+async function fetchRealData(){
+
+  // 🔌 Replace later with real API
+  return {
+    total: 1000 + Math.random()*10,
+    usdt: 6 + Math.random()*0.3
+  };
 }
 
 // ---------------------
-// DATA
+// CREATE CANDLE
 // ---------------------
-let candles = [];
+async function updateData(){
 
-// ---------------------
-// CREATE FOOTPRINT
-// ---------------------
-function createCandle(){
+  let data = await fetchRealData();
 
-  let prevT = TOTAL;
-  let prevU = USDT;
+  let arr = TFs[currentTF];
 
-  TOTAL += rand()*6;
-  USDT += rand()*0.2;
+  let prev = arr.length > 0 ? arr[arr.length-1] : null;
 
-  let delta = (TOTAL - prevT) - (USDT - prevU);
+  let prevT = prev ? prev.total : data.total;
+  let prevU = prev ? prev.usdt : data.usdt;
+
+  let delta = (data.total - prevT) - (data.usdt - prevU);
 
   let levels = [];
-
-  let rows = Math.floor(Math.abs(delta) * 4) + 3;
+  let rows = Math.max(4, Math.floor(Math.abs(delta) * 5));
 
   for(let i=0;i<rows;i++){
-
-    let vol = Math.floor(Math.random()*90 + 10); // fake volume numbers
-
     levels.push({
-      vol,
-      color: delta > 0 ? "#22c55e" : "#ef4444"
+      vol: Math.floor(Math.random()*80+20),
+      side: delta > 0 ? "buy" : "sell"
     });
   }
 
-  candles.push({levels});
+  arr.push({
+    total: data.total,
+    usdt: data.usdt,
+    delta,
+    levels
+  });
 
-  if(candles.length > 20) candles.shift();
+  if(arr.length > 25) arr.shift();
+
+  draw();
 }
 
 // ---------------------
@@ -83,32 +128,32 @@ function draw(){
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  let x = 100;
+  let arr = TFs[currentTF];
 
-  candles.forEach(c => {
+  let x = 80;
 
-    let y = canvas.height / 2;
+  arr.forEach(c => {
+
+    let centerY = canvas.height / 2;
 
     c.levels.forEach((lvl, i) => {
 
-      let rowHeight = 18;
+      let h = 18;
+      let y = centerY - i*h;
 
-      let posY = y - i * rowHeight;
+      // background
+      ctx.fillStyle = "#111";
+      ctx.fillRect(x, y, 60, h-2);
 
-      // background box
-      ctx.fillStyle = "rgba(20,20,20,0.9)";
-      ctx.fillRect(x, posY, 60, rowHeight - 2);
+      // color
+      ctx.fillStyle = lvl.side === "buy"
+        ? "rgba(34,197,94,0.4)"
+        : "rgba(239,68,68,0.4)";
+      ctx.fillRect(x, y, 60, h-2);
 
-      // color highlight
-      ctx.fillStyle = lvl.color;
-      ctx.globalAlpha = 0.3;
-      ctx.fillRect(x, posY, 60, rowHeight - 2);
-      ctx.globalAlpha = 1;
-
-      // text (volume)
+      // text
       ctx.fillStyle = "#fff";
-      ctx.font = "12px monospace";
-      ctx.fillText(lvl.vol + "M", x + 10, posY + 13);
+      ctx.fillText(lvl.vol + "M", x+10, y+12);
 
     });
 
@@ -117,12 +162,15 @@ function draw(){
 }
 
 // ---------------------
-// LOOP
+// SWITCH TF
 // ---------------------
-setInterval(()=>{
-  createCandle();
+function switchTF(){
+  currentTF = parseInt(document.getElementById("tf").value);
   draw();
-}, 800);
+}
+
+// initial draw
+draw();
 
 </script>
 
