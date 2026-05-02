@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>V12 Liquidity Footprint</title>
+<title>Footprint Ladder Style</title>
 
 <style>
 body {
@@ -45,7 +45,7 @@ function rand(){
 let candles = [];
 
 // ---------------------
-// CREATE FOOTPRINT CANDLE
+// CREATE FOOTPRINT
 // ---------------------
 function createCandle(){
 
@@ -57,15 +57,23 @@ function createCandle(){
 
   let delta = (TOTAL - prevT) - (USDT - prevU);
 
-  // convert delta into blocks
-  let blocks = Math.floor(Math.abs(delta) * 3);
+  let levels = [];
 
-  candles.push({
-    delta,
-    blocks
-  });
+  let rows = Math.floor(Math.abs(delta) * 4) + 3;
 
-  if(candles.length > 60) candles.shift();
+  for(let i=0;i<rows;i++){
+
+    let vol = Math.floor(Math.random()*90 + 10); // fake volume numbers
+
+    levels.push({
+      vol,
+      color: delta > 0 ? "#22c55e" : "#ef4444"
+    });
+  }
+
+  candles.push({levels});
+
+  if(candles.length > 20) candles.shift();
 }
 
 // ---------------------
@@ -75,29 +83,36 @@ function draw(){
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  let x = 50;
+  let x = 100;
 
   candles.forEach(c => {
 
-    let blockSize = 6;
-    let centerY = canvas.height / 2;
+    let y = canvas.height / 2;
 
-    for(let i=0;i<c.blocks;i++){
+    c.levels.forEach((lvl, i) => {
 
-      let y;
+      let rowHeight = 18;
 
-      if(c.delta > 0){
-        y = centerY - i * blockSize;
-        ctx.fillStyle = "#22c55e";
-      } else {
-        y = centerY + i * blockSize;
-        ctx.fillStyle = "#ef4444";
-      }
+      let posY = y - i * rowHeight;
 
-      ctx.fillRect(x, y, 10, blockSize - 1);
-    }
+      // background box
+      ctx.fillStyle = "rgba(20,20,20,0.9)";
+      ctx.fillRect(x, posY, 60, rowHeight - 2);
 
-    x += 14;
+      // color highlight
+      ctx.fillStyle = lvl.color;
+      ctx.globalAlpha = 0.3;
+      ctx.fillRect(x, posY, 60, rowHeight - 2);
+      ctx.globalAlpha = 1;
+
+      // text (volume)
+      ctx.fillStyle = "#fff";
+      ctx.font = "12px monospace";
+      ctx.fillText(lvl.vol + "M", x + 10, posY + 13);
+
+    });
+
+    x += 70;
   });
 }
 
@@ -107,7 +122,7 @@ function draw(){
 setInterval(()=>{
   createCandle();
   draw();
-}, 600);
+}, 800);
 
 </script>
 
