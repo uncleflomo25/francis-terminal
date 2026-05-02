@@ -2,66 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>V11 Stable Liquidity Footprint</title>
+<title>V12 Liquidity Footprint</title>
 
 <style>
 body {
   margin:0;
   background:#05070c;
-  color:#cbd5e1;
   font-family: monospace;
 }
 
-#topbar {
-  display:flex;
-  gap:10px;
-  padding:10px;
-  background:#0f172a;
-}
-
-.box {
-  padding:6px 10px;
-  background:#111827;
-  border-radius:6px;
-}
-
-button, select {
-  background:#111827;
-  color:#cbd5e1;
-  border:none;
-  padding:5px;
-}
-
-#chart {
-  width:100%;
-  height:85vh;
+canvas {
+  display:block;
 }
 </style>
 </head>
 
 <body>
-
-<div id="topbar">
-
-  <div class="box">
-    TF:
-    <select id="tf" onchange="switchTF()">
-      <option value="1">1m</option>
-      <option value="5">5m</option>
-      <option value="15">15m</option>
-      <option value="60">1h</option>
-      <option value="240">4h</option>
-      <option value="1440">1D</option>
-      <option value="10080">1W</option>
-    </select>
-  </div>
-
-  <div class="box">DELTA: <span id="delta">0</span></div>
-  <div class="box">CUMULATIVE: <span id="cum">0</span></div>
-
-  <button onclick="toggle()">START / STOP</button>
-
-</div>
 
 <canvas id="chart"></canvas>
 
@@ -71,167 +27,87 @@ const canvas = document.getElementById("chart");
 const ctx = canvas.getContext("2d");
 
 canvas.width = window.innerWidth;
-canvas.height = window.innerHeight * 0.85;
+canvas.height = window.innerHeight;
 
-// -------------------------
-// TIMEFRAME STORAGE
-// -------------------------
-const TFs = {
-  1: [], 5: [], 15: [],
-  60: [], 240: [],
-  1440: [], 10080: []
-};
-
-let currentTF = 1;
-
-// -------------------------
+// ---------------------
 // MARKET STATE
-// -------------------------
+// ---------------------
 let TOTAL = 1000;
 let USDT = 6;
 
-let tick = 0;
-
-// -------------------------
-// SIMULATION
-// -------------------------
 function rand(){
   return (Math.random()-0.5)*2;
 }
 
-// -------------------------
-// COMPUTE DELTA
-// -------------------------
-function compute(){
+// ---------------------
+// DATA
+// ---------------------
+let candles = [];
 
-  let prevTOTAL = TOTAL;
-  let prevUSDT = USDT;
+// ---------------------
+// CREATE FOOTPRINT CANDLE
+// ---------------------
+function createCandle(){
+
+  let prevT = TOTAL;
+  let prevU = USDT;
 
   TOTAL += rand()*6;
   USDT += rand()*0.2;
 
-  let dTOTAL = TOTAL - prevTOTAL;
-  let dUSDT = USDT - prevUSDT;
+  let delta = (TOTAL - prevT) - (USDT - prevU);
 
-  return dTOTAL - dUSDT;
+  // convert delta into blocks
+  let blocks = Math.floor(Math.abs(delta) * 3);
+
+  candles.push({
+    delta,
+    blocks
+  });
+
+  if(candles.length > 60) candles.shift();
 }
 
-// -------------------------
-// UPDATE PER TIMEFRAME
-// -------------------------
-function updateTF(tf){
-
-  let delta = compute();
-
-  let arr = TFs[tf];
-
-  let cum = arr.length > 0 ? arr[arr.length-1].cum + delta : delta;
-
-  arr.push({delta, cum});
-
-  if(arr.length > 120) arr.shift();
-}
-
-// -------------------------
-// GLOBAL UPDATE LOOP
-// -------------------------
-function update(){
-
-  tick++;
-
-  // timeframe logic
-  updateTF(1);
-
-  if(tick % 5 === 0) updateTF(5);
-  if(tick % 15 === 0) updateTF(15);
-  if(tick % 60 === 0) updateTF(60);
-  if(tick % 240 === 0) updateTF(240);
-  if(tick % 1440 === 0) updateTF(1440);
-  if(tick % 10080 === 0) updateTF(10080);
-
-  let tfArr = TFs[currentTF];
-
-  if(tfArr.length === 0) return;
-
-  let last = tfArr[tfArr.length-1];
-
-  document.getElementById("delta").innerText = last.delta.toFixed(2);
-  document.getElementById("cum").innerText = last.cum.toFixed(2);
-}
-
-// -------------------------
-// DRAW CHART (SCROLLING)
-// -------------------------
+// ---------------------
+// DRAW FOOTPRINT
+// ---------------------
 function draw(){
 
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  let tfArr = TFs[currentTF];
-
-  let visible = tfArr.slice(-100);
-
   let x = 50;
-  let scale = 15;
 
-  for(let i=0;i<visible.length;i++){
+  candles.forEach(c => {
 
-    let d = visible[i].delta;
+    let blockSize = 6;
+    let centerY = canvas.height / 2;
 
-    ctx.fillStyle = d > 0 ? "#22c55e" : "#ef4444";
+    for(let i=0;i<c.blocks;i++){
 
-    let h = Math.abs(d)*scale;
+      let y;
 
-    ctx.fillRect(x, canvas.height/2 - h, 6, h);
+      if(c.delta > 0){
+        y = centerY - i * blockSize;
+        ctx.fillStyle = "#22c55e";
+      } else {
+        y = centerY + i * blockSize;
+        ctx.fillStyle = "#ef4444";
+      }
 
-    x += 8;
-  }
+      ctx.fillRect(x, y, 10, blockSize - 1);
+    }
 
-  // cumulative line
-  ctx.beginPath();
-  ctx.strokeStyle = "#3b82f6";
-
-  for(let i=0;i<visible.length;i++){
-
-    let y = canvas.height/2 - visible[i].cum * 0.3;
-
-    if(i === 0) ctx.moveTo(50, y);
-    else ctx.lineTo(50 + i*8, y);
-  }
-
-  ctx.stroke();
+    x += 14;
+  });
 }
 
-// -------------------------
-// CONTROLS
-// -------------------------
-let running = true;
-let loop;
-
-function start(){
-  loop = setInterval(()=>{
-    update();
-    draw();
-  }, 500);
-}
-
-function stop(){
-  clearInterval(loop);
-}
-
-function toggle(){
-  if(running) stop();
-  else start();
-  running = !running;
-}
-
-function switchTF(){
-  currentTF = parseInt(document.getElementById("tf").value);
-}
-
-// -------------------------
-// START
-// -------------------------
-start();
+// ---------------------
+// LOOP
+// ---------------------
+setInterval(()=>{
+  createCandle();
+  draw();
+}, 600);
 
 </script>
 
