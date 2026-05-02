@@ -1,155 +1,182 @@
-// ==========================================
-// CRYPTO MARKET CONTROL ENGINE V3 (ALL-IN-ONE)
-// ==========================================
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>V10 Multi-Timeframe Liquidity Footprint</title>
 
-const MarketEngine = (function(){
+<style>
+body {
+  margin:0;
+  background:#05070c;
+  color:#cbd5e1;
+  font-family: monospace;
+}
 
-  // ------------------------------
-  // STATE
-  // ------------------------------
-  let marketBias = "NEUTRAL";
-  let lastBias = "NEUTRAL";
+#topbar {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:10px;
+  background:#0f172a;
+}
 
-  let btcDom = 0;
-  let ethDom = 0;
-  let usdtDom = 0;
-  let totalCap = 0;
+.box {
+  padding:6px 10px;
+  background:#111827;
+  border-radius:6px;
+}
 
-  let prevTotalCap = 0;
-  let prevBtcDom = 0;
+select {
+  background:#111827;
+  color:#cbd5e1;
+  border:none;
+}
 
-  let biasPersistence = 0; // anti-noise counter
+#chart {
+  width:100%;
+  height:85vh;
+}
+</style>
+</head>
 
-  // ------------------------------
-  // CORE ENGINE
-  // ------------------------------
-  async function run(){
+<body>
 
-    try {
+<div id="topbar">
 
-      const res = await fetch("https://api.coingecko.com/api/v3/global");
-      const json = await res.json();
+  <div class="box">
+    TF:
+    <select id="tf" onchange="switchTF()">
+      <option value="1">1m</option>
+      <option value="5">5m</option>
+      <option value="15">15m</option>
+      <option value="60">1h</option>
+      <option value="240">4h</option>
+      <option value="1440">1D</option>
+      <option value="10080">1W</option>
+    </select>
+  </div>
 
-      const market = json.data.market_cap_percentage;
+  <div class="box">FLOW: <span id="flow">--</span></div>
+  <div class="box">DELTA: <span id="delta">0</span></div>
 
-      // ------------------------------
-      // DATA UPDATE
-      // ------------------------------
-      prevTotalCap = totalCap;
-      prevBtcDom = btcDom;
+</div>
 
-      btcDom = market.btc;
-      ethDom = market.eth;
-      usdtDom = market.usdt || 0;
-      totalCap = json.data.total_market_cap.usd;
+<canvas id="chart"></canvas>
 
-      // ------------------------------
-      // DERIVED METRICS
-      // ------------------------------
-      const ethStrength = btcDom ? (ethDom / btcDom) : 0;
+<script>
 
-      const capChange = prevTotalCap
-        ? ((totalCap - prevTotalCap) / prevTotalCap) * 100
-        : 0;
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
 
-      const btcDomChange = prevBtcDom
-        ? btcDom - prevBtcDom
-        : 0;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight * 0.85;
 
-      // ------------------------------
-      // SCORING SYSTEM (SMART FLOW)
-      // ------------------------------
-      let score = 0;
+// -------------------------
+// TIMEFRAME STORAGE
+// -------------------------
+const TFs = {
+  1: [], 5: [], 15: [],
+  60: [], 240: [],
+  1440: [], 10080: []
+};
 
-      // BTC DOM LEVEL + TREND
-      if (btcDom > 52) score -= 2;
-      else if (btcDom < 48) score += 2;
+let currentTF = 1;
 
-      if (btcDomChange > 0.2) score -= 1;     // rising dominance = risk off
-      if (btcDomChange < -0.2) score += 1;    // falling dominance = alt rotation
+// -------------------------
+// MARKET STATE
+// -------------------------
+let TOTAL = 1000;
+let USDT = 6;
 
-      // USDT DOM (FEAR / SIDELINE MONEY)
-      if (usdtDom > 6.5) score -= 2;
-      else if (usdtDom < 5) score += 1;
+function rand(){
+  return (Math.random()-0.5)*2;
+}
 
-      // ETH VS BTC (ALT STRENGTH)
-      if (ethStrength > 0.08) score += 2;
-      else if (ethStrength < 0.06) score -= 1;
+// -------------------------
+// COMPUTE DELTA PER TF
+// -------------------------
+function computeTF(tfArr){
 
-      // TOTAL MARKET FLOW (LIQUIDITY TREND)
-      if (capChange > 1) score += 2;
-      else if (capChange < -1) score -= 2;
+  let prevTOTAL = TOTAL;
+  let prevUSDT = USDT;
 
-      // ------------------------------
-      // RAW BIAS
-      // ------------------------------
-      let newBias = "NEUTRAL";
+  TOTAL += rand()*6;
+  USDT += rand()*0.2;
 
-      if (score >= 3) newBias = "BULLISH";
-      else if (score <= -2) newBias = "BEARISH";
+  let dTOTAL = TOTAL - prevTOTAL;
+  let dUSDT = USDT - prevUSDT;
 
-      // ------------------------------
-      // ANTI-NOISE (PERSISTENCE FILTER)
-      // ------------------------------
-      if (newBias === lastBias) {
-        biasPersistence++;
-      } else {
-        biasPersistence = 0;
-      }
+  let DELTA = dTOTAL - dUSDT;
 
-      // only confirm after stability
-      if (biasPersistence >= 2) {
-        marketBias = newBias;
-      }
+  tfArr.push({DELTA});
 
-      lastBias = newBias;
+  if(tfArr.length > 120) tfArr.shift();
 
-      // ------------------------------
-      // UI + DEBUG
-      // ------------------------------
-      const el = document.getElementById("bias");
+  return DELTA;
+}
 
-      if (el) {
-        el.innerText = marketBias;
+// -------------------------
+// GLOBAL UPDATE
+// -------------------------
+function update(){
 
-        el.style.color =
-          marketBias === "BULLISH" ? "#22c55e" :
-          marketBias === "BEARISH" ? "#ef4444" :
-          "#eab308";
-      }
+  let tfArr = TFs[currentTF];
 
-      console.log(
-        "BIAS:", marketBias,
-        "| SCORE:", score,
-        "| BTC.D:", btcDom.toFixed(2),
-        "| ΔBTC.D:", btcDomChange.toFixed(2),
-        "| ETH/BTC:", ethStrength.toFixed(4),
-        "| USDT.D:", usdtDom.toFixed(2),
-        "| ΔTOTAL%:", capChange.toFixed(2),
-        "| PERSIST:", biasPersistence
-      );
+  let delta = computeTF(tfArr);
 
-    } catch (err) {
-      console.log("Engine error:", err);
-    }
+  let flow = "NEUTRAL";
+
+  if(delta > 0) flow = "LIQUIDITY RISK-ON";
+  else if(delta < 0) flow = "LIQUIDITY RISK-OFF";
+
+  document.getElementById("delta").innerText = delta.toFixed(2);
+  document.getElementById("flow").innerText = flow;
+
+  return delta;
+}
+
+// -------------------------
+// DRAW FOOTPRINT
+// -------------------------
+function draw(){
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  let tfArr = TFs[currentTF];
+
+  let x = 50;
+  let scale = 25;
+
+  for(let i=0;i<tfArr.length;i++){
+
+    let d = tfArr[i].DELTA;
+
+    ctx.fillStyle = d > 0 ? "#22c55e" : "#ef4444";
+
+    let h = Math.abs(d)*scale;
+
+    ctx.fillRect(x, canvas.height/2 - h, 6, h);
+
+    x += 8;
   }
+}
 
-  // ------------------------------
-  // START LOOP
-  // ------------------------------
-  function start(interval = 15000){
-    run();
-    setInterval(run, interval);
-  }
+// -------------------------
+// SWITCH TF
+// -------------------------
+function switchTF(){
+  currentTF = parseInt(document.getElementById("tf").value);
+}
 
-  // ------------------------------
-  // EXPORT
-  // ------------------------------
-  return { start };
+// -------------------------
+// LOOP
+// -------------------------
+setInterval(()=>{
+  update();
+  draw();
+}, 250);
 
-})();
+</script>
 
-// ==========================================
-// RUN ENGINE
-// ==========================================
-MarketEngine.start(15000);
+</body>
+</html>
