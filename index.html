@@ -1,637 +1,628 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SYNTHETIC CANDLE CHART - POWERFLOW TERMINAL</title>
-    <style>
-        * { box-sizing: border-box; }
-        
-        body {
-            margin: 0;
-            background: #05070b;
-            color: #d1d5db;
-            font-family: 'Courier New', monospace;
-            overflow: hidden;
-        }
-        
-        .wrapper {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .topbar {
-            height: 48px;
-            background: linear-gradient(to right, #0b1220, #0d1428);
-            border-bottom: 2px solid #1f2937;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 15px;
-            font-size: 11px;
-            letter-spacing: 0.5px;
-        }
-        
-        .left-controls {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .title {
-            color: #00ff88;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        select, button {
-            background: #111827;
-            color: #00ff88;
-            border: 1px solid #374151;
-            padding: 5px 10px;
-            outline: none;
-            cursor: pointer;
-            font-family: monospace;
-            font-size: 11px;
-        }
-        
-        select:hover, button:hover {
-            background: #1f2937;
-            border-color: #00ff88;
-        }
-        
-        .indicator-panel {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            padding: 0 15px;
-            border-right: 1px solid #1f2937;
-        }
-        
-        .indicator {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .indicator-label {
-            font-size: 9px;
-            color: #9ca3af;
-        }
-        
-        .indicator-value {
-            font-size: 11px;
-            font-weight: bold;
-            color: #00ff88;
-        }
-        
-        .indicator-value.negative {
-            color: #ef4444;
-        }
-        
-        .indicator-value.positive {
-            color: #22c55e;
-        }
-        
-        .status {
-            color: #00ff88;
-            font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        
-        .canvas-wrap {
-            flex: 1;
-            position: relative;
-        }
-        
-        canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .bottom-legend {
-            height: 28px;
-            background: #0b1220;
-            border-top: 1px solid #1f2937;
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            gap: 30px;
-            font-size: 10px;
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .legend-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BTC + TOTAL - USDT.D Synthetic Terminal</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #0a0e1a;
+    color: #e2e8f0;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+    padding: 10px;
+    user-select: none;
+  }
+  .terminal-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #0d1117;
+    border: 2px solid #1e3a8a;
+    border-radius: 6px;
+    box-shadow: 0 0 30px rgba(30, 58, 138, 0.3);
+  }
+  .top-bar {
+    height: 50px;
+    background: linear-gradient(135deg, #0d1117 0%, #1e3a8a 100%);
+    border-bottom: 2px solid #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+  .top-left {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .status-tag {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    font-size: 11px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  .synthetic-formula {
+    color: #00ffff;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .price-ticker {
+    display: flex;
+    gap: 30px;
+    font-size: 11px;
+  }
+  .ticker-item {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .ticker-label {
+    color: #64748b;
+  }
+  .ticker-value {
+    color: #00ffff;
+    font-weight: bold;
+  }
+  .ticker-change {
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+  .change-up { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+  .change-down { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  
+  .canvas-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    display: flex;
+  }
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .right-panel {
+    width: 180px;
+    background: #0d1117;
+    border-left: 2px solid #1e3a8a;
+    padding: 15px 10px;
+    font-size: 10px;
+    overflow-y: auto;
+    color: #cbd5e1;
+  }
+  .panel-section {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #1e3a8a;
+  }
+  .panel-title {
+    color: #3b82f6;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .panel-metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+    align-items: center;
+  }
+  .metric-label {
+    color: #64748b;
+  }
+  .metric-value {
+    color: #00ffff;
+    font-weight: bold;
+  }
+</style>
 </head>
-
 <body>
 
-<div class="wrapper">
-    <div class="topbar">
-        <div class="left-controls">
-            <div class="title">⚡ SYNTHETIC POWERFLOW TERMINAL</div>
-            <div class="controls">
-                <select id="tf">
-                    <option value="1m">1M</option>
-                    <option value="5m">5M</option>
-                    <option value="15m">15M</option>
-                    <option value="1h">1H</option>
-                    <option value="4h">4H</option>
-                </select>
-            </div>
-        </div>
-        
-        <div class="indicator-panel">
-            <div class="indicator">
-                <div class="indicator-label">GC</div>
-                <div class="indicator-value" id="gc-value">-12.5</div>
-            </div>
-            <div class="indicator">
-                <div class="indicator-label">DXY</div>
-                <div class="indicator-value" id="dxy-value">+8.3</div>
-            </div>
-            <div class="indicator">
-                <div class="indicator-label">US10Y</div>
-                <div class="indicator-value" id="us10y-value">-4.2</div>
-            </div>
-            <div class="indicator">
-                <div class="indicator-label">VOL Δ</div>
-                <div class="indicator-value" id="vol-delta">+242</div>
-            </div>
-            <div class="indicator">
-                <div class="indicator-label">HTF BIAS</div>
-                <div class="indicator-value positive" id="htf-bias">↑ BULLISH</div>
-            </div>
-        </div>
-        
-        <div class="status">● BINANCE LIVE FEED ACTIVE</div>
+<div class="terminal-wrapper">
+  <div class="top-bar">
+    <div class="top-left">
+      <div>🔥 SYNTHETIC CHART: (BTC + TOTAL) - USDT.D</div>
+      <div class="synthetic-formula">= BTC dominance × TOTAL cap - stablecoin dilution</div>
     </div>
-
-    <div class="canvas-wrap">
-        <canvas id="canvas"></canvas>
+    <div class="status-tag">⚡ ENGINE ACTIVE</div>
+    <div class="price-ticker" id="priceTicker"></div>
+  </div>
+  
+  <div style="display: flex; flex: 1;">
+    <div class="canvas-container">
+      <canvas id="syntheticCanvas"></canvas>
     </div>
-
-    <div class="bottom-legend">
-        <div class="legend-item">
-            <div class="legend-color" style="background: rgba(34, 197, 94, 0.7);"></div>
-            <span>Buy Volume</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: rgba(239, 68, 68, 0.7);"></div>
-            <span>Sell Volume</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #facc15;"></div>
-            <span>Extreme Imbalance</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #3b82f6;"></div>
-            <span>Volume Profile</span>
-        </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #8b5cf6;"></div>
-            <span>Cumulative Delta</span>
-        </div>
-    </div>
+    <div class="right-panel" id="rightPanel"></div>
+  </div>
 </div>
 
 <script>
-
-// =====================================================
-// CANVAS ENGINE
-// =====================================================
-
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const canvas = document.getElementById('syntheticCanvas');
+const ctx = canvas.getContext('2d');
+const rightPanel = document.getElementById('rightPanel');
+const priceTicker = document.getElementById('priceTicker');
 
 let dpr = window.devicePixelRatio || 1;
-let W = 0;
-let H = 0;
+let width = 0;
+let height = 0;
 
-function resize(){
-    W = canvas.parentElement.clientWidth;
-    H = canvas.parentElement.clientHeight;
-    canvas.width = W * dpr;
-    canvas.height = H * dpr;
-    canvas.style.width = W + "px";
-    canvas.style.height = H + "px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
+// Layout constants
+const candleWidth = 45;
+const candleSpacing = 20;
+const paddingTop = 40;
+const paddingBottom = 60;
+const paddingLeft = 80;
+const paddingRight = 20;
+
+// Market data storage
+let syntheticBars = [];
+let marketData = {
+  btc: 67500,
+  total: 2450000,
+  usdtd: 110.5,
+  btcChange: 2.15,
+  totalChange: 1.85,
+  usdtdChange: -0.45
+};
+
+// ======================================================
+// 1. SYNTHETIC DATA ENGINE
+// ======================================================
+
+function calculateSynthetic(btc, total, usdtd) {
+  // Normalize inputs: BTC dominance contribution, TOTAL market cap, minus USDT.D dilution
+  const normBtc = btc / 1000; // Scale down
+  const normTotal = total / 100000; // Scale down
+  const dilutionFactor = 1 - (usdtd / 150); // 0-1 scale, inverse relationship
+  
+  return (normBtc + normTotal) * dilutionFactor * 100;
 }
 
-window.addEventListener("resize", resize);
+function generateSyntheticBars(count) {
+  let bars = [];
+  let time = Date.now() - (count * 60000);
+  let currentSynthetic = calculateSynthetic(marketData.btc, marketData.total, marketData.usdtd);
+  
+  for (let i = 0; i < count; i++) {
+    // Simulate correlated market movements
+    let btcChange = (Math.random() - 0.5) * 800;
+    let totalChange = (Math.random() - 0.5) * 80000;
+    let usdtdChange = (Math.random() - 0.5) * 3;
+    
+    // Apply trend bias
+    if (Math.random() > 0.55) {
+      btcChange *= 1.5;
+      totalChange *= 1.5;
+      usdtdChange *= -0.8; // Inverse
+    }
+    
+    let btc = marketData.btc + btcChange;
+    let total = marketData.total + totalChange;
+    let usdtd = Math.max(100, marketData.usdtd + usdtdChange);
+    
+    let open = currentSynthetic;
+    let close = calculateSynthetic(btc, total, usdtd);
+    let high = Math.max(open, close) + Math.random() * 50;
+    let low = Math.min(open, close) - Math.random() * 50;
+    
+    // Volume profile (POC - Point of Control)
+    let buyVolume = Math.floor(Math.random() * 5000) + 2000;
+    let sellVolume = Math.floor(Math.random() * 5000) + 2000;
+    
+    if (close > open) buyVolume *= 1.3; // Buying pressure
+    if (close < open) sellVolume *= 1.3; // Selling pressure
+    
+    bars.push({
+      time: time + (i * 60000),
+      open,
+      close,
+      high,
+      low,
+      buyVolume,
+      sellVolume,
+      btc,
+      total,
+      usdtd,
+      delta: buyVolume - sellVolume,
+      volatility: high - low,
+      isBull: close > open
+    });
+    
+    currentSynthetic = close;
+    marketData.btc = btc;
+    marketData.total = total;
+    marketData.usdtd = usdtd;
+  }
+  
+  return bars;
+}
+
+syntheticBars = generateSyntheticBars(50);
+
+// ======================================================
+// 2. RENDERING ENGINE
+// ======================================================
+
+function resize() {
+  width = canvas.parentElement.clientWidth;
+  height = canvas.parentElement.clientHeight;
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.scale(dpr, dpr);
+}
+
+window.addEventListener('resize', resize);
 resize();
 
-// =====================================================
-// CONFIG
-// =====================================================
-
-const barWidth = 80;
-const barGap = 32;
-const rowHeight = 14;
-const maxBars = 16;
-
-let currentTF = "1m";
-
-const tfMap = {
-    "1m": 60000,
-    "5m": 300000,
-    "15m": 900000,
-    "1h": 3600000,
-    "4h": 14400000
-};
-
-document.getElementById("tf").addEventListener("change", (e) => {
-    currentTF = e.target.value;
-    bars = [];
-    currentBar = null;
-});
-
-// =====================================================
-// SYNTHETIC INDICATOR ENGINE
-// =====================================================
-
-class SyntheticIndicators {
-    constructor() {
-        this.gcFutures = -12.5;
-        this.dxyInverse = 8.3;
-        this.us10yInverse = -4.2;
-        this.volumeDelta = 242;
-        this.htfBias = 'BULLISH';
-        this.correlationStrength = 0.87;
-    }
-
-    update(bars) {
-        if (bars.length < 2) return;
-        
-        const currentBar = bars[bars.length - 1];
-        const prevBar = bars[bars.length - 2];
-        
-        // GC Futures correlation (inverse to BTC in this synthetic model)
-        this.gcFutures += (Math.random() - 0.48) * 5;
-        
-        // DXY Inverse correlation
-        this.dxyInverse += (Math.random() - 0.52) * 3;
-        
-        // US10Y Inverse correlation
-        this.us10yInverse += (Math.random() - 0.51) * 2;
-        
-        // Volume Delta cumulative
-        this.volumeDelta += currentBar.delta * 0.1;
-        
-        // HTF Bias determination
-        const dominantDelta = currentBar.delta > 0 ? 'BULLISH' : 'BEARISH';
-        const gcTrend = this.gcFutures > 0 ? 'BEARISH' : 'BULLISH';
-        const dxyTrend = this.dxyInverse > 0 ? 'BEARISH' : 'BULLISH';
-        
-        this.htfBias = dominantDelta;
-        this.correlationStrength = 0.75 + Math.random() * 0.25;
-    }
-
-    render() {
-        document.getElementById("gc-value").textContent = this.gcFutures.toFixed(1);
-        document.getElementById("dxy-value").textContent = (this.dxyInverse > 0 ? '+' : '') + this.dxyInverse.toFixed(1);
-        document.getElementById("us10y-value").textContent = (this.us10yInverse > 0 ? '+' : '') + this.us10yInverse.toFixed(1);
-        document.getElementById("vol-delta").textContent = Math.round(this.volumeDelta);
-        
-        const biasElement = document.getElementById("htf-bias");
-        biasElement.textContent = (this.htfBias === 'BULLISH' ? '↑ ' : '↓ ') + this.htfBias;
-        biasElement.className = 'indicator-value ' + (this.htfBias === 'BULLISH' ? 'positive' : 'negative');
-    }
+function getChartBounds() {
+  if (syntheticBars.length === 0) return { min: 0, max: 100, range: 100 };
+  
+  let prices = syntheticBars.flatMap(b => [b.high, b.low]);
+  let min = Math.min(...prices);
+  let max = Math.max(...prices);
+  let range = max - min;
+  let padding = range * 0.1;
+  
+  return {
+    min: min - padding,
+    max: max + padding,
+    range: (max - min) + (padding * 2)
+  };
 }
 
-const syntheticIndicators = new SyntheticIndicators();
-
-// =====================================================
-// DATA ENGINE
-// =====================================================
-
-let bars = [];
-let currentBar = null;
-
-function roundPrice(price) {
-    return Math.round(price / 5) * 5;
+function priceToY(price, bounds) {
+  const chartHeight = height - paddingTop - paddingBottom;
+  const y = paddingTop + (bounds.max - price) / bounds.range * chartHeight;
+  return y;
 }
 
-function createBar(bucket) {
-    return {
-        bucket,
-        footprint: {},
-        delta: 0,
-        buyVolume: 0,
-        sellVolume: 0,
-        high: -Infinity,
-        low: Infinity,
-        close: 0,
-        volumeProfile: {},
-        imbalanceEvents: []
-    };
+function xToPrice(y, bounds) {
+  const chartHeight = height - paddingTop - paddingBottom;
+  return bounds.max - (y - paddingTop) / chartHeight * bounds.range;
 }
 
-// =====================================================
-// PROCESS TRADE
-// =====================================================
-
-function processTrade(price, qty, isSeller) {
-    const tf = tfMap[currentTF];
-    const now = Date.now();
-    const bucket = Math.floor(now / tf) * tf;
-
-    if (!currentBar || currentBar.bucket !== bucket) {
-        currentBar = createBar(bucket);
-        bars.push(currentBar);
-        
-        if (bars.length > maxBars) {
-            bars.shift();
-        }
-    }
-
-    currentBar.close = price;
-    currentBar.high = Math.max(currentBar.high, price);
-    currentBar.low = Math.min(currentBar.low, price);
-
-    const p = roundPrice(price);
-
-    if (!currentBar.footprint[p]) {
-        currentBar.footprint[p] = { buy: 0, sell: 0 };
-    }
-
-    if (isSeller) {
-        currentBar.footprint[p].sell += qty;
-        currentBar.sellVolume += qty;
-        currentBar.delta -= qty;
-    } else {
-        currentBar.footprint[p].buy += qty;
-        currentBar.buyVolume += qty;
-        currentBar.delta += qty;
-    }
-
-    // Track volume profile
-    const priceLevel = Math.floor(price / 100) * 100;
-    if (!currentBar.volumeProfile[priceLevel]) {
-        currentBar.volumeProfile[priceLevel] = 0;
-    }
-    currentBar.volumeProfile[priceLevel] += qty;
-
-    // Detect extreme imbalances
-    const imbalance = currentBar.footprint[p].buy / (currentBar.footprint[p].sell || 1);
-    if (imbalance > 5 || imbalance < 0.2) {
-        currentBar.imbalanceEvents.push({ price: p, imbalance, qty });
-    }
-}
-
-// =====================================================
-// BINANCE WEBSOCKET
-// =====================================================
-
-const ws = new WebSocket("wss://fstream.binance.com/ws/btcusdt@aggTrade");
-
-ws.onmessage = (event) => {
-    const t = JSON.parse(event.data);
-    const price = parseFloat(t.p);
-    const qty = parseFloat(t.q);
-    const isSeller = t.m;
-
-    processTrade(price, qty, isSeller);
-};
-
-ws.onerror = () => {
-    console.log("WebSocket error - using mock data");
-    // Fallback mock data generation
-    setInterval(() => {
-        const mockPrice = 70000 + (Math.random() - 0.5) * 1000;
-        const mockQty = Math.random() * 10;
-        const isSeller = Math.random() > 0.5;
-        processTrade(mockPrice, mockQty, isSeller);
-    }, 100);
-};
-
-// =====================================================
-// DRAW ENGINE
-// =====================================================
-
-function drawCandle(x, y, bar, height) {
-    const range = bar.high - bar.low || 1;
-    const openRatio = (bar.open - bar.low) / range;
-    const closeRatio = (bar.close - bar.low) / range;
+function drawGrid(bounds) {
+  ctx.strokeStyle = '#1a2942';
+  ctx.lineWidth = 1;
+  
+  const chartHeight = height - paddingTop - paddingBottom;
+  const levels = 8;
+  
+  for (let i = 0; i <= levels; i++) {
+    let price = bounds.max - (i / levels) * bounds.range;
+    let y = priceToY(price, bounds);
     
-    const color = bar.delta >= 0 ? '#22c55e' : '#ef4444';
-    const wickColor = bar.delta >= 0 ? 'rgba(34, 197, 94, 0.5)' : 'rgba(239, 68, 68, 0.5)';
-    
-    // Draw wick
-    ctx.strokeStyle = wickColor;
-    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(x + barWidth / 2, y);
-    ctx.lineTo(x + barWidth / 2, y + height);
+    ctx.moveTo(paddingLeft, y);
+    ctx.lineTo(width - paddingRight, y);
     ctx.stroke();
     
-    // Draw candle body
-    const bodyTop = y + (Math.min(openRatio, closeRatio) * height);
-    const bodyHeight = Math.abs(closeRatio - openRatio) * height || 2;
+    // Price labels
+    ctx.fillStyle = '#475569';
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText(price.toFixed(2), paddingLeft - 10, y + 4);
+  }
+  
+  // Draw price axis border
+  ctx.strokeStyle = '#3b82f6';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(paddingLeft, paddingTop);
+  ctx.lineTo(paddingLeft, height - paddingBottom);
+  ctx.moveTo(width - paddingRight, paddingTop);
+  ctx.lineTo(width - paddingRight, height - paddingBottom);
+  ctx.stroke();
+}
+
+function drawCandles(bounds) {
+  let startX = paddingLeft + 50;
+  let visibleBars = Math.floor((width - paddingLeft - paddingRight) / (candleWidth + candleSpacing));
+  let startIdx = Math.max(0, syntheticBars.length - visibleBars);
+  
+  for (let i = startIdx; i < syntheticBars.length; i++) {
+    let bar = syntheticBars[i];
+    let x = startX + (i - startIdx) * (candleWidth + candleSpacing);
     
-    ctx.fillStyle = color;
-    ctx.fillRect(x + 10, bodyTop, barWidth - 20, bodyHeight);
+    if (x > width - paddingRight) break;
     
-    ctx.strokeStyle = color;
+    let yOpen = priceToY(bar.open, bounds);
+    let yClose = priceToY(bar.close, bounds);
+    let yHigh = priceToY(bar.high, bounds);
+    let yLow = priceToY(bar.low, bounds);
+    
+    let isBull = bar.close > bar.open;
+    let bodyColor = isBull ? '#10b981' : '#ef4444';
+    let wickColor = isBull ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
+    
+    // Draw wicks
+    ctx.strokeStyle = wickColor;
     ctx.lineWidth = 1.5;
-    ctx.strokeRect(x + 10, bodyTop, barWidth - 20, bodyHeight);
+    ctx.beginPath();
+    ctx.moveTo(x + candleWidth / 2, yHigh);
+    ctx.lineTo(x + candleWidth / 2, yLow);
+    ctx.stroke();
+    
+    // Draw bodies
+    let bodyTop = Math.min(yOpen, yClose);
+    let bodyHeight = Math.abs(yClose - yOpen);
+    bodyHeight = Math.max(bodyHeight, 3); // Minimum height for visibility
+    
+    ctx.fillStyle = bodyColor;
+    ctx.fillRect(x + 5, bodyTop, candleWidth - 10, bodyHeight);
+    
+    // Draw border
+    ctx.strokeStyle = bodyColor;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x + 5, bodyTop, candleWidth - 10, bodyHeight);
+    
+    // Volume bar beneath candle
+    let maxVolume = Math.max(...syntheticBars.map(b => b.buyVolume + b.sellVolume));
+    let totalVol = bar.buyVolume + bar.sellVolume;
+    let volHeight = (totalVol / maxVolume) * 25;
+    
+    ctx.fillStyle = isBull ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+    ctx.fillRect(x + 5, height - paddingBottom + 5, candleWidth - 10, volHeight);
+  }
+}
+
+function drawTimeAxis(bounds) {
+  const chartWidth = width - paddingLeft - paddingRight;
+  const visibleBars = Math.floor(chartWidth / (candleWidth + candleSpacing));
+  const startIdx = Math.max(0, syntheticBars.length - visibleBars);
+  
+  ctx.fillStyle = '#64748b';
+  ctx.font = '9px monospace';
+  ctx.textAlign = 'center';
+  
+  for (let i = startIdx; i < syntheticBars.length; i += Math.max(1, Math.floor(visibleBars / 6))) {
+    let bar = syntheticBars[i];
+    let x = paddingLeft + 50 + (i - startIdx) * (candleWidth + candleSpacing) + candleWidth / 2;
+    
+    let date = new Date(bar.time);
+    let timeStr = date.getHours().toString().padStart(2, '0') + ':' + 
+                  date.getMinutes().toString().padStart(2, '0');
+    
+    ctx.fillText(timeStr, x, height - 25);
+  }
 }
 
 function draw() {
-    ctx.fillStyle = "#05070b";
-    ctx.fillRect(0, 0, W, H);
-
-    const mainHeight = H * 0.65;
-    const volumeHeight = H * 0.20;
-    const deltaHeight = H * 0.15;
-
-    // Draw panel dividers
-    ctx.strokeStyle = "#1f2937";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, mainHeight);
-    ctx.lineTo(W, mainHeight);
-    ctx.moveTo(0, mainHeight + volumeHeight);
-    ctx.lineTo(W, mainHeight + volumeHeight);
-    ctx.stroke();
-
-    // Draw grid
-    ctx.strokeStyle = "#0f1419";
-    ctx.lineWidth = 0.5;
-    for (let i = 0; i < W; i += 100) {
-        ctx.beginPath();
-        ctx.moveTo(i, mainHeight);
-        ctx.lineTo(i, H);
-        ctx.stroke();
-    }
-
-    let x = W - 120;
-
-    for (let i = bars.length - 1; i >= 0; i--) {
-        const bar = bars[i];
-
-        const prices = Object.keys(bar.footprint)
-            .map(Number)
-            .sort((a, b) => b - a);
-
-        let y = 60;
-
-        // --- FOOTPRINT RENDERING ---
-        for (let p of prices) {
-            const node = bar.footprint[p];
-            const buy = node.buy;
-            const sell = node.sell;
-            const total = buy + sell;
-
-            let imbalance = buy / (sell || 1);
-            let color;
-
-            if (bar.delta >= 0) {
-                color = `rgba(34, 197, 94, ${Math.min(total / 12, 0.85)})`;
-            } else {
-                color = `rgba(239, 68, 68, ${Math.min(total / 12, 0.85)})`;
-            }
-
-            if (imbalance > 4 || imbalance < 0.25) {
-                color = "#facc15";
-            }
-
-            ctx.fillStyle = color;
-            ctx.fillRect(x, y, barWidth, rowHeight - 1);
-
-            ctx.fillStyle = color === "#facc15" ? "#000" : "#e5e7eb";
-            ctx.font = "8px monospace";
-            ctx.textAlign = "center";
-            ctx.fillText(
-                `${buy.toFixed(0)} | ${sell.toFixed(0)}`,
-                x + barWidth / 2,
-                y + 9
-            );
-
-            y += rowHeight;
-
-            if (y > mainHeight - 20) break;
-        }
-
-        // --- VOLUME PROFILE PANEL ---
-        const volPanelY = mainHeight + 5;
-        const volProfileMax = Math.max(...Object.values(bar.volumeProfile || {}), 1);
-        const volBarHeight = (volumeHeight - 10) / 4;
-
-        let volPrices = Object.keys(bar.volumeProfile || {}).slice(0, 4);
-        volPrices.forEach((priceLevel, idx) => {
-            const vol = bar.volumeProfile[priceLevel];
-            const volRatio = vol / volProfileMax;
-            
-            ctx.fillStyle = `rgba(59, 130, 246, ${volRatio * 0.7})`;
-            ctx.fillRect(x + 2, volPanelY + (idx * volBarHeight), (barWidth - 4) * volRatio, volBarHeight - 1);
-        });
-
-        // --- DELTA PANEL ---
-        const deltaY = mainHeight + volumeHeight + 10;
-        const deltaColor = bar.delta >= 0 ? "#22c55e" : "#ef4444";
-        const deltaHeight = Math.abs(bar.delta) / 1000 * (deltaHeight - 20);
-
-        ctx.fillStyle = deltaColor;
-        ctx.fillRect(x, deltaY + (deltaHeight - 20) / 2, barWidth, Math.max(deltaHeight, 4));
-
-        ctx.fillStyle = "white";
-        ctx.font = "9px monospace";
-        ctx.textAlign = "center";
-        ctx.fillText(
-            Math.round(bar.delta),
-            x + barWidth / 2,
-            deltaY + (deltaHeight - 20) / 2 + 15
-        );
-
-        // --- PRICE LABEL ---
-        ctx.fillStyle = "#00ff88";
-        ctx.textAlign = "left";
-        ctx.font = "10px monospace";
-        ctx.fillText(
-            bar.close.toFixed(2),
-            x + 2,
-            20
-        );
-
-        x -= (barWidth + barGap);
-    }
-
-    // --- RIGHT AXIS PANEL ---
-    ctx.fillStyle = "#0b1220";
-    ctx.fillRect(W - 90, 0, 90, H);
-
-    ctx.strokeStyle = "#1f2937";
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(W - 90, 0);
-    ctx.lineTo(W - 90, H);
-    ctx.stroke();
-
-    ctx.fillStyle = "#00ff88";
-    ctx.font = "11px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText("LIVE DATA", W - 45, 25);
-
-    // Stats
-    if (currentBar) {
-        ctx.fillStyle = "#9ca3af";
-        ctx.font = "9px monospace";
-        let statY = 50;
-        ctx.textAlign = "left";
-        ctx.fillText(`H: ${currentBar.high.toFixed(0)}`, W - 85, statY);
-        statY += 15;
-        ctx.fillText(`L: ${currentBar.low.toFixed(0)}`, W - 85, statY);
-        statY += 15;
-        ctx.fillText(`Δ: ${Math.round(currentBar.delta)}`, W - 85, statY);
-        statY += 15;
-        ctx.fillText(`Vol: ${(currentBar.buyVolume + currentBar.sellVolume).toFixed(0)}`, W - 85, statY);
-    }
+  // Clear canvas
+  ctx.fillStyle = '#0d1117';
+  ctx.fillRect(0, 0, width, height);
+  
+  // Background grid
+  ctx.fillStyle = 'rgba(30, 58, 138, 0.05)';
+  ctx.fillRect(paddingLeft, paddingTop, width - paddingLeft - paddingRight, height - paddingTop - paddingBottom);
+  
+  let bounds = getChartBounds();
+  
+  // Draw layers
+  drawGrid(bounds);
+  drawCandles(bounds);
+  drawTimeAxis(bounds);
+  
+  // Draw volume panel
+  ctx.fillStyle = '#1a2942';
+  ctx.fillRect(paddingLeft, height - paddingBottom, width - paddingLeft - paddingRight, paddingBottom);
+  ctx.fillStyle = '#3b82f6';
+  ctx.font = 'bold 11px monospace';
+  ctx.textAlign = 'left';
+  ctx.fillText('VOLUME PROFILE', paddingLeft + 10, height - paddingBottom + 20);
 }
 
-// =====================================================
-// RENDER LOOP
-// =====================================================
+// ======================================================
+// 3. RIGHT PANEL METRICS
+// ======================================================
 
-function animate() {
-    draw();
+function updateRightPanel() {
+  if (syntheticBars.length === 0) return;
+  
+  let current = syntheticBars[syntheticBars.length - 1];
+  let prev = syntheticBars[Math.max(0, syntheticBars.length - 2)];
+  
+  let changePercent = ((current.close - prev.close) / prev.close) * 100;
+  let avgDelta = syntheticBars.slice(-10).reduce((a, b) => a + b.delta, 0) / 10;
+  let avgVolatility = syntheticBars.slice(-10).reduce((a, b) => a + b.volatility, 0) / 10;
+  
+  rightPanel.innerHTML = `
+    <div class="panel-section">
+      <div class="panel-title">📊 SYNTHETIC</div>
+      <div class="panel-metric">
+        <span class="metric-label">Price:</span>
+        <span class="metric-value">${current.close.toFixed(2)}</span>
+      </div>
+      <div class="panel-metric">
+        <span class="metric-label">Change:</span>
+        <span class="metric-value" style="color: ${changePercent >= 0 ? '#10b981' : '#ef4444'}">
+          ${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%
+        </span>
+      </div>
+      <div class="panel-metric">
+        <span class="metric-label">High/Low:</span>
+        <span class="metric-value">${current.high.toFixed(1)}/${current.low.toFixed(1)}</span>
+      </div>
+    </div>
     
-    if (bars.length > 0) {
-        syntheticIndicators.update(bars);
-        syntheticIndicators.render();
-    }
-
-    requestAnimationFrame(animate);
+    <div class="panel-section">
+      <div class="panel-title">💰 COMPONENTS</div>
+      <div class="panel-metric">
+        <span class="metric-label">BTC:</span>
+        <span class="metric-value">$${current.btc.toFixed(0)}</span>
+      </div>
+      <div class="panel-metric">
+        <span class="metric-label">TOTAL:</span>
+        <span class="metric-value">$${(current.total / 1000000).toFixed(2)}M</span>
+      </div>
+      <div class="panel-metric">
+        <span class="metric-label">USDT.D:</span>
+        <span class="metric-value">${current.usdtd.toFixed(2)}%</span>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-title">⚙️ FLOW</div>
+      <div class="panel-metric">
+        <span class="metric-label">Delta:</span>
+        <span class="metric-value" style="color: ${current.delta >= 0 ? '#10b981' : '#ef4444'}">
+          ${current.delta >= 0 ? '+' : ''}${current.delta.toFixed(0)}
+        </span>
+      </div>
+      <div class="panel-metric">
+        <span class="metric-label">Buy Vol:</span>
+        <span class="metric-value">${(current.buyVolume / 1000).toFixed(1)}K</span>
+      </div>
+      <div class="panel-metric">
+        <span class="metric-label">Sell Vol:</span>
+        <span class="metric-value">${(current.sellVolume / 1000).toFixed(1)}K</span>
+      </div>
+    </div>
+    
+    <div class="panel-section">
+      <div class="panel-title">📈 METRICS</div>
+      <div class="panel-metric">
+        <span class="metric-label">Volatility:</span>
+        <span class="metric-value">${avgVolatility.toFixed(2)}</span>
+      </div>
+      <div class="panel-metric">
+        <span class="metric-label">Avg Delta:</span>
+        <span class="metric-value" style="color: ${avgDelta >= 0 ? '#10b981' : '#ef4444'}">
+          ${avgDelta >= 0 ? '+' : ''}${avgDelta.toFixed(0)}
+        </span>
+      </div>
+    </div>
+  `;
 }
 
-animate();
+// ======================================================
+// 4. TICKER UPDATE
+// ======================================================
 
+function updateTicker() {
+  if (syntheticBars.length < 2) return;
+  
+  let current = syntheticBars[syntheticBars.length - 1];
+  let change = ((current.close - syntheticBars[syntheticBars.length - 2].close) / syntheticBars[syntheticBars.length - 2].close) * 100;
+  let changeClass = change >= 0 ? 'change-up' : 'change-down';
+  
+  priceTicker.innerHTML = `
+    <div class="ticker-item">
+      <span class="ticker-label">BTC:</span>
+      <span class="ticker-value">$${current.btc.toFixed(0)}</span>
+      <span class="ticker-change ${marketData.btcChange >= 0 ? 'change-up' : 'change-down'}">
+        ${marketData.btcChange >= 0 ? '+' : ''}${marketData.btcChange.toFixed(2)}%
+      </span>
+    </div>
+    <div class="ticker-item">
+      <span class="ticker-label">TOTAL:</span>
+      <span class="ticker-value">$${(current.total / 1000000).toFixed(1)}M</span>
+      <span class="ticker-change ${marketData.totalChange >= 0 ? 'change-up' : 'change-down'}">
+        ${marketData.totalChange >= 0 ? '+' : ''}${marketData.totalChange.toFixed(2)}%
+      </span>
+    </div>
+    <div class="ticker-item">
+      <span class="ticker-label">USDT.D:</span>
+      <span class="ticker-value">${current.usdtd.toFixed(2)}%</span>
+      <span class="ticker-change ${marketData.usdtdChange >= 0 ? 'change-up' : 'change-down'}">
+        ${marketData.usdtdChange >= 0 ? '+' : ''}${marketData.usdtdChange.toFixed(2)}%
+      </span>
+    </div>
+    <div class="ticker-item">
+      <span class="ticker-label">SYNTHETIC:</span>
+      <span class="ticker-value">${current.close.toFixed(2)}</span>
+      <span class="ticker-change ${change >= 0 ? 'change-up' : 'change-down'}">
+        ${change >= 0 ? '+' : ''}${change.toFixed(2)}%
+      </span>
+    </div>
+  `;
+}
+
+// ======================================================
+// 5. LIVE ENGINE UPDATE LOOP
+// ======================================================
+
+function updateEngine() {
+  // Simulate new tick
+  let lastBar = syntheticBars[syntheticBars.length - 1];
+  
+  // Update market data with slight variation
+  marketData.btc += (Math.random() - 0.5) * 200;
+  marketData.total += (Math.random() - 0.5) * 50000;
+  marketData.usdtd += (Math.random() - 0.5) * 0.3;
+  
+  marketData.btcChange = (Math.random() - 0.5) * 5;
+  marketData.totalChange = (Math.random() - 0.5) * 4;
+  marketData.usdtdChange = (Math.random() - 0.5) * 1;
+  
+  // Create new synthetic value
+  let newClose = calculateSynthetic(marketData.btc, marketData.total, marketData.usdtd);
+  
+  // Update last bar or create new one
+  if (Math.random() > 0.85) {
+    let bar = {
+      time: Date.now(),
+      open: lastBar.close,
+      close: newClose,
+      high: Math.max(lastBar.close, newClose) + Math.random() * 50,
+      low: Math.min(lastBar.close, newClose) - Math.random() * 50,
+      buyVolume: Math.floor(Math.random() * 5000) + 2000,
+      sellVolume: Math.floor(Math.random() * 5000) + 2000,
+      btc: marketData.btc,
+      total: marketData.total,
+      usdtd: marketData.usdtd,
+      delta: 0,
+      volatility: 0,
+      isBull: newClose > lastBar.close
+    };
+    
+    bar.delta = bar.buyVolume - bar.sellVolume;
+    bar.volatility = bar.high - bar.low;
+    
+    syntheticBars.push(bar);
+    if (syntheticBars.length > 100) syntheticBars.shift();
+  } else {
+    lastBar.close = newClose;
+    lastBar.high = Math.max(lastBar.open, newClose) + Math.random() * 50;
+    lastBar.low = Math.min(lastBar.open, newClose) - Math.random() * 50;
+    lastBar.buyVolume += Math.floor(Math.random() * 200);
+    lastBar.sellVolume += Math.floor(Math.random() * 200);
+    lastBar.delta = lastBar.buyVolume - lastBar.sellVolume;
+    lastBar.volatility = lastBar.high - lastBar.low;
+    lastBar.btc = marketData.btc;
+    lastBar.total = marketData.total;
+    lastBar.usdtd = marketData.usdtd;
+  }
+  
+  draw();
+  updateRightPanel();
+  updateTicker();
+  requestAnimationFrame(updateEngine);
+}
+
+// Start engine
+draw();
+updateRightPanel();
+updateTicker();
+requestAnimationFrame(updateEngine);
 </script>
-
 </body>
 </html>
