@@ -1,55 +1,286 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Live Composite Terminal</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
-    <style>
-        body {
-            margin: 0;
-            background: #0b0f1a;
-            color: white;
-            font-family: monospace;
-        }
-
-        #topbar {
-            padding: 10px;
-            background: #111827;
-            font-size: 14px;
-        }
-
-        #chart {
-            width: 100%;
-            height: 95vh;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Liquidity Flow Order Flow Terminal</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #06090e;
+    color: #e2e8f0;
+    font-family: 'Courier New', Courier, monospace;
+    overflow: hidden;
+    padding: 10px;
+    user-select: none;
+  }
+  .terminal-wrapper {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #090d14;
+    border: 1px solid #1a2232;
+    border-radius: 4px;
+  }
+  .top-bar {
+    height: 40px;
+    background: #0d131f;
+    border-bottom: 1px solid #1a2232;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  .status-tag {
+    color: #00ff88;
+    background: rgba(0, 255, 136, 0.1);
+    padding: 2px 8px;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 255, 136, 0.2);
+  }
+  .canvas-container {
+    flex: 1;
+    position: relative;
+    width: 100%;
+  }
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+</style>
 </head>
-
 <body>
 
-<div id="topbar">
-    ⚡ LIVE COMPOSITE LIQUIDITY STREAM (USDT.D vs TOTAL)
+<div class="terminal-wrapper">
+  <div class="top-bar">
+    <div>📊 TOTAL + USDT.D SYNTHETIC ORDER FLOW TERMINAL</div>
+    <div class="status-tag">ENGINE STATUS: REALTIME ACTIVE</div>
+  </div>
+  <div class="canvas-container">
+    <canvas id="footprintCanvas"></canvas>
+  </div>
 </div>
 
-<div id="chart"></div>
-
 <script>
-let chartDiv = document.getElementById("chart");
+const canvas = document.getElementById('footprintCanvas');
+const ctx = canvas.getContext('2d');
 
-async function loadChart() {
-    const res = await fetch("/data");
-    const fig = await res.json();
+// --- Layout Configurations ---
+let dpr = window.devicePixelRatio || 1;
+let width = 0;
+let height = 0;
 
-    Plotly.react("chart", fig.data, fig.layout);
+const barWidth = 70;      // Width of each structural footprint cluster block
+const barSpacing = 45;    // Spacing between columns
+const rowHeight = 16;     // Height of each stacked price cluster row inside a candle
+const paddingRight = 80;  // Room for the right side price axis scale readout
+
+// Mocked structural prices centered around current index calculation bounds
+let basePrice = 70385.00;
+
+// ======================================================
+// 1. ENGINE ORDER FLOW MOCK DATA GENERATOR
+// ======================================================
+function generateMockBars(count) {
+    let bars = [];
+    let time = Date.now() - (count * 60000);
+    
+    for (let i = 0; i < count; i++) {
+        let isBullish = Math.random() > 0.45;
+        let clusterRows = Math.floor(Math.random() * 8) + 8; // Stacked segment count
+        let nodePriceStart = basePrice + (Math.floor(Math.random() * 20) - 10) * 10;
+        
+        let segments = [];
+        for (let r = 0; r < clusterRows; r++) {
+            let buyVol = Math.floor(Math.random() * 400) + 10;
+            let sellVol = Math.floor(Math.random() * 400) + 10;
+            // Introduce imbalance triggers matching image patterns
+            if (isBullish && r > clusterRows * 0.6) buyVol *= 4;
+            if (!isBullish && r < clusterRows * 0.4) sellVol *= 4;
+            
+            segments.push({
+                price: nodePriceStart - (r * 10),
+                buyVolume: buyVol,
+                sellVolume: sellVol
+            });
+        }
+        
+        bars.push({
+            time: time + (i * 60000),
+            isBull: isBullish,
+            high: segments[0].price,
+            low: segments[segments.length - 1].price,
+            open: isBullish ? segments[segments.length-3].price : segments[2].price,
+            close: isBullish ? segments[2].price : segments[segments.length-3].price,
+            dataNodes: segments,
+            delta: Math.floor((Math.random() - 0.5) * 1500),
+            openInterest: Math.floor(Math.random() * 5000) + 12000
+        });
+    }
+    return bars;
 }
 
-// initial load
-loadChart();
+let historyBars = generateMockBars(12);
 
-// 🔥 LIVE STREAM LOOP (every 5 seconds)
-setInterval(loadChart, 5000);
+// ======================================================
+// 2. CANVAS RENDERING ENGINE
+// ======================================================
+function resize() {
+    width = canvas.parentElement.clientWidth;
+    height = canvas.parentElement.clientHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    ctx.scale(dpr, dpr);
+}
+window.addEventListener('resize', resize);
+resize();
 
+function draw() {
+    // Clear canvas frame stack
+    ctx.fillStyle = '#06090e';
+    ctx.fillRect(0, 0, width, height);
+    
+    // Sub-pane division levels calculations
+    let mainChartHeight = height * 0.70;
+    let subPaneHeight = (height - mainChartHeight) / 3;
+    
+    // Draw horizontal panel dividing grid-lines
+    ctx.strokeStyle = '#141b25';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, mainChartHeight); ctx.lineTo(width, mainChartHeight);
+    ctx.moveTo(0, mainChartHeight + subPaneHeight); ctx.lineTo(width, mainChartHeight + subPaneHeight);
+    ctx.moveTo(0, mainChartHeight + subPaneHeight * 2); ctx.lineTo(width, mainChartHeight + subPaneHeight * 2);
+    ctx.stroke();
+
+    // Map starting print frame limits from right to left
+    let startX = width - paddingRight - barWidth;
+    
+    for (let i = historyBars.length - 1; i >= 0; i--) {
+        if (startX < 0) break;
+        let bar = historyBars[i];
+        
+        // --- 1. RENDER VERTICAL FOOTPRINT TEXT BLOCKS ---
+        let currentY = 80; // Baseline entry level height offsets
+        
+        bar.dataNodes.forEach(node => {
+            let boxY = currentY;
+            currentY += rowHeight;
+            
+            if (boxY + rowHeight > mainChartHeight - 20) return;
+
+            // Determine volume dominance shading logic states
+            let totalNodeVol = node.buyVolume + node.sellVolume;
+            let imbalance = node.buyVolume / (node.sellVolume || 1);
+            
+            let bgAlpha = Math.min(totalNodeVol / 1200, 0.45);
+            let boxColor = bar.isBull ? `rgba(34, 197, 94, ${bgAlpha})` : `rgba(239, 68, 68, ${bgAlpha})`;
+            
+            // Highlight extreme imbalance concentrations (Yellow Node blocks from user template)
+            if (imbalance > 4.0 || imbalance < 0.25) {
+                boxColor = bar.isBull ? 'rgba(34, 197, 94, 0.8)' : 'rgba(239, 68, 68, 0.8)';
+            }
+
+            // Fill individual cell cluster background block matrix
+            ctx.fillStyle = boxColor;
+            ctx.fillRect(startX, boxY, barWidth, rowHeight - 1);
+            
+            // Text values printing
+            ctx.fillStyle = (imbalance > 4.0 || imbalance < 0.25) ? '#000000' : '#d1d5db';
+            ctx.font = '9px monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Map text inside the row node blocks
+            let labelText = `${Math.round(node.buyVolume / 10)} | ${Math.round(node.sellVolume / 10)}`;
+            ctx.fillText(labelText, startX + barWidth / 2, boxY + rowHeight / 2);
+        });
+
+        // --- 2. SUB-PANE HISTOGRAMS RENDERING ---
+        ctx.textAlign = 'center';
+        ctx.font = '10px monospace';
+        
+        // Sub-Pane 1: Cumulative Delta Block Matrix Bars
+        let sp1Y = mainChartHeight + 10;
+        let deltaColor = bar.delta >= 0 ? '#22c55e' : '#ef4444';
+        ctx.fillStyle = deltaColor;
+        ctx.fillRect(startX, sp1Y, barWidth, subPaneHeight - 20);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(bar.delta.toString(), startX + barWidth / 2, sp1Y + (subPaneHeight - 20) / 2 + 3);
+
+        // Sub-Pane 2: Min/Max Delta Momentum Strips
+        let sp2Y = mainChartHeight + subPaneHeight + 10;
+        ctx.fillStyle = bar.isBull ? 'rgba(34, 197, 94, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+        ctx.fillRect(startX, sp2Y, barWidth, subPaneHeight - 20);
+        ctx.fillStyle = '#9ca3af';
+        ctx.fillText((bar.delta * 1.2).toFixed(0), startX + barWidth / 2, sp2Y + (subPaneHeight - 20) / 2 + 3);
+
+        // Sub-Pane 3: Open Interest Multi-Layer Tiers
+        let sp3Y = mainChartHeight + subPaneHeight * 2 + 10;
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(startX, sp3Y, barWidth, 4); // Static baseline frame track strip
+        ctx.fillStyle = '#2563eb'; // Blue tinting for Open Interest momentum lines
+        ctx.fillRect(startX + 2, sp3Y - 4, barWidth - 4, 12);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText((bar.openInterest / 1000).toFixed(1) + 'K', startX + barWidth / 2, sp3Y + 16);
+
+        // Shift rendering anchor point leftward for previous historical candle
+        startX -= (barWidth + barSpacing);
+    }
+
+    // --- 3. RIGHT SIDE AXIS RENDER SCALE BLOCK ---
+    ctx.fillStyle = '#0d131f';
+    ctx.fillRect(width - paddingRight, 0, paddingRight, height);
+    ctx.strokeStyle = '#1a2232';
+    ctx.beginPath();
+    ctx.moveTo(width - paddingRight, 0); ctx.lineTo(width - paddingRight, height);
+    ctx.stroke();
+
+    // Output live price targets on axis blocks scale
+    ctx.fillStyle = '#00ff88';
+    ctx.font = '11px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`▶ ${basePrice.toFixed(2)}`, width - paddingRight + 5, 120);
+}
+
+// ======================================================
+// 3. ENGINE UPDATE RUNTIME INTERVAL LOOPS
+// ======================================================
+function updateEngine() {
+    // Inject streaming micro ticks directly into the active tracking cluster
+    let activeBar = historyBars[historyBars.length - 1];
+    let randomNode = activeBar.dataNodes[Math.floor(Math.random() * activeBar.dataNodes.length)];
+    
+    if (Math.random() > 0.5) {
+        randomNode.buyVolume += Math.floor(Math.random() * 80);
+    } else {
+        randomNode.sellVolume += Math.floor(Math.random() * 80);
+    }
+    
+    activeBar.delta += Math.floor((Math.random() - 0.5) * 120);
+    basePrice += (Math.random() - 0.5) * 4;
+
+    // Shift data arrays once lookahead thresholds are reached to optimize graphics memory
+    if (Math.random() > 0.98) {
+        historyBars.shift();
+        historyBars.push(generateMockBars(1)[0]);
+    }
+
+    draw();
+    requestAnimationFrame(updateEngine);
+}
+
+// Start terminal loops
+draw();
+requestAnimationFrame(updateEngine);
 </script>
-
 </body>
 </html>
