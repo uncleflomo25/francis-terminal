@@ -228,7 +228,7 @@ button:hover{
 
     <div class="grid">
 
-        <!-- LEFT PANEL -->
+        <!-- LEFT -->
         <div class="panel">
 
             <div class="panel-title">
@@ -239,7 +239,6 @@ button:hover{
                 <label>Trading Pair</label>
 
                 <select id="pair">
-
                     <option>BTCUSDT</option>
                     <option>ETHUSDT</option>
                     <option>SOLUSDT</option>
@@ -247,7 +246,6 @@ button:hover{
                     <option>NAS100</option>
                     <option>EURUSD</option>
                     <option>GBPUSD</option>
-
                 </select>
             </div>
 
@@ -255,10 +253,8 @@ button:hover{
                 <label>Trade Type</label>
 
                 <select id="tradeType">
-
                     <option>BUY</option>
                     <option selected>SELL</option>
-
                 </select>
             </div>
 
@@ -526,7 +522,6 @@ button:hover{
 
                     <select id="brokerServer">
 
-                        <!-- UAE -->
                         <option>EQUITI UAE - MT5</option>
                         <option>EQUITI UAE - MT4</option>
                         <option>ADSS UAE - MT5</option>
@@ -535,8 +530,6 @@ button:hover{
                         <option>MULTIBANK UAE - MT4</option>
                         <option>XS UAE - MT5</option>
                         <option>XS UAE - MT4</option>
-
-                        <!-- GLOBAL -->
                         <option>EXNESS - MT5 REAL</option>
                         <option>EXNESS - MT4 REAL</option>
                         <option>IC MARKETS - MT5</option>
@@ -576,7 +569,7 @@ button:hover{
 
             </div>
 
-            <!-- API -->
+            <!-- CRYPTO -->
             <div id="apiBox"
             style="display:none;">
 
@@ -604,82 +597,58 @@ button:hover{
 
             <!-- CONNECT -->
             <button onclick="connectAccount()">
-
                 CONNECT ACCOUNT
-
             </button>
 
             <!-- STATUS -->
             <div style="margin-top:20px;">
 
                 <div class="output">
-
                     Status:
                     <span id="connectionStatus"
                     class="red">
-
                         DISCONNECTED
-
                     </span>
-
                 </div>
 
                 <div class="output">
-
                     Platform:
                     <span id="brokerName"
                     class="yellow">
-
                         NONE
-
                     </span>
-
                 </div>
 
                 <div class="output">
-
                     Account Type:
                     <span id="liveType"
                     class="blue">
-
                         NONE
-
                     </span>
-
                 </div>
 
                 <div class="output">
-
                     Balance:
                     <span id="accountBalance"
                     class="green">
-
                         0.00 USD
-
                     </span>
-
                 </div>
 
                 <div class="output">
-
                     Equity:
                     <span id="accountEquity"
                     class="blue">
-
                         0.00 USD
-
                     </span>
-
                 </div>
 
             </div>
 
-            <!-- CHART -->
+            <!-- LIVE CHART -->
             <div class="panel-title"
             style="margin-top:20px;">
-
                 LIVE CHART
-
             </div>
 
             <div class="chart">
@@ -859,7 +828,7 @@ function calculate(){
     breakeven.toFixed(1) + "%";
 
     document.getElementById("lotInput").value =
-    lot.toFixed(3) + " BTC";
+    lot.toFixed(3);
 
     if(lot > 0.05){
 
@@ -902,7 +871,7 @@ document.querySelectorAll("input, select")
 
 calculate();
 
-// PLATFORM SWITCH
+// SWITCH PLATFORM
 function switchPlatform(){
 
     let platform =
@@ -931,7 +900,7 @@ function switchPlatform(){
 
 }
 
-// CONNECT
+// CONNECT ACCOUNT
 function connectAccount(){
 
     let platform =
@@ -940,19 +909,7 @@ function connectAccount(){
     let accountType =
     document.getElementById("accountType").value;
 
-    document.getElementById("connectionStatus")
-    .innerHTML = "CONNECTED";
-
-    document.getElementById("connectionStatus")
-    .className = "green";
-
-    document.getElementById("brokerName")
-    .innerHTML = platform;
-
-    document.getElementById("liveType")
-    .innerHTML = accountType;
-
-    // MT
+    // MT4 / MT5
     if(platform === "MT4" ||
        platform === "MT5"){
 
@@ -969,10 +926,21 @@ function connectAccount(){
            password === ""){
 
             alert("ENTER LOGIN DETAILS");
-
             return;
 
         }
+
+        document.getElementById("connectionStatus")
+        .innerHTML = "CONNECTED";
+
+        document.getElementById("connectionStatus")
+        .className = "green";
+
+        document.getElementById("brokerName")
+        .innerHTML = broker;
+
+        document.getElementById("liveType")
+        .innerHTML = accountType;
 
         document.getElementById("accountBalance")
         .innerHTML = "15,420 USD";
@@ -1001,12 +969,16 @@ function connectAccount(){
         document.getElementById("exitArrow")
         .style.top = "240px";
 
-        alert(
-            broker +
-            " CONNECTED (" +
-            accountType +
-            ")"
-        );
+        setTimeout(()=>{
+
+            alert(
+                broker +
+                " CONNECTED (" +
+                accountType +
+                ")"
+            );
+
+        },200);
 
     }
 
@@ -1023,10 +995,21 @@ function connectAccount(){
            secret === ""){
 
             alert("ENTER API KEYS");
-
             return;
 
         }
+
+        document.getElementById("connectionStatus")
+        .innerHTML = "CONNECTED";
+
+        document.getElementById("connectionStatus")
+        .className = "green";
+
+        document.getElementById("brokerName")
+        .innerHTML = platform;
+
+        document.getElementById("liveType")
+        .innerHTML = accountType;
 
         document.getElementById("accountBalance")
         .innerHTML = "12,600 USD";
@@ -1055,12 +1038,16 @@ function connectAccount(){
         document.getElementById("exitArrow")
         .style.top = "260px";
 
-        alert(
-            platform +
-            " API CONNECTED (" +
-            accountType +
-            ")"
-        );
+        setTimeout(()=>{
+
+            alert(
+                platform +
+                " API CONNECTED (" +
+                accountType +
+                ")"
+            );
+
+        },200);
 
     }
 
@@ -1100,4 +1087,4 @@ upload.addEventListener("change", function(e){
 </script>
 
 </body>
-                    </html>
+    </html>
