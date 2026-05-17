@@ -351,32 +351,44 @@ button:hover{
 
                 <div class="stat-box">
                     <div class="stat-title">Total P&L</div>
-                    <div class="stat-value green">+2,450 AED</div>
+                    <div class="stat-value green" id="totalPnL">
+                        +0 AED
+                    </div>
                 </div>
 
                 <div class="stat-box">
                     <div class="stat-title">Total Trades</div>
-                    <div class="stat-value">124</div>
+                    <div class="stat-value" id="totalTrades">
+                        0
+                    </div>
                 </div>
 
                 <div class="stat-box">
                     <div class="stat-title">Win Trades</div>
-                    <div class="stat-value green">74</div>
+                    <div class="stat-value green" id="winTrades">
+                        0
+                    </div>
                 </div>
 
                 <div class="stat-box">
                     <div class="stat-title">Lose Trades</div>
-                    <div class="stat-value red">50</div>
+                    <div class="stat-value red" id="loseTrades">
+                        0
+                    </div>
                 </div>
 
                 <div class="stat-box">
                     <div class="stat-title">Win Ratio</div>
-                    <div class="stat-value blue">59%</div>
+                    <div class="stat-value blue" id="winRatio">
+                        0%
+                    </div>
                 </div>
 
                 <div class="stat-box">
                     <div class="stat-title">Profit Factor</div>
-                    <div class="stat-value yellow">2.1</div>
+                    <div class="stat-value yellow">
+                        2.1
+                    </div>
                 </div>
 
             </div>
@@ -392,21 +404,53 @@ button:hover{
 
             <div class="account-buttons">
 
-                <button>
+                <button onclick="connectAccount('BINANCE')">
                     CONNECT BINANCE
                 </button>
 
-                <button>
+                <button onclick="connectAccount('BYBIT')">
                     CONNECT BYBIT
                 </button>
 
-                <button>
+                <button onclick="connectAccount('MT4')">
                     CONNECT MT4
                 </button>
 
-                <button>
+                <button onclick="connectAccount('MT5')">
                     CONNECT MT5
                 </button>
+
+            </div>
+
+            <div style="margin-top:20px;">
+
+                <div class="output">
+                    Connection Status:
+                    <span id="connectionStatus" class="red">
+                        DISCONNECTED
+                    </span>
+                </div>
+
+                <div class="output">
+                    Connected Broker:
+                    <span id="brokerName" class="yellow">
+                        NONE
+                    </span>
+                </div>
+
+                <div class="output">
+                    Account Balance:
+                    <span id="accountBalance" class="green">
+                        0.00 USD
+                    </span>
+                </div>
+
+                <div class="output">
+                    Live Equity:
+                    <span id="accountEquity" class="blue">
+                        0.00 USD
+                    </span>
+                </div>
 
             </div>
 
@@ -416,13 +460,11 @@ button:hover{
 
             <div class="chart">
 
-                <!-- ENTRY -->
                 <div class="arrow entry-arrow"
                 style="top:120px; left:100px;">
                     ↑ ENTRY
                 </div>
 
-                <!-- EXIT -->
                 <div class="arrow exit-arrow"
                 style="top:260px; left:260px;">
                     ↓ EXIT
@@ -489,7 +531,7 @@ button:hover{
     </div>
 
     <div class="footer">
-        INSTITUTIONAL TERMINAL v3.0
+        INSTITUTIONAL TERMINAL v4.0
     </div>
 
 </div>
@@ -628,6 +670,122 @@ document.querySelectorAll("input, select")
 });
 
 calculate();
+
+// ACCOUNT CONNECTION
+function connectAccount(type){
+
+    document.getElementById("connectionStatus")
+    .innerHTML = "CONNECTED";
+
+    document.getElementById("connectionStatus")
+    .className = "green";
+
+    document.getElementById("brokerName")
+    .innerHTML = type;
+
+    if(type === "BINANCE"){
+
+        document.getElementById("accountBalance")
+        .innerHTML = "12,450 USD";
+
+        document.getElementById("accountEquity")
+        .innerHTML = "12,920 USD";
+
+        document.getElementById("totalPnL")
+        .innerHTML = "+2,450 AED";
+
+        document.getElementById("totalTrades")
+        .innerHTML = "124";
+
+        document.getElementById("winTrades")
+        .innerHTML = "74";
+
+        document.getElementById("loseTrades")
+        .innerHTML = "50";
+
+        document.getElementById("winRatio")
+        .innerHTML = "59%";
+
+    }
+
+    else if(type === "BYBIT"){
+
+        document.getElementById("accountBalance")
+        .innerHTML = "8,320 USD";
+
+        document.getElementById("accountEquity")
+        .innerHTML = "8,700 USD";
+
+        document.getElementById("totalPnL")
+        .innerHTML = "+1,850 AED";
+
+        document.getElementById("totalTrades")
+        .innerHTML = "88";
+
+        document.getElementById("winTrades")
+        .innerHTML = "49";
+
+        document.getElementById("loseTrades")
+        .innerHTML = "39";
+
+        document.getElementById("winRatio")
+        .innerHTML = "55%";
+
+    }
+
+    else if(type === "MT4"){
+
+        document.getElementById("accountBalance")
+        .innerHTML = "5,100 USD";
+
+        document.getElementById("accountEquity")
+        .innerHTML = "5,340 USD";
+
+        document.getElementById("totalPnL")
+        .innerHTML = "+940 AED";
+
+        document.getElementById("totalTrades")
+        .innerHTML = "41";
+
+        document.getElementById("winTrades")
+        .innerHTML = "23";
+
+        document.getElementById("loseTrades")
+        .innerHTML = "18";
+
+        document.getElementById("winRatio")
+        .innerHTML = "56%";
+
+    }
+
+    else if(type === "MT5"){
+
+        document.getElementById("accountBalance")
+        .innerHTML = "14,890 USD";
+
+        document.getElementById("accountEquity")
+        .innerHTML = "15,120 USD";
+
+        document.getElementById("totalPnL")
+        .innerHTML = "+4,250 AED";
+
+        document.getElementById("totalTrades")
+        .innerHTML = "210";
+
+        document.getElementById("winTrades")
+        .innerHTML = "132";
+
+        document.getElementById("loseTrades")
+        .innerHTML = "78";
+
+        document.getElementById("winRatio")
+        .innerHTML = "63%";
+
+    }
+
+    alert(type + " ACCOUNT CONNECTED");
+
+}
 
 // IMAGE UPLOAD
 const upload =
