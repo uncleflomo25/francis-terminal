@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advanced Trade Journal</title>
+<title>Advanced AED Risk Calculator</title>
 
 <style>
+
 *{
   margin:0;
   padding:0;
@@ -13,28 +14,20 @@
 }
 
 body{
-  background:#081018;
-  color:#fff;
+  background:#0b1220;
+  color:white;
   font-family:Arial;
   padding:20px;
 }
 
 .container{
-  max-width:1400px;
+  max-width:1200px;
   margin:auto;
-}
-
-.card{
-  background:#111827;
-  border:1px solid #1f2937;
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:20px;
 }
 
 h1{
   margin-bottom:20px;
-  color:#00ff88;
+  color:#00ff99;
 }
 
 .grid{
@@ -49,6 +42,13 @@ h1{
   }
 }
 
+.card{
+  background:#111827;
+  border-radius:12px;
+  padding:20px;
+  border:1px solid #1f2937;
+}
+
 label{
   display:block;
   margin-bottom:6px;
@@ -56,15 +56,15 @@ label{
   font-size:13px;
 }
 
-input,select{
+input{
   width:100%;
   padding:12px;
+  margin-bottom:15px;
   border:none;
-  outline:none;
+  border-radius:8px;
   background:#0f172a;
   color:white;
-  border-radius:8px;
-  margin-bottom:15px;
+  outline:none;
 }
 
 button{
@@ -82,10 +82,18 @@ button:hover{
   opacity:.9;
 }
 
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
+.mode{
+  display:flex;
   gap:10px;
+  margin-bottom:20px;
+}
+
+.mode button{
+  flex:1;
+}
+
+.active{
+  background:#00aa66 !important;
 }
 
 .result{
@@ -97,29 +105,16 @@ button:hover{
 
 .result span{
   float:right;
-  color:#00ff88;
-}
-
-.mode-buttons{
-  display:flex;
-  gap:10px;
-  margin-bottom:15px;
-}
-
-.mode-buttons button{
-  flex:1;
-}
-
-.active{
-  background:#00aa66 !important;
+  color:#00ff99;
 }
 
 .rr{
-  font-size:30px;
   text-align:center;
-  color:#00ff88;
-  margin-top:20px;
+  font-size:35px;
+  color:#00ff99;
+  margin-top:25px;
 }
+
 </style>
 </head>
 
@@ -127,7 +122,7 @@ button:hover{
 
 <div class="container">
 
-<h1>📊 ADVANCED TRADE JOURNAL</h1>
+<h1>📊 ADVANCED TRADE JOURNAL + AUTO RISK CALCULATOR</h1>
 
 <div class="grid">
 
@@ -136,24 +131,25 @@ button:hover{
 <label>Account Balance (AED)</label>
 <input type="number" id="balance" placeholder="10000">
 
-<label>Trade Direction</label>
-
-<div class="mode-buttons">
-<button id="buyBtn" class="active" onclick="setDirection('buy')">BUY</button>
-<button id="sellBtn" onclick="setDirection('sell')">SELL</button>
-</div>
-
 <label>Entry Price</label>
-<input type="number" id="entry" placeholder="1.1000" step="0.00001">
+<input type="number" id="entry" placeholder="1.10000" step="0.00001">
+
+<label>Stop Loss Price</label>
+<input type="number" id="sl" placeholder="1.09500" step="0.00001">
 
 <label>Take Profit Price</label>
-<input type="number" id="tp" placeholder="1.1200" step="0.00001">
+<input type="number" id="tp" placeholder="1.12000" step="0.00001">
 
-<label>Calculation Mode</label>
+<div class="mode">
 
-<div class="mode-buttons">
-<button id="riskBtn" class="active" onclick="setMode('risk')">Risk %</button>
-<button id="lotBtn" onclick="setMode('lot')">Lot Size</button>
+<button id="riskBtn" class="active" onclick="setMode('risk')">
+Risk %
+</button>
+
+<button id="lotBtn" onclick="setMode('lot')">
+Lot Size
+</button>
+
 </div>
 
 <div id="riskMode">
@@ -161,22 +157,18 @@ button:hover{
 <label>Risk %</label>
 <input type="number" id="riskPercent" placeholder="2">
 
-<label>Stop Loss Price</label>
-<input type="number" id="sl" placeholder="1.0950" step="0.00001">
-
 </div>
 
 <div id="lotMode" style="display:none;">
 
 <label>Lot Size</label>
-<input type="number" id="lotInput" placeholder="0.10" step="0.01">
-
-<label>Stop Loss Price</label>
-<input type="number" id="slLot" placeholder="1.0950" step="0.00001">
+<input type="number" id="lotSize" placeholder="0.10" step="0.01">
 
 </div>
 
-<button onclick="calculate()">CALCULATE</button>
+<button onclick="calculate()">
+CALCULATE
+</button>
 
 </div>
 
@@ -194,7 +186,7 @@ Risk Amount
 
 <div class="result">
 Risk %
-<span id="r_riskPercent">0%</span>
+<span id="r_percent">0%</span>
 </div>
 
 <div class="result">
@@ -204,7 +196,7 @@ Lot Size
 
 <div class="result">
 SL Points
-<span id="r_slPoints">0</span>
+<span id="r_points">0</span>
 </div>
 
 <div class="result">
@@ -217,8 +209,8 @@ Potential Loss
 <span id="r_loss">0 AED</span>
 </div>
 
-<div class="rr" id="rrRatio">
-1:1
+<div class="rr" id="rr">
+1 : 1
 </div>
 
 </div>
@@ -229,35 +221,21 @@ Potential Loss
 
 <script>
 
-let direction = 'buy';
 let mode = 'risk';
 
-function setDirection(dir){
+function setMode(type){
 
-  direction = dir;
-
-  document.getElementById('buyBtn').classList.remove('active');
-  document.getElementById('sellBtn').classList.remove('active');
-
-  if(dir === 'buy'){
-    document.getElementById('buyBtn').classList.add('active');
-  }else{
-    document.getElementById('sellBtn').classList.add('active');
-  }
-}
-
-function setMode(m){
-
-  mode = m;
+  mode = type;
 
   document.getElementById('riskBtn').classList.remove('active');
   document.getElementById('lotBtn').classList.remove('active');
 
-  if(m === 'risk'){
+  if(type === 'risk'){
 
     document.getElementById('riskBtn').classList.add('active');
 
     document.getElementById('riskMode').style.display = 'block';
+
     document.getElementById('lotMode').style.display = 'none';
 
   }else{
@@ -265,6 +243,7 @@ function setMode(m){
     document.getElementById('lotBtn').classList.add('active');
 
     document.getElementById('riskMode').style.display = 'none';
+
     document.getElementById('lotMode').style.display = 'block';
   }
 }
@@ -277,51 +256,64 @@ function calculate(){
   const entry =
     parseFloat(document.getElementById('entry').value) || 0;
 
+  const sl =
+    parseFloat(document.getElementById('sl').value) || 0;
+
   const tp =
     parseFloat(document.getElementById('tp').value) || 0;
 
-  let sl = 0;
-  let lot = 0;
+  if(!balance || !entry || !sl){
+
+    alert('Fill all fields');
+
+    return;
+  }
+
+  const slDistance =
+    Math.abs(entry - sl);
+
+  const slPoints =
+    slDistance / 0.0001;
+
   let riskAED = 0;
   let riskPercent = 0;
+  let lot = 0;
+
+  // ===== RISK MODE =====
 
   if(mode === 'risk'){
 
     riskPercent =
       parseFloat(document.getElementById('riskPercent').value) || 0;
 
-    sl =
-      parseFloat(document.getElementById('sl').value) || 0;
+    if(!riskPercent){
 
-    if(!balance || !entry || !sl || !riskPercent){
-      alert('Fill all fields');
+      alert('Enter risk %');
+
       return;
     }
 
     riskAED =
       balance * (riskPercent / 100);
 
-    const slDistance =
-      Math.abs(entry - sl);
-
     lot =
       riskAED / (slDistance * 100000);
 
-  }else{
+  }
+
+  // ===== LOT SIZE MODE =====
+
+  else{
 
     lot =
-      parseFloat(document.getElementById('lotInput').value) || 0;
+      parseFloat(document.getElementById('lotSize').value) || 0;
 
-    sl =
-      parseFloat(document.getElementById('slLot').value) || 0;
+    if(!lot){
 
-    if(!balance || !entry || !sl || !lot){
-      alert('Fill all fields');
+      alert('Enter lot size');
+
       return;
     }
-
-    const slDistance =
-      Math.abs(entry - sl);
 
     riskAED =
       slDistance * lot * 100000;
@@ -330,8 +322,7 @@ function calculate(){
       (riskAED / balance) * 100;
   }
 
-  const slPoints =
-    Math.abs(entry - sl) / 0.0001;
+  // ===== TP =====
 
   let profitAED = 0;
 
@@ -344,8 +335,14 @@ function calculate(){
       tpDistance * lot * 100000;
   }
 
+  // ===== RR =====
+
   const rr =
-    riskAED > 0 ? profitAED / riskAED : 0;
+    riskAED > 0
+      ? profitAED / riskAED
+      : 0;
+
+  // ===== DISPLAY =====
 
   document.getElementById('r_balance').innerHTML =
     balance.toFixed(2) + ' AED';
@@ -353,13 +350,13 @@ function calculate(){
   document.getElementById('r_risk').innerHTML =
     riskAED.toFixed(2) + ' AED';
 
-  document.getElementById('r_riskPercent').innerHTML =
+  document.getElementById('r_percent').innerHTML =
     riskPercent.toFixed(2) + '%';
 
   document.getElementById('r_lot').innerHTML =
     lot.toFixed(2);
 
-  document.getElementById('r_slPoints').innerHTML =
+  document.getElementById('r_points').innerHTML =
     slPoints.toFixed(1);
 
   document.getElementById('r_profit').innerHTML =
@@ -368,7 +365,7 @@ function calculate(){
   document.getElementById('r_loss').innerHTML =
     riskAED.toFixed(2) + ' AED';
 
-  document.getElementById('rrRatio').innerHTML =
+  document.getElementById('rr').innerHTML =
     '1 : ' + rr.toFixed(2);
 }
 
