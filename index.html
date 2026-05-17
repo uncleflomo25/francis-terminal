@@ -86,7 +86,6 @@ input, select, button{
 
 button{
     cursor:pointer;
-    transition:0.3s;
 }
 
 button:hover{
@@ -106,53 +105,6 @@ button:hover{
 .yellow{color:#ffd000;}
 .blue{color:#00d0ff;}
 
-.bottom{
-    margin-top:20px;
-}
-
-.upload{
-    border:2px dashed #333;
-    padding:25px;
-    text-align:center;
-    border-radius:10px;
-    cursor:pointer;
-}
-
-.preview-wrapper{
-    margin-top:20px;
-    width:100%;
-    overflow:auto;
-    border:1px solid #222;
-    border-radius:10px;
-    padding:10px;
-    background:#050505;
-    text-align:center;
-}
-
-.preview{
-    max-width:100%;
-    transform-origin:center;
-    transition:0.2s;
-    display:none;
-}
-
-.zoom-controls{
-    display:flex;
-    gap:10px;
-    margin-top:15px;
-}
-
-.analytics{
-    margin-top:15px;
-    line-height:1.8;
-}
-
-.footer{
-    margin-top:20px;
-    text-align:center;
-    color:#555;
-}
-
 .chart{
     height:400px;
     background:#050505;
@@ -160,11 +112,13 @@ button:hover{
     border-radius:10px;
     position:relative;
     overflow:hidden;
+    margin-top:20px;
 }
 
 .arrow{
     position:absolute;
-    font-size:24px;
+    font-size:22px;
+    font-weight:bold;
 }
 
 .entry-arrow{
@@ -199,9 +153,48 @@ button:hover{
     color:#00ffd5;
 }
 
-.account-buttons{
-    display:grid;
+.bottom{
+    margin-top:20px;
+}
+
+.upload{
+    border:2px dashed #333;
+    padding:25px;
+    text-align:center;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.preview-wrapper{
+    margin-top:20px;
+    overflow:auto;
+    border:1px solid #222;
+    border-radius:10px;
+    padding:10px;
+    background:#050505;
+}
+
+.preview{
+    max-width:100%;
+    display:none;
+    transform-origin:center;
+}
+
+.zoom-controls{
+    display:flex;
     gap:10px;
+    margin-top:15px;
+}
+
+.analytics{
+    margin-top:15px;
+    line-height:1.8;
+}
+
+.footer{
+    margin-top:20px;
+    text-align:center;
+    color:#555;
 }
 
 @media(max-width:1000px){
@@ -225,14 +218,14 @@ button:hover{
         </div>
 
         <div class="sub">
-            BTC CFD • MT5 • EXCHANGE • ANALYTICS ENGINE
+            MT5 • MT4 • BINANCE • BYBIT • RISK ENGINE
         </div>
 
     </div>
 
     <div class="grid">
 
-        <!-- LEFT PANEL -->
+        <!-- LEFT -->
         <div class="panel">
 
             <div class="panel-title">
@@ -241,6 +234,7 @@ button:hover{
 
             <div class="input-group">
                 <label>Trading Pair</label>
+
                 <select id="pair">
                     <option>BTCUSDT</option>
                     <option>ETHUSDT</option>
@@ -253,6 +247,7 @@ button:hover{
 
             <div class="input-group">
                 <label>Trade Type</label>
+
                 <select id="tradeType">
                     <option>BUY</option>
                     <option selected>SELL</option>
@@ -261,42 +256,63 @@ button:hover{
 
             <div class="input-group">
                 <label>Entry Price</label>
-                <input type="number" id="entry" value="79090.63">
+
+                <input type="number"
+                id="entry"
+                value="79090.63">
             </div>
 
             <div class="input-group">
                 <label>Take Profit</label>
-                <input type="number" id="tp" value="76090.63">
+
+                <input type="number"
+                id="tp"
+                value="76090.63">
             </div>
 
             <div class="input-group">
                 <label>Money Risk (AED)</label>
-                <input type="number" id="aedRisk" value="50">
+
+                <input type="number"
+                id="aedRisk"
+                value="50">
             </div>
 
             <div class="input-group">
                 <label>Stop Distance (Points)</label>
-                <input type="number" id="stopPoints" value="1000">
+
+                <input type="number"
+                id="stopPoints"
+                value="1000">
             </div>
 
             <div class="input-group">
                 <label>USD/AED</label>
-                <input type="number" id="usdAed" value="3.67">
+
+                <input type="number"
+                id="usdAed"
+                value="3.67">
             </div>
 
             <div class="input-group">
                 <label>Auto Stop Loss</label>
-                <input type="number" id="sl" readonly>
+
+                <input type="number"
+                id="sl"
+                readonly>
             </div>
 
             <div class="input-group">
                 <label>Recommended Lot Size</label>
-                <input type="text" id="lotInput" readonly>
+
+                <input type="text"
+                id="lotInput"
+                readonly>
             </div>
 
         </div>
 
-        <!-- CENTER PANEL -->
+        <!-- CENTER -->
         <div class="panel">
 
             <div class="panel-title">
@@ -305,87 +321,107 @@ button:hover{
 
             <div class="output">
                 Stop Distance:
-                <span class="yellow" id="distance">0</span>
+                <span id="distance"
+                class="yellow">0</span>
             </div>
 
             <div class="output">
                 USD Risk:
-                <span class="green" id="usdRisk">0</span>
+                <span id="usdRisk"
+                class="green">0</span>
             </div>
 
             <div class="output">
                 AED Risk:
-                <span class="green" id="aedRiskOut">0</span>
+                <span id="aedRiskOut"
+                class="green">0</span>
             </div>
 
             <div class="output">
                 RR Ratio:
-                <span class="blue" id="rr">0</span>
+                <span id="rr"
+                class="blue">0</span>
             </div>
 
             <div class="output">
                 Break-even Rate:
-                <span class="yellow" id="winrate">0</span>
+                <span id="winrate"
+                class="yellow">0</span>
             </div>
 
             <div class="output">
                 Exposure:
-                <span class="green" id="exposure">LOW</span>
+                <span id="exposure"
+                class="green">LOW</span>
             </div>
 
-            <div class="output">
-                Margin Status:
-                <span class="green">SAFE</span>
-            </div>
-
-            <div class="output">
-                Daily Drawdown:
-                <span class="red">50 / 150 AED</span>
-            </div>
-
-            <div class="panel-title" style="margin-top:20px;">
-                ACCOUNT P&L DASHBOARD
+            <div class="panel-title"
+            style="margin-top:20px;">
+                ACCOUNT P&L
             </div>
 
             <div class="stats-grid">
 
                 <div class="stat-box">
-                    <div class="stat-title">Total P&L</div>
-                    <div class="stat-value green" id="totalPnL">
+                    <div class="stat-title">
+                        Total P&L
+                    </div>
+
+                    <div class="stat-value green"
+                    id="totalPnL">
                         +0 AED
                     </div>
                 </div>
 
                 <div class="stat-box">
-                    <div class="stat-title">Total Trades</div>
-                    <div class="stat-value" id="totalTrades">
+                    <div class="stat-title">
+                        Total Trades
+                    </div>
+
+                    <div class="stat-value"
+                    id="totalTrades">
                         0
                     </div>
                 </div>
 
                 <div class="stat-box">
-                    <div class="stat-title">Win Trades</div>
-                    <div class="stat-value green" id="winTrades">
+                    <div class="stat-title">
+                        Win Trades
+                    </div>
+
+                    <div class="stat-value green"
+                    id="winTrades">
                         0
                     </div>
                 </div>
 
                 <div class="stat-box">
-                    <div class="stat-title">Lose Trades</div>
-                    <div class="stat-value red" id="loseTrades">
+                    <div class="stat-title">
+                        Lose Trades
+                    </div>
+
+                    <div class="stat-value red"
+                    id="loseTrades">
                         0
                     </div>
                 </div>
 
                 <div class="stat-box">
-                    <div class="stat-title">Win Ratio</div>
-                    <div class="stat-value blue" id="winRatio">
+                    <div class="stat-title">
+                        Win Ratio
+                    </div>
+
+                    <div class="stat-value blue"
+                    id="winRatio">
                         0%
                     </div>
                 </div>
 
                 <div class="stat-box">
-                    <div class="stat-title">Profit Factor</div>
+                    <div class="stat-title">
+                        Profit Factor
+                    </div>
+
                     <div class="stat-value yellow">
                         2.1
                     </div>
@@ -395,90 +431,153 @@ button:hover{
 
         </div>
 
-        <!-- RIGHT PANEL -->
+        <!-- RIGHT -->
         <div class="panel">
 
             <div class="panel-title">
                 ACCOUNT CONNECTION
             </div>
 
-            <div class="account-buttons">
+            <div class="input-group">
 
-                <button onclick="connectAccount('BINANCE')">
-                    CONNECT BINANCE
-                </button>
+                <label>Platform</label>
 
-                <button onclick="connectAccount('BYBIT')">
-                    CONNECT BYBIT
-                </button>
+                <select id="platformSelect"
+                onchange="switchPlatform()">
 
-                <button onclick="connectAccount('MT4')">
-                    CONNECT MT4
-                </button>
+                    <option value="MT5">
+                        MT5
+                    </option>
 
-                <button onclick="connectAccount('MT5')">
-                    CONNECT MT5
-                </button>
+                    <option value="MT4">
+                        MT4
+                    </option>
+
+                    <option value="BINANCE">
+                        BINANCE
+                    </option>
+
+                    <option value="BYBIT">
+                        BYBIT
+                    </option>
+
+                </select>
 
             </div>
+
+            <!-- MT LOGIN -->
+            <div id="mtBox">
+
+                <div class="input-group">
+                    <label>Broker Server</label>
+
+                    <input type="text"
+                    id="brokerServer"
+                    placeholder="Exness-MT5Real">
+                </div>
+
+                <div class="input-group">
+                    <label>Account Login</label>
+
+                    <input type="text"
+                    id="mtLogin"
+                    placeholder="12345678">
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+
+                    <input type="password"
+                    id="mtPassword"
+                    placeholder="********">
+                </div>
+
+            </div>
+
+            <!-- API -->
+            <div id="apiBox"
+            style="display:none;">
+
+                <div class="input-group">
+                    <label>API KEY</label>
+
+                    <input type="text"
+                    id="apiKey"
+                    placeholder="API KEY">
+                </div>
+
+                <div class="input-group">
+                    <label>SECRET KEY</label>
+
+                    <input type="password"
+                    id="secretKey"
+                    placeholder="SECRET KEY">
+                </div>
+
+            </div>
+
+            <button onclick="connectAccount()">
+                CONNECT ACCOUNT
+            </button>
 
             <div style="margin-top:20px;">
 
                 <div class="output">
-                    Connection Status:
-                    <span id="connectionStatus" class="red">
+                    Status:
+                    <span id="connectionStatus"
+                    class="red">
                         DISCONNECTED
                     </span>
                 </div>
 
                 <div class="output">
-                    Connected Broker:
-                    <span id="brokerName" class="yellow">
+                    Broker:
+                    <span id="brokerName"
+                    class="yellow">
                         NONE
                     </span>
                 </div>
 
                 <div class="output">
-                    Account Balance:
-                    <span id="accountBalance" class="green">
+                    Balance:
+                    <span id="accountBalance"
+                    class="green">
                         0.00 USD
                     </span>
                 </div>
 
                 <div class="output">
-                    Live Equity:
-                    <span id="accountEquity" class="blue">
+                    Equity:
+                    <span id="accountEquity"
+                    class="blue">
                         0.00 USD
                     </span>
                 </div>
 
             </div>
 
-            <div class="panel-title" style="margin-top:20px;">
+            <div class="panel-title"
+            style="margin-top:20px;">
                 LIVE CHART
             </div>
 
             <div class="chart">
 
                 <div class="arrow entry-arrow"
+                id="entryArrow"
                 style="top:120px; left:100px;">
+
                     ↑ ENTRY
+
                 </div>
 
                 <div class="arrow exit-arrow"
-                style="top:260px; left:260px;">
+                id="exitArrow"
+                style="top:260px; left:250px;">
+
                     ↓ EXIT
+
                 </div>
-
-            </div>
-
-            <div class="analytics">
-
-                ✔ Entry Arrow Detection<br>
-                ✔ Exit Arrow Detection<br>
-                ✔ Exact Price Level Mapping<br>
-                ✔ MT4/MT5 Sync Ready<br>
-                ✔ Exchange API Ready
 
             </div>
 
@@ -486,7 +585,7 @@ button:hover{
 
     </div>
 
-    <!-- SCREENSHOT AREA -->
+    <!-- IMAGE -->
     <div class="panel bottom">
 
         <div class="panel-title">
@@ -494,8 +593,13 @@ button:hover{
         </div>
 
         <label class="upload">
+
             Upload Trade Screenshot
-            <input type="file" id="imageUpload" hidden>
+
+            <input type="file"
+            id="imageUpload"
+            hidden>
+
         </label>
 
         <div class="zoom-controls">
@@ -512,7 +616,8 @@ button:hover{
 
         <div class="preview-wrapper">
 
-            <img id="preview" class="preview">
+            <img id="preview"
+            class="preview">
 
         </div>
 
@@ -520,18 +625,17 @@ button:hover{
 
             ✔ BOS Confirmed<br>
             ✔ Liquidity Sweep Detected<br>
-            ✔ HTF Alignment Strong<br>
-            ✔ Entry Confirmation Found<br>
-            ⚠ Entry Slightly Late<br>
-            ✔ NY Session Confirmation<br>
-            ✔ Market Structure Bullish
+            ✔ Entry Confirmation<br>
+            ✔ Trend Alignment<br>
+            ✔ Session Analysis<br>
+            ✔ Structure Shift
 
         </div>
 
     </div>
 
     <div class="footer">
-        INSTITUTIONAL TERMINAL v4.0
+        INSTITUTIONAL TERMINAL v5.0
     </div>
 
 </div>
@@ -540,6 +644,7 @@ button:hover{
 
 let scale = 1;
 
+// ZOOM
 function zoomIn(){
 
     scale += 0.1;
@@ -555,7 +660,9 @@ function zoomOut(){
     scale -= 0.1;
 
     if(scale < 0.2){
+
         scale = 0.2;
+
     }
 
     document.getElementById("preview")
@@ -564,6 +671,7 @@ function zoomOut(){
 
 }
 
+// CALCULATOR
 function calculate(){
 
     let entry =
@@ -615,7 +723,7 @@ function calculate(){
     sl.toFixed(2);
 
     document.getElementById("distance").innerHTML =
-    stopDistance.toFixed(0) + " pts";
+    stopDistance + " pts";
 
     document.getElementById("usdRisk").innerHTML =
     usdRisk.toFixed(2) + " USD";
@@ -641,6 +749,7 @@ function calculate(){
         .className = "red";
 
     }
+
     else if(lot > 0.02){
 
         document.getElementById("exposure")
@@ -650,6 +759,7 @@ function calculate(){
         .className = "yellow";
 
     }
+
     else{
 
         document.getElementById("exposure")
@@ -671,8 +781,40 @@ document.querySelectorAll("input, select")
 
 calculate();
 
-// ACCOUNT CONNECTION
-function connectAccount(type){
+// PLATFORM SWITCH
+function switchPlatform(){
+
+    let platform =
+    document.getElementById("platformSelect").value;
+
+    if(platform === "MT4" ||
+       platform === "MT5"){
+
+        document.getElementById("mtBox")
+        .style.display = "block";
+
+        document.getElementById("apiBox")
+        .style.display = "none";
+
+    }
+
+    else{
+
+        document.getElementById("mtBox")
+        .style.display = "none";
+
+        document.getElementById("apiBox")
+        .style.display = "block";
+
+    }
+
+}
+
+// CONNECT ACCOUNT
+function connectAccount(){
+
+    let platform =
+    document.getElementById("platformSelect").value;
 
     document.getElementById("connectionStatus")
     .innerHTML = "CONNECTED";
@@ -681,99 +823,45 @@ function connectAccount(type){
     .className = "green";
 
     document.getElementById("brokerName")
-    .innerHTML = type;
+    .innerHTML = platform;
 
-    if(type === "BINANCE"){
+    // MT5 / MT4
+    if(platform === "MT5" ||
+       platform === "MT4"){
 
-        document.getElementById("accountBalance")
-        .innerHTML = "12,450 USD";
+        let login =
+        document.getElementById("mtLogin").value;
 
-        document.getElementById("accountEquity")
-        .innerHTML = "12,920 USD";
+        let server =
+        document.getElementById("brokerServer").value;
 
-        document.getElementById("totalPnL")
-        .innerHTML = "+2,450 AED";
+        let password =
+        document.getElementById("mtPassword").value;
 
-        document.getElementById("totalTrades")
-        .innerHTML = "124";
+        if(login === "" ||
+           server === "" ||
+           password === ""){
 
-        document.getElementById("winTrades")
-        .innerHTML = "74";
+            alert("ENTER MT LOGIN DETAILS");
 
-        document.getElementById("loseTrades")
-        .innerHTML = "50";
+            return;
 
-        document.getElementById("winRatio")
-        .innerHTML = "59%";
-
-    }
-
-    else if(type === "BYBIT"){
+        }
 
         document.getElementById("accountBalance")
-        .innerHTML = "8,320 USD";
+        .innerHTML = "15,420 USD";
 
         document.getElementById("accountEquity")
-        .innerHTML = "8,700 USD";
+        .innerHTML = "15,880 USD";
 
         document.getElementById("totalPnL")
-        .innerHTML = "+1,850 AED";
+        .innerHTML = "+4,850 AED";
 
         document.getElementById("totalTrades")
-        .innerHTML = "88";
+        .innerHTML = "214";
 
         document.getElementById("winTrades")
-        .innerHTML = "49";
-
-        document.getElementById("loseTrades")
-        .innerHTML = "39";
-
-        document.getElementById("winRatio")
-        .innerHTML = "55%";
-
-    }
-
-    else if(type === "MT4"){
-
-        document.getElementById("accountBalance")
-        .innerHTML = "5,100 USD";
-
-        document.getElementById("accountEquity")
-        .innerHTML = "5,340 USD";
-
-        document.getElementById("totalPnL")
-        .innerHTML = "+940 AED";
-
-        document.getElementById("totalTrades")
-        .innerHTML = "41";
-
-        document.getElementById("winTrades")
-        .innerHTML = "23";
-
-        document.getElementById("loseTrades")
-        .innerHTML = "18";
-
-        document.getElementById("winRatio")
-        .innerHTML = "56%";
-
-    }
-
-    else if(type === "MT5"){
-
-        document.getElementById("accountBalance")
-        .innerHTML = "14,890 USD";
-
-        document.getElementById("accountEquity")
-        .innerHTML = "15,120 USD";
-
-        document.getElementById("totalPnL")
-        .innerHTML = "+4,250 AED";
-
-        document.getElementById("totalTrades")
-        .innerHTML = "210";
-
-        document.getElementById("winTrades")
-        .innerHTML = "132";
+        .innerHTML = "136";
 
         document.getElementById("loseTrades")
         .innerHTML = "78";
@@ -781,9 +869,64 @@ function connectAccount(type){
         document.getElementById("winRatio")
         .innerHTML = "63%";
 
+        document.getElementById("entryArrow")
+        .style.top = "120px";
+
+        document.getElementById("exitArrow")
+        .style.top = "240px";
+
+        alert(platform + " CONNECTED");
+
     }
 
-    alert(type + " ACCOUNT CONNECTED");
+    // EXCHANGE
+    else{
+
+        let api =
+        document.getElementById("apiKey").value;
+
+        let secret =
+        document.getElementById("secretKey").value;
+
+        if(api === "" ||
+           secret === ""){
+
+            alert("ENTER API KEYS");
+
+            return;
+
+        }
+
+        document.getElementById("accountBalance")
+        .innerHTML = "12,600 USD";
+
+        document.getElementById("accountEquity")
+        .innerHTML = "13,020 USD";
+
+        document.getElementById("totalPnL")
+        .innerHTML = "+2,940 AED";
+
+        document.getElementById("totalTrades")
+        .innerHTML = "148";
+
+        document.getElementById("winTrades")
+        .innerHTML = "82";
+
+        document.getElementById("loseTrades")
+        .innerHTML = "66";
+
+        document.getElementById("winRatio")
+        .innerHTML = "55%";
+
+        document.getElementById("entryArrow")
+        .style.top = "140px";
+
+        document.getElementById("exitArrow")
+        .style.top = "260px";
+
+        alert(platform + " API CONNECTED");
+
+    }
 
 }
 
@@ -804,7 +947,8 @@ upload.addEventListener("change", function(e){
 
         reader.onload = function(event){
 
-            preview.src = event.target.result;
+            preview.src =
+            event.target.result;
 
             preview.style.display =
             "block";
@@ -820,4 +964,4 @@ upload.addEventListener("change", function(e){
 </script>
 
 </body>
-</html>
+                </html>
