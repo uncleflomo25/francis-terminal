@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Institutional Trading Terminal</title>
+<title>Institutional Risk Calculator</title>
 
 <style>
 
@@ -20,189 +20,90 @@ color:#d7d7d7;
 padding:20px;
 }
 
-.terminal{
-border:1px solid #1f1f1f;
-background:#0b0b0b;
-padding:20px;
-border-radius:12px;
-max-width:1600px;
+.container{
+max-width:700px;
 margin:auto;
-}
-
-.topbar{
-border-bottom:1px solid #1f1f1f;
-padding-bottom:15px;
-margin-bottom:20px;
+background:#0b0b0b;
+border:1px solid #1f1f1f;
+border-radius:14px;
+padding:25px;
 }
 
 .title{
-color:#00ffd5;
 font-size:24px;
-font-weight:bold;
-}
-
-.sub{
-color:#888;
-margin-top:5px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr 1fr;
-gap:20px;
+color:#00ffd5;
+margin-bottom:20px;
 }
 
 .panel{
-border:1px solid #1f1f1f;
 background:#111;
+border:1px solid #222;
+padding:20px;
 border-radius:10px;
-padding:15px;
-}
-
-.panel-title{
-color:#00ffd5;
-margin-bottom:15px;
-font-size:18px;
-border-bottom:1px solid #222;
-padding-bottom:10px;
 }
 
 .input-group{
-margin-bottom:12px;
+margin-bottom:16px;
 }
 
 label{
 display:block;
-margin-bottom:5px;
+margin-bottom:6px;
 color:#888;
 }
 
 input,
-select,
-button{
+select{
 width:100%;
+padding:12px;
 background:#050505;
 border:1px solid #222;
+border-radius:6px;
 color:#fff;
-padding:10px;
-border-radius:5px;
 outline:none;
 }
 
+.output{
+margin-top:12px;
+padding:14px;
+background:#050505;
+border:1px solid #222;
+border-radius:8px;
+font-size:17px;
+}
+
+.green{
+color:#00ff95;
+}
+
+.red{
+color:#ff4b4b;
+}
+
+.blue{
+color:#00d0ff;
+}
+
+.yellow{
+color:#ffd000;
+}
+
 button{
+width:100%;
+padding:14px;
+background:#050505;
+border:1px solid #00ffd5;
+color:#00ffd5;
+border-radius:8px;
 cursor:pointer;
+font-size:16px;
+margin-top:10px;
 transition:0.2s;
 }
 
 button:hover{
-border-color:#00ffd5;
-}
-
-.output{
-margin-bottom:12px;
-padding:10px;
-background:#050505;
-border:1px solid #1f1f1f;
-border-radius:5px;
-}
-
-.green{color:#00ff95;}
-.red{color:#ff4b4b;}
-.yellow{color:#ffd000;}
-.blue{color:#00d0ff;}
-
-.stats-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-}
-
-.stat-box{
-background:#050505;
-border:1px solid #222;
-border-radius:10px;
-padding:15px;
-text-align:center;
-}
-
-.stat-title{
-color:#888;
-margin-bottom:5px;
-}
-
-.stat-value{
-font-size:22px;
-color:#00ffd5;
-}
-
-.chart{
-height:400px;
-background:#050505;
-border:1px solid #222;
-border-radius:10px;
-position:relative;
-overflow:hidden;
-margin-top:20px;
-}
-
-.arrow{
-position:absolute;
-font-size:22px;
-font-weight:bold;
-}
-
-.entry-arrow{
-color:#00ff95;
-top:120px;
-left:100px;
-}
-
-.exit-arrow{
-color:#ff4b4b;
-top:260px;
-left:250px;
-}
-
-.bottom{
-margin-top:20px;
-}
-
-.upload{
-border:2px dashed #333;
-padding:25px;
-text-align:center;
-border-radius:10px;
-cursor:pointer;
-display:block;
-}
-
-.preview-wrapper{
-margin-top:20px;
-overflow:auto;
-border:1px solid #222;
-border-radius:10px;
-padding:10px;
-background:#050505;
-text-align:center;
-min-height:300px;
-}
-
-.preview{
-max-width:100%;
-display:none;
-transform-origin:center;
-transition:0.2s;
-}
-
-.zoom-controls{
-display:flex;
-gap:10px;
-margin-top:15px;
-}
-
-.analytics{
-margin-top:15px;
-line-height:1.8;
+background:#00ffd5;
+color:#000;
 }
 
 .footer{
@@ -211,332 +112,251 @@ text-align:center;
 color:#555;
 }
 
-@media(max-width:1000px){
-
-.grid{
-grid-template-columns:1fr;
-}
-
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="terminal">
+<div class="container">
 
-<div class="topbar">
 <div class="title">
-INSTITUTIONAL TRADING TERMINAL
+INSTITUTIONAL LOT SIZE CALCULATOR
 </div>
-
-<div class="sub">
-MT5 • MT4 • UAE BROKERS • CRYPTO EXCHANGES
-</div>
-</div>
-
-<div class="grid">
-
-<!-- LEFT PANEL -->
 
 <div class="panel">
 
-<div class="panel-title">
-TRADE EXECUTION
-</div>
-
 <div class="input-group">
 <label>Trading Pair</label>
+
 <select id="pair">
-<option>BTCUSDT</option>
-<option>ETHUSDT</option>
-<option>SOLUSDT</option>
-<option>XAUUSD</option>
-<option>NAS100</option>
-<option>EURUSD</option>
-<option>GBPUSD</option>
+<option value="BTCUSDT">BTCUSDT</option>
+<option value="ETHUSDT">ETHUSDT</option>
+<option value="XAUUSD">XAUUSD</option>
+<option value="NAS100">NAS100</option>
+<option value="EURUSD">EURUSD</option>
+<option value="GBPUSD">GBPUSD</option>
 </select>
 </div>
 
 <div class="input-group">
 <label>Trade Type</label>
+
 <select id="tradeType">
-<option>BUY</option>
-<option selected>SELL</option>
+<option value="BUY">BUY</option>
+<option value="SELL">SELL</option>
 </select>
 </div>
 
 <div class="input-group">
 <label>Entry Price</label>
-<input type="number" id="entry" value="79090.63">
+
+<input type="number"
+id="entry"
+value="79090">
 </div>
 
 <div class="input-group">
-<label>Take Profit</label>
-<input type="number" id="tp" value="76090.63">
+<label>Risk Per Trade (AED)</label>
+
+<input type="number"
+id="risk"
+value="50">
 </div>
 
 <div class="input-group">
-<label>Money Risk (AED)</label>
-<input type="number" id="aedRisk" value="50">
+<label>Stop Loss Distance (Points)</label>
+
+<input type="number"
+id="slPoints"
+value="1000">
 </div>
 
 <div class="input-group">
-<label>Stop Distance (Points)</label>
-<input type="number" id="stopPoints" value="1000">
+<label>Risk Reward Ratio</label>
+
+<select id="rrRatio">
+<option value="1">1 : 1</option>
+<option value="2">1 : 2</option>
+<option value="3" selected>1 : 3</option>
+<option value="4">1 : 4</option>
+<option value="5">1 : 5</option>
+</select>
 </div>
 
 <div class="input-group">
 <label>USD/AED</label>
-<input type="number" id="usdAed" value="3.67">
+
+<input type="number"
+id="usdAed"
+value="3.67">
 </div>
 
-<div class="input-group">
-<label>Auto Stop Loss</label>
-<input type="number" id="sl" readonly>
-</div>
+<button onclick="calculateTrade()">
+CALCULATE TRADE
+</button>
 
-<div class="input-group">
-<label>Recommended Lot Size</label>
-<input type="text" id="lotInput" readonly>
-</div>
-
-</div>
-
-<!-- CENTER PANEL -->
-
-<div class="panel">
-
-<div class="panel-title">
-RISK ANALYTICS
+<div class="output">
+Lot Size:
+<span id="lotSize"
+class="green">
+0.00
+</span>
 </div>
 
 <div class="output">
-Stop Distance:
-<span id="distance" class="yellow">0</span>
+Auto Stop Loss:
+<span id="slPrice"
+class="red">
+0.00
+</span>
+</div>
+
+<div class="output">
+Auto Take Profit:
+<span id="tpPrice"
+class="blue">
+0.00
+</span>
 </div>
 
 <div class="output">
 USD Risk:
-<span id="usdRisk" class="green">0</span>
+<span id="usdRisk"
+class="yellow">
+0.00
+</span>
 </div>
 
 <div class="output">
-AED Risk:
-<span id="aedRiskOut" class="green">0</span>
+Break-even Win Rate:
+<span id="breakeven"
+class="green">
+0%
+</span>
 </div>
 
 <div class="output">
-RR Ratio:
-<span id="rr" class="blue">0</span>
-</div>
-
-<div class="output">
-Break-even Rate:
-<span id="winrate" class="yellow">0</span>
-</div>
-
-<div class="output">
-Exposure:
-<span id="exposure" class="green">LOW</span>
-</div>
-
-</div>
-
-<!-- RIGHT PANEL -->
-
-<div class="panel">
-
-<div class="panel-title">
-LIVE CHART
-</div>
-
-<div class="chart">
-
-<div class="arrow entry-arrow">
-↑ ENTRY
-</div>
-
-<div class="arrow exit-arrow">
-↓ EXIT
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-<!-- SCREENSHOT -->
-
-<div class="panel bottom">
-
-<div class="panel-title">
-TRADE SCREENSHOT ANALYTICS
-</div>
-
-<label class="upload">
-
-UPLOAD TRADE SCREENSHOT
-
-<input type="file" id="imageUpload" hidden>
-
-</label>
-
-<div class="zoom-controls">
-
-<button onclick="zoomIn()">
-ZOOM IN
-</button>
-
-<button onclick="zoomOut()">
-ZOOM OUT
-</button>
-
-</div>
-
-<div class="preview-wrapper">
-
-<img id="preview" class="preview">
-
-</div>
-
-<div class="analytics">
-
-✔ BOS Confirmed<br>
-✔ Liquidity Sweep Detected<br>
-✔ Entry Confirmation<br>
-✔ Trend Alignment<br>
-✔ Session Analysis<br>
-✔ Structure Shift
-
+Risk Exposure:
+<span id="exposure"
+class="green">
+LOW
+</span>
 </div>
 
 </div>
 
 <div class="footer">
-INSTITUTIONAL TERMINAL v6.0
+INSTITUTIONAL TERMINAL v7.0
 </div>
 
 </div>
 
 <script>
 
-let scale = 1;
-
-/* =========================
-ZOOM
-========================= */
-
-function zoomIn(){
-
-scale += 0.1;
-
-document.getElementById("preview")
-.style.transform = `scale(${scale})`;
-
-}
-
-function zoomOut(){
-
-scale -= 0.1;
-
-if(scale < 0.2){
-scale = 0.2;
-}
-
-document.getElementById("preview")
-.style.transform = `scale(${scale})`;
-
-}
-
-/* =========================
-CALCULATOR
-========================= */
-
-function calculate(){
+function calculateTrade(){
 
 let entry =
 parseFloat(document.getElementById("entry").value) || 0;
 
-let tp =
-parseFloat(document.getElementById("tp").value) || 0;
+let riskAed =
+parseFloat(document.getElementById("risk").value) || 0;
 
-let aedRisk =
-parseFloat(document.getElementById("aedRisk").value) || 0;
+let slPoints =
+parseFloat(document.getElementById("slPoints").value) || 1;
+
+let rr =
+parseFloat(document.getElementById("rrRatio").value) || 1;
 
 let usdAed =
-parseFloat(document.getElementById("usdAed").value) || 1;
-
-let stopDistance =
-parseFloat(document.getElementById("stopPoints").value) || 1;
+parseFloat(document.getElementById("usdAed").value) || 3.67;
 
 let tradeType =
 document.getElementById("tradeType").value;
 
+// AED TO USD
+
 let usdRisk =
-aedRisk / usdAed;
+riskAed / usdAed;
 
-let lot =
-usdRisk / stopDistance;
+// LOT SIZE
 
-let sl;
+let lotSize =
+usdRisk / slPoints;
 
-if(tradeType === "SELL"){
+// STOP LOSS
 
-sl = entry + stopDistance;
+let stopLoss;
+
+if(tradeType === "BUY"){
+
+stopLoss =
+entry - slPoints;
 
 }else{
 
-sl = entry - stopDistance;
+stopLoss =
+entry + slPoints;
 
 }
 
-let reward =
-Math.abs(entry - tp);
+// TAKE PROFIT
 
-let rr =
-reward / stopDistance;
+let tpDistance =
+slPoints * rr;
 
-if(!isFinite(rr)){
-rr = 0;
+let takeProfit;
+
+if(tradeType === "BUY"){
+
+takeProfit =
+entry + tpDistance;
+
+}else{
+
+takeProfit =
+entry - tpDistance;
+
 }
+
+// BREAKEVEN %
 
 let breakeven =
 100 / (1 + rr);
 
-document.getElementById("sl").value =
-sl.toFixed(2);
+// OUTPUTS
 
-document.getElementById("distance").innerHTML =
-stopDistance + " pts";
+document.getElementById("lotSize")
+.innerHTML =
+lotSize.toFixed(3);
 
-document.getElementById("usdRisk").innerHTML =
+document.getElementById("slPrice")
+.innerHTML =
+stopLoss.toFixed(2);
+
+document.getElementById("tpPrice")
+.innerHTML =
+takeProfit.toFixed(2);
+
+document.getElementById("usdRisk")
+.innerHTML =
 usdRisk.toFixed(2) + " USD";
 
-document.getElementById("aedRiskOut").innerHTML =
-aedRisk.toFixed(2) + " AED";
-
-document.getElementById("rr").innerHTML =
-"1 : " + rr.toFixed(2);
-
-document.getElementById("winrate").innerHTML =
+document.getElementById("breakeven")
+.innerHTML =
 breakeven.toFixed(1) + "%";
 
-document.getElementById("lotInput").value =
-lot.toFixed(3);
+// EXPOSURE
 
-const exposure =
+let exposure =
 document.getElementById("exposure");
 
-if(lot > 0.05){
+if(lotSize > 0.05){
 
 exposure.innerHTML = "HIGH";
 exposure.className = "red";
 
 }
-else if(lot > 0.02){
+else if(lotSize > 0.02){
 
 exposure.innerHTML = "MEDIUM";
 exposure.className = "yellow";
@@ -551,52 +371,16 @@ exposure.className = "green";
 
 }
 
-/* =========================
-LIVE INPUT UPDATE
-========================= */
+// LIVE AUTO UPDATE
 
 document.querySelectorAll("input, select")
 .forEach(el=>{
 
-el.addEventListener("input", calculate);
+el.addEventListener("input", calculateTrade);
 
 });
 
-calculate();
-
-/* =========================
-IMAGE UPLOAD
-========================= */
-
-const upload =
-document.getElementById("imageUpload");
-
-const preview =
-document.getElementById("preview");
-
-upload.addEventListener("change", function(e){
-
-const file = e.target.files[0];
-
-if(file){
-
-const reader = new FileReader();
-
-reader.onload = function(event){
-
-preview.src =
-event.target.result;
-
-preview.style.display =
-"block";
-
-}
-
-reader.readAsDataURL(file);
-
-}
-
-});
+calculateTrade();
 
 </script>
 
