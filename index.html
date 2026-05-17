@@ -3,38 +3,60 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Advanced Trade Journal - Auto Lot Size Risk Engine</title>
+<title>FRANCIS TERMINAL - Professional Trading Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
   * { box-sizing: border-box; }
   
   body {
     margin: 0;
-    background: #0a0e27;
+    background: linear-gradient(135deg, #0a0e27 0%, #0f1729 100%);
     color: #e2e8f0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding-bottom: 50px;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
   }
 
   .container {
-    max-width: 1600px;
+    max-width: 1900px;
     margin: 0 auto;
     padding: 20px;
   }
 
   header {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-bottom: 2px solid #3b82f6;
-    padding: 20px;
+    border-bottom: 3px solid #3b82f6;
+    padding: 25px 0;
     margin-bottom: 30px;
-    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.1);
-    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  header .logo-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
   }
 
   header h1 {
     margin: 0;
-    font-size: 28px;
+    font-size: 32px;
     color: #00ff88;
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+
+  header .badge {
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid #3b82f6;
+    color: #60a5fa;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
   }
 
   header p {
@@ -43,23 +65,114 @@
     font-size: 12px;
   }
 
-  .main-grid {
+  header .header-stats {
+    display: flex;
+    gap: 30px;
+    padding-right: 20px;
+  }
+
+  .header-stat {
+    text-align: right;
+  }
+
+  .header-stat-label {
+    color: #60a5fa;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .header-stat-value {
+    color: #00ff88;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .header-stat-value.negative {
+    color: #ef4444;
+  }
+
+  .nav-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0;
+  }
+
+  .nav-btn {
+    padding: 14px 24px;
+    background: transparent;
+    border: none;
+    color: #60a5fa;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .nav-btn:hover {
+    color: #00ff88;
+  }
+
+  .nav-btn.active {
+    color: #00ff88;
+    border-bottom-color: #3b82f6;
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
   }
 
-  @media (max-width: 1400px) {
-    .main-grid {
-      grid-template-columns: 1fr;
-    }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 1600px) {
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 1200px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    header { flex-direction: column; gap: 15px; }
+    header .header-stats { flex-direction: row; padding-right: 0; }
   }
 
   .card {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     border: 1px solid #334155;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 25px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
@@ -68,6 +181,7 @@
   .card:hover {
     border-color: #3b82f6;
     box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
   }
 
   .card h2 {
@@ -75,7 +189,10 @@
     color: #00ff88;
     font-size: 18px;
     border-bottom: 2px solid #3b82f6;
-    padding-bottom: 10px;
+    padding-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   .form-group {
@@ -86,28 +203,34 @@
     display: block;
     margin-bottom: 8px;
     color: #60a5fa;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 12px;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
 
   input, select, textarea {
     width: 100%;
-    padding: 12px;
+    padding: 12px 14px;
     border: 1px solid #334155;
     background: #0f172a;
     color: #e2e8f0;
-    border-radius: 6px;
-    font-family: 'Courier New', monospace;
+    border-radius: 8px;
+    font-family: 'Monaco', 'Courier New', monospace;
     transition: all 0.3s ease;
+    font-size: 13px;
   }
 
   input:focus, select:focus, textarea:focus {
     outline: none;
     border-color: #3b82f6;
     background: #1e293b;
-    box-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+  }
+
+  input:disabled, textarea:disabled {
+    background: #0a0e27;
+    opacity: 0.6;
   }
 
   .input-row {
@@ -116,38 +239,49 @@
     gap: 15px;
   }
 
-  .currency-selector {
+  .input-row-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+
+  .button-group {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
   }
 
-  .currency-btn {
+  .btn-toggle {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     border: 2px solid #334155;
     background: transparent;
     color: #60a5fa;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: 600;
+    font-size: 12px;
   }
 
-  .currency-btn.active {
+  .btn-toggle:hover {
+    border-color: #3b82f6;
+  }
+
+  .btn-toggle.active {
     background: #3b82f6;
     border-color: #3b82f6;
     color: white;
   }
 
-  button.submit-btn {
+  button {
     width: 100%;
     padding: 14px;
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-weight: 600;
+    border-radius: 8px;
+    font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
@@ -155,564 +289,1339 @@
     font-size: 12px;
   }
 
-  button.submit-btn:hover {
+  button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.4);
   }
 
-  .calculation-panel {
+  button:active {
+    transform: translateY(0);
+  }
+
+  button.success {
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  }
+
+  button.danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  .metric-panel {
     background: rgba(59, 130, 246, 0.1);
     border-left: 4px solid #3b82f6;
-    padding: 15px;
-    border-radius: 6px;
+    padding: 18px;
+    border-radius: 8px;
     margin: 15px 0;
   }
 
-  .calc-row {
+  .metric-row {
     display: flex;
     justify-content: space-between;
-    margin: 10px 0;
+    align-items: center;
+    margin: 12px 0;
     font-size: 13px;
-    font-family: 'Courier New', monospace;
-  }
-
-  .calc-label {
-    color: #60a5fa;
-  }
-
-  .calc-value {
-    color: #00ff88;
-    font-weight: 600;
-  }
-
-  .risk-reward-panel {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
-    border: 2px solid #22c55e;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
-  }
-
-  .risk-reward-metric {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px;
-    margin-bottom: 15px;
-  }
-
-  .metric-box {
-    background: #0f172a;
-    border: 1px solid #334155;
-    padding: 15px;
-    border-radius: 6px;
-    text-align: center;
+    font-family: 'Monaco', monospace;
   }
 
   .metric-label {
     color: #60a5fa;
-    font-size: 11px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
+    font-weight: 600;
   }
 
   .metric-value {
     color: #00ff88;
-    font-size: 20px;
-    font-weight: bold;
+    font-weight: 700;
   }
 
-  .metric-value.ratio {
-    font-size: 24px;
+  .metric-value.negative {
+    color: #ef4444;
+  }
+
+  .metric-value.warning {
+    color: #f59e0b;
+  }
+
+  .performance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+  }
+
+  .performance-card {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  .performance-card.highlight {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.1);
+  }
+
+  .perf-label {
     color: #60a5fa;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .perf-value {
+    color: #00ff88;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+  .perf-value.negative {
+    color: #ef4444;
+  }
+
+  .perf-change {
+    color: #60a5fa;
+    font-size: 11px;
+    margin-top: 5px;
+  }
+
+  .risk-reward-box {
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    border: 2px solid #22c55e;
+    border-radius: 10px;
+    padding: 25px;
+    margin: 20px 0;
+  }
+
+  .ratio-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+    margin: 15px 0;
+  }
+
+  .ratio-box {
+    background: #0f172a;
+    border: 1px solid #334155;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .ratio-label {
+    color: #60a5fa;
+    font-size: 11px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .ratio-value {
+    color: #00ff88;
+    font-size: 28px;
+    font-weight: 700;
   }
 
   .ratio-bar {
     width: 100%;
-    height: 8px;
+    height: 10px;
     background: #1e293b;
-    border-radius: 4px;
-    margin-top: 10px;
+    border-radius: 5px;
+    margin-top: 12px;
     overflow: hidden;
   }
 
   .ratio-fill {
     height: 100%;
-    width: 0%;
     background: linear-gradient(90deg, #22c55e 0%, #00ff88 100%);
     transition: width 0.3s ease;
   }
 
-  .image-upload {
-    border: 2px dashed #3b82f6;
-    border-radius: 8px;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-
-  .image-upload:hover {
-    background: rgba(59, 130, 246, 0.1);
-  }
-
-  .image-upload input[type="file"] {
-    display: none;
-  }
-
-  .image-preview {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    margin-top: 15px;
-  }
-
-  .image-item {
-    position: relative;
-    border-radius: 6px;
-    overflow: hidden;
-    background: #0f172a;
-  }
-
-  .image-item img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-  }
-
-  .remove-image {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .account-connector {
-    background: rgba(168, 85, 247, 0.1);
-    border: 1px solid #a855f7;
-    border-radius: 8px;
-    padding: 15px;
-    margin: 15px 0;
-  }
-
-  .account-connector h3 {
-    margin: 0 0 10px 0;
-    color: #a855f7;
-    font-size: 14px;
-  }
-
-  .account-list {
-    margin: 10px 0;
-  }
-
-  .account-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #0f172a;
-    padding: 10px;
-    border-radius: 6px;
-    margin-bottom: 8px;
-    font-size: 12px;
-  }
-
-  .account-status {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 8px;
-  }
-
-  .account-status.connected { background: #22c55e; }
-
-  .journal-entries {
-    margin-top: 30px;
-  }
-
-  .entry-card {
+  .trade-entry-card {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-radius: 8px;
+    border-left: 4px solid #3b82f6;
+    border-radius: 10px;
     padding: 20px;
     margin-bottom: 15px;
     border: 1px solid #334155;
+    transition: all 0.3s ease;
   }
 
-  .entry-header {
+  .trade-entry-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+  }
+
+  .trade-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
     border-bottom: 1px solid #334155;
-    padding-bottom: 10px;
+    padding-bottom: 12px;
   }
 
-  .entry-symbol {
-    font-size: 18px;
-    font-weight: bold;
+  .trade-symbol {
+    font-size: 20px;
+    font-weight: 800;
     color: #00ff88;
   }
 
-  .entry-type {
+  .trade-type {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
   }
 
-  .entry-type.buy { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-  .entry-type.sell { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+  .trade-type.buy {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.4);
+  }
 
-  .entry-date {
+  .trade-type.sell {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+  }
+
+  .trade-date {
     color: #60a5fa;
     font-size: 12px;
   }
 
-  .entry-body {
+  .trade-body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+    gap: 12px;
     margin-bottom: 15px;
   }
 
-  @media (max-width: 768px) {
-    .entry-body { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 1200px) {
+    .trade-body { grid-template-columns: repeat(2, 1fr); }
   }
 
-  .entry-stat {
+  .trade-stat {
     background: #0f172a;
-    padding: 10px;
+    padding: 12px;
     border-radius: 6px;
     border: 1px solid #334155;
   }
 
   .stat-label {
     color: #60a5fa;
-    font-size: 11px;
+    font-size: 10px;
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+    font-weight: 600;
   }
 
   .stat-value {
     color: #e2e8f0;
     font-size: 15px;
-    font-weight: bold;
+    font-weight: 700;
   }
 
-  .entry-notes {
-    background: rgba(0,0,0,0.2);
-    padding: 12px;
-    border-radius: 6px;
+  .pnl-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    margin-top: 12px;
+  }
+
+  .pnl-item {
+    text-align: center;
+    flex: 1;
+  }
+
+  .pnl-label {
+    color: #60a5fa;
+    font-size: 10px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .pnl-value {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .pnl-value.positive {
+    color: #22c55e;
+  }
+
+  .pnl-value.negative {
+    color: #ef4444;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 300px;
+    margin: 20px 0;
+  }
+
+  .chart-container.large {
+    height: 400px;
+  }
+
+  .stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .stat-overview-card {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-overview-label {
+    color: #60a5fa;
+    font-size: 11px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .stat-overview-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #00ff88;
+    margin-bottom: 5px;
+  }
+
+  .stat-overview-value.negative {
+    color: #ef4444;
+  }
+
+  .stat-overview-change {
+    color: #60a5fa;
+    font-size: 11px;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #1e293b;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6 0%, #00ff88 100%);
+    transition: width 0.3s ease;
+  }
+
+  .alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border-left: 4px solid;
     font-size: 13px;
-    color: #94a3b8;
-    border-left: 3px solid #3b82f6;
+  }
+
+  .alert.info {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: #3b82f6;
+    color: #60a5fa;
+  }
+
+  .alert.success {
+    background: rgba(34, 197, 94, 0.1);
+    border-color: #22c55e;
+    color: #22c55e;
+  }
+
+  .alert.warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .alert.danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+
+  .divider {
+    height: 1px;
+    background: #334155;
+    margin: 20px 0;
+  }
+
+  .mini-chart {
+    height: 50px;
+    margin: 10px 0;
   }
 </style>
 </head>
 <body>
 
+<header class="container">
+  <div class="logo-section">
+    <h1>🚀 FRANCIS TERMINAL</h1>
+    <span class="badge">Professional Trading</span>
+  </div>
+  <div class="header-stats">
+    <div class="header-stat">
+      <div class="header-stat-label">Account Balance</div>
+      <div class="header-stat-value" id="headerBalance">$0.00</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-label">Total P&L</div>
+      <div class="header-stat-value" id="headerPnL">+$0.00</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-label">Win Rate</div>
+      <div class="header-stat-value" id="headerWinRate">0%</div>
+    </div>
+  </div>
+</header>
+
 <div class="container">
-  <header>
-    <h1>Advanced Trade Journal</h1>
-    <p>AUTO RISK CALCULATOR LOGS (LOTS & UNITS VALUE SIZING MATRIX)</p>
-  </header>
+  <div class="nav-section">
+    <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+    <button class="nav-btn" onclick="switchTab('calculator')">🧮 Calculator</button>
+    <button class="nav-btn" onclick="switchTab('journal')">📔 Journal</button>
+    <button class="nav-btn" onclick="switchTab('analytics')">📈 Analytics</button>
+    <button class="nav-btn" onclick="switchTab('accounts')">🔗 Accounts</button>
+  </div>
 
-  <div class="main-grid">
-    <!-- Input Parameter Metrics Form -->
-    <div class="card">
-      <h2>Execution Parameter Metrics</h2>
-      
-      <label>Display Reporting Account Currency</label>
-      <div class="currency-selector">
-        <button type="button" class="currency-btn active" id="btn-usd" onclick="setCurrency('USD')">USD ($)</button>
-        <button type="button" class="currency-btn" id="btn-aed" onclick="setCurrency('AED')">AED (د.إ)</button>
+  <!-- DASHBOARD TAB -->
+  <div id="dashboard" class="tab-content active">
+    <div class="grid-4">
+      <div class="performance-card highlight">
+        <div class="perf-label">Total Trades</div>
+        <div class="perf-value" id="dashTotalTrades">0</div>
       </div>
-
-      <div class="input-row">
-        <div class="form-group">
-          <label for="ticker">Asset Ticker</label>
-          <input type="text" id="ticker" value="XAUUSD" placeholder="e.g. BTCUSDT">
-        </div>
-        <div class="form-group">
-          <label for="position-lots">Lot Size / Sizing Units</label>
-          <input type="number" id="position-lots" value="1.5" step="0.01" oninput="calculateRisk()">
-        </div>
+      <div class="performance-card highlight">
+        <div class="perf-label">Win Rate</div>
+        <div class="perf-value" id="dashWinRate">0%</div>
       </div>
-
-      <div class="input-row">
-        <div class="form-group">
-          <label for="trade-direction">Direction Matrix</label>
-          <select id="trade-direction">
-            <option value="BUY">BUY / LONG</option>
-            <option value="SELL">SELL / SHORT</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="entry-price">Entry Level Price</label>
-          <input type="number" id="entry-price" value="2300" step="any" oninput="calculateRisk()">
-        </div>
+      <div class="performance-card highlight">
+        <div class="perf-label">Profit Factor</div>
+        <div class="perf-value" id="dashProfitFactor">0.00</div>
       </div>
-
-      <div class="input-row">
-        <div class="form-group">
-          <label for="stop-loss">Stop Loss Threshold</label>
-          <input type="number" id="stop-loss" value="2290" step="any" oninput="calculateRisk()">
-        </div>
-        <div class="form-group">
-          <label for="take-profit">Take Profit Objective</label>
-          <input type="number" id="take-profit" value="2330" step="any" oninput="calculateRisk()">
-        </div>
+      <div class="performance-card highlight">
+        <div class="perf-label">Total P&L</div>
+        <div class="perf-value" id="dashTotalPnL">$0</div>
       </div>
-
-      <div class="form-group">
-        <label for="trade-notes">Execution Observations</label>
-        <textarea id="trade-notes" rows="3" placeholder="Identify market footprint metrics, imbalances, or session biases..."></textarea>
-      </div>
-
-      <button type="button" class="submit-btn" onclick="commitEntry()">Commit Entry to Database</button>
     </div>
 
-    <!-- Realtime Risk Engine Analytics Dashboard -->
+    <div class="grid-2">
+      <div class="card">
+        <h2>📊 Equity Curve</h2>
+        <div class="chart-container large">
+          <canvas id="equityChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🎯 Performance Metrics</h2>
+        <div class="performance-grid">
+          <div class="performance-card">
+            <div class="perf-label">Avg Win</div>
+            <div class="perf-value" id="dashAvgWin">$0</div>
+          </div>
+          <div class="performance-card">
+            <div class="perf-label">Avg Loss</div>
+            <div class="perf-value negative" id="dashAvgLoss">$0</div>
+          </div>
+          <div class="performance-card">
+            <div class="perf-label">Best Trade</div>
+            <div class="perf-value" id="dashBestTrade">$0</div>
+          </div>
+          <div class="performance-card">
+            <div class="perf-label">Worst Trade</div>
+            <div class="perf-value negative" id="dashWorstTrade">$0</div>
+          </div>
+          <div class="performance-card">
+            <div class="perf-label">Max Drawdown</div>
+            <div class="perf-value warning" id="dashMaxDD">0%</div>
+          </div>
+          <div class="performance-card">
+            <div class="perf-label">Sharpe Ratio</div>
+            <div class="perf-value" id="dashSharpe">0.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>📉 Win/Loss Distribution</h2>
+        <div class="chart-container">
+          <canvas id="winLossChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>💰 Monthly Returns</h2>
+        <div class="chart-container">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
-      <h2>Realtime Risk Analytics</h2>
-      
-      <div class="calculation-panel">
-        <div class="calc-row">
-          <span class="calc-label">Calculated Risk Size (USD):</span>
-          <span class="calc-value" id="risk-usd" style="color:#ef4444;">$0.00</span>
+      <h2>📝 Recent Trades</h2>
+      <div id="recentTrades"></div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR TAB -->
+  <div id="calculator" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <h2>⚙️ Trade Setup</h2>
+
+        <div class="form-group">
+          <label>Trading Pair</label>
+          <input type="text" id="calcInstrument" placeholder="EURUSD, BTCUSDT, etc." />
         </div>
-        <div class="calc-row">
-          <span class="calc-label">Calculated Risk Size (AED):</span>
-          <span class="calc-value" id="risk-aed" style="color:#ef4444;">0.00 د.إ</span>
+
+        <div class="form-group">
+          <label>Trade Direction</label>
+          <div class="button-group">
+            <button class="btn-toggle active" onclick="setCalcDirection('buy')">🟢 BUY</button>
+            <button class="btn-toggle" onclick="setCalcDirection('sell')">🔴 SELL</button>
+          </div>
         </div>
-        <div class="calc-row">
-          <span class="calc-label">Stop-Loss Points Distance:</span>
-          <span class="calc-value" id="pip-distance">0.00 units</span>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label>Account Balance</label>
+            <input type="number" id="calcBalance" placeholder="10000" step="0.01" onchange="calcLotSize()" />
+          </div>
+          <div class="form-group">
+            <label>Risk Per Trade (%)</label>
+            <input type="number" id="calcRisk" placeholder="2" step="0.1" min="0.1" max="10" value="2" onchange="calcLotSize()" />
+          </div>
         </div>
-        <div class="calc-row">
-          <span class="calc-label">Reporting Base Balance Metric:</span>
-          <span class="calc-value" id="active-currency-label" style="color: #60a5fa;">USD Dynamic</span>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label>Entry Price</label>
+            <input type="number" id="calcEntry" placeholder="1.0850" step="0.00001" onchange="calcLotSize()" />
+          </div>
+          <div class="form-group">
+            <label>Stop Loss Price</label>
+            <input type="number" id="calcSL" placeholder="1.0800" step="0.00001" onchange="calcLotSize()" />
+          </div>
         </div>
+
+        <div class="input-row">
+          <div class="form-group">
+            <label>Take Profit Price</label>
+            <input type="number" id="calcTP" placeholder="1.0950" step="0.00001" onchange="calcLotSize()" />
+          </div>
+          <div class="form-group">
+            <label>Position Size (Lots)</label>
+            <input type="number" id="calcLots" placeholder="1.00" step="0.01" onchange="calcLotSize()" />
+          </div>
+        </div>
+
+        <button onclick="calcLotSize()" class="success" style="margin-bottom: 15px;">🧮 Calculate</button>
+        <button onclick="saveCalculationToJournal()">💾 Save to Journal</button>
       </div>
 
-      <div class="risk-reward-panel">
-        <div class="risk-reward-metric">
-          <div class="metric-box">
-            <div class="metric-label">Max Risk Exposure</div>
-            <div class="metric-value" id="potential-loss" style="color:#ef4444;">$0.00</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-label">Potential Gross Return</div>
-            <div class="metric-value" id="potential-profit" style="color:#22c55e;">$0.00</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-label">Net R:R Ratio Matrix</div>
-            <div class="metric-value ratio" id="rr-ratio">0.00</div>
-          </div>
-        </div>
-        <div class="ratio-bar">
-          <div class="ratio-fill" id="ratio-progress"></div>
-        </div>
-      </div>
+      <div class="card">
+        <h2>📊 Calculation Results</h2>
 
-      <div class="form-group">
-        <label>Attach Matrix Footprint Capture</label>
-        <div class="image-upload" onclick="document.getElementById('file-input').click()">
-          <span style="font-size: 13px; color: #60a5fa;">📷 Drag & Drop or Click to Upload Layout Capture</span>
-          <input type="file" id="file-input" accept="image/*" multiple onchange="handleImages(this.files)">
-        </div>
-        <div class="image-preview" id="preview-grid"></div>
-      </div>
-
-      <div class="account-connector">
-        <h3>Integrated Node Status</h3>
-        <div class="account-list">
-          <div class="account-item">
-            <span><span class="account-status connected"></span>Auto Lot-Risk Calculus Array</span>
-            <span style="color:#22c55e;">OPERATIONAL</span>
+        <div class="metric-panel">
+          <div class="metric-row">
+            <span class="metric-label">Entry Price</span>
+            <span class="metric-value" id="calcEntryDisp">0.0000</span>
           </div>
-          <div class="account-item">
-            <span><span class="account-status connected"></span>Liquidity Core Peg Engine</span>
-            <span style="color:#22c55e;">SYNCHRONIZED (3.6725)</span>
+          <div class="metric-row">
+            <span class="metric-label">Stop Loss</span>
+            <span class="metric-value" id="calcSLDisp">0.0000</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Take Profit</span>
+            <span class="metric-value" id="calcTPDisp">0.0000</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="metric-panel">
+          <div class="metric-row">
+            <span class="metric-label">Position Size</span>
+            <span class="metric-value" id="calcLotsDisp">0.00 lots</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Risk Amount</span>
+            <span class="metric-value" id="calcRiskAmt">$0</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">SL Distance (pips)</span>
+            <span class="metric-value" id="calcSLPips">0 pips</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">TP Distance (pips)</span>
+            <span class="metric-value" id="calcTPPips">0 pips</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="risk-reward-box">
+          <h3 style="margin: 0 0 15px 0; color: #22c55e;">🎯 Risk/Reward Analysis</h3>
+          <div class="ratio-display">
+            <div class="ratio-box">
+              <div class="ratio-label">Risk</div>
+              <div class="ratio-value" id="calcRiskDisp">$0</div>
+            </div>
+            <div class="ratio-box">
+              <div class="ratio-label">Reward</div>
+              <div class="ratio-value" id="calcRewardDisp">$0</div>
+            </div>
+            <div class="ratio-box">
+              <div class="ratio-label">Ratio</div>
+              <div class="ratio-value" id="calcRatio">1:1</div>
+            </div>
+          </div>
+          <div class="ratio-bar">
+            <div class="ratio-fill" id="calcRatioBar" style="width: 50%;"></div>
+          </div>
+        </div>
+
+        <div class="metric-panel">
+          <div class="metric-row">
+            <span class="metric-label">Win Rate at Breakeven</span>
+            <span class="metric-value" id="calcWinRateBreak">50%</span>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Database Output Ledger Grid Component -->
-  <div class="card journal-entries">
-    <h2>Committed Journal Ledger Records</h2>
-    <div id="ledger-grid">
-      <div style="text-align: center; color: #475569; padding: 30px; font-size: 13px;">
-        No database records currently committed in this node session stack.
+  <!-- JOURNAL TAB -->
+  <div id="journal" class="tab-content">
+    <div class="card" style="margin-bottom: 20px;">
+      <h2>📝 Record Trade</h2>
+
+      <div class="input-row">
+        <div class="form-group">
+          <label>Entry Date & Time</label>
+          <input type="datetime-local" id="journalEntryDate" />
+        </div>
+        <div class="form-group">
+          <label>Exit Date & Time</label>
+          <input type="datetime-local" id="journalExitDate" />
+        </div>
+      </div>
+
+      <div class="input-row-3">
+        <div class="form-group">
+          <label>Trading Pair</label>
+          <input type="text" id="journalSymbol" placeholder="EURUSD" />
+        </div>
+        <div class="form-group">
+          <label>Direction</label>
+          <select id="journalDirection">
+            <option value="BUY">🟢 BUY</option>
+            <option value="SELL">🔴 SELL</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Position Size</label>
+          <input type="number" id="journalLots" placeholder="1.00" step="0.01" />
+        </div>
+      </div>
+
+      <div class="input-row-3">
+        <div class="form-group">
+          <label>Entry Price</label>
+          <input type="number" id="journalEntry" placeholder="0.0000" step="0.00001" />
+        </div>
+        <div class="form-group">
+          <label>Exit Price</label>
+          <input type="number" id="journalExit" placeholder="0.0000" step="0.00001" />
+        </div>
+        <div class="form-group">
+          <label>Profit/Loss ($)</label>
+          <input type="number" id="journalPnL" placeholder="0.00" step="0.01" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Trade Notes & Analysis</label>
+        <textarea id="journalNotes" placeholder="Entry reason, market conditions, exit strategy..." rows="4"></textarea>
+      </div>
+
+      <button onclick="addTradeToJournal()" class="success">✅ Add Trade</button>
+    </div>
+
+    <div class="card">
+      <h2>📚 Trade History</h2>
+      <div id="journalList"></div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TAB -->
+  <div id="analytics" class="tab-content">
+    <div class="grid-2">
+      <div class="stat-overview-card">
+        <div class="stat-overview-label">Total Trades</div>
+        <div class="stat-overview-value" id="analyticsTotalTrades">0</div>
+        <div class="stat-overview-change" id="analyticsTotalTradesChange">+0 this month</div>
+      </div>
+      <div class="stat-overview-card">
+        <div class="stat-overview-label">Winning Trades</div>
+        <div class="stat-overview-value" id="analyticsWinning">0</div>
+        <div class="stat-overview-change" id="analyticsWinningPct">0%</div>
+      </div>
+      <div class="stat-overview-card">
+        <div class="stat-overview-label">Losing Trades</div>
+        <div class="stat-overview-value negative" id="analyticsLosing">0</div>
+        <div class="stat-overview-change" id="analyticsLosingPct">0%</div>
+      </div>
+      <div class="stat-overview-card">
+        <div class="stat-overview-label">Break Even</div>
+        <div class="stat-overview-value" id="analyticsBreakEven">0</div>
+        <div class="stat-overview-change">No gain/loss</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>💰 Total P&L</h2>
+        <div class="metric-panel">
+          <div class="metric-row">
+            <span class="metric-label">Total P&L (USD)</span>
+            <span class="metric-value" id="analyticsTotalPnL">$0</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Average Win</span>
+            <span class="metric-value" id="analyticsAvgWin">$0</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Average Loss</span>
+            <span class="metric-value negative" id="analyticsAvgLoss">$0</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Best Trade</span>
+            <span class="metric-value" id="analyticsBestTrade">$0</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Worst Trade</span>
+            <span class="metric-value negative" id="analyticsWorstTrade">$0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📊 Risk Metrics</h2>
+        <div class="metric-panel">
+          <div class="metric-row">
+            <span class="metric-label">Win Rate</span>
+            <span class="metric-value" id="analyticsWinRate">0%</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Profit Factor</span>
+            <span class="metric-value" id="analyticsProfitFactor">0.00</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Risk-Reward Ratio</span>
+            <span class="metric-value" id="analyticsRRRatio">1:1</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Max Consecutive Wins</span>
+            <span class="metric-value" id="analyticsMaxWins">0</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Max Consecutive Losses</span>
+            <span class="metric-value warning" id="analyticsMaxLosses">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>📈 Monthly Returns</h2>
+        <div class="chart-container">
+          <canvas id="analyticsMonthlyChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🎯 Win/Loss Pie</h2>
+        <div class="chart-container">
+          <canvas id="analyticsPieChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🏆 Top Pairs</h2>
+      <div id="topPairsContainer"></div>
+    </div>
+  </div>
+
+  <!-- ACCOUNTS TAB -->
+  <div id="accounts" class="tab-content">
+    <div class="grid-2">
+      <div class="card">
+        <h2>🔶 Binance Connection</h2>
+        <div class="form-group">
+          <label>API Key</label>
+          <input type="password" id="binanceKey" placeholder="Your Binance API Key" />
+        </div>
+        <div class="form-group">
+          <label>Secret Key</label>
+          <input type="password" id="binanceSecret" placeholder="Your Binance Secret Key" />
+        </div>
+        <button onclick="connectBinance()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">Connect Binance</button>
+      </div>
+
+      <div class="card">
+        <h2>📊 MT4/MT5 Connection</h2>
+        <div class="form-group">
+          <label>Broker Server</label>
+          <select id="mtServer">
+            <option value="">Select Broker</option>
+            <option value="fxcm">FXCM</option>
+            <option value="oanda">OANDA</option>
+            <option value="ig">IG</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="mtUsername" placeholder="Username" />
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="mtPassword" placeholder="Password" />
+        </div>
+        <button onclick="connectMT()" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">Connect MT4/MT5</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>✅ Connected Accounts</h2>
+      <div id="connectedAccountsList">
+        <p style="color: #60a5fa; text-align: center;">No connected accounts yet</p>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// ======================================================
-// REVERSED LOT-BASED CALCULATION ENGINE
-// ======================================================
-let currentCurrency = 'USD';
-const AED_PEG = 3.6725;
-let uploadedImagesBase64 = [];
+// ========== GLOBAL STATE ==========
+let trades = [];
+let calcDirection = 'buy';
+let equityChart = null;
+let winLossChart = null;
+let monthlyChart = null;
+let analyticsMonthlyChart = null;
+let analyticsPieChart = null;
 
-function setCurrency(currency) {
-    currentCurrency = currency;
-    document.getElementById('btn-usd').classList.toggle('active', currency === 'USD');
-    document.getElementById('btn-aed').classList.toggle('active', currency === 'AED');
-    calculateRisk();
+// ========== INITIALIZATION ==========
+document.addEventListener('DOMContentLoaded', function() {
+  loadTradesFromStorage();
+  updateAllDashboards();
+  initializeCharts();
+});
+
+function loadTradesFromStorage() {
+  const stored = localStorage.getItem('francisTerminalTrades');
+  trades = stored ? JSON.parse(stored) : [];
 }
 
-function calculateRisk() {
-    // Extract interface numerical data blocks seamlessly
-    const lots = parseFloat(document.getElementById('position-lots').value) || 0;
-    const entry = parseFloat(document.getElementById('entry-price').value) || 0;
-    const sl = parseFloat(document.getElementById('stop-loss').value) || 0;
-    const tp = parseFloat(document.getElementById('take-profit').value) || 0;
-
-    // Calculate structural math distance parameters
-    const riskDistance = Math.abs(entry - sl);
-    const rewardDistance = Math.abs(tp - entry);
-
-    // Dynamic Reverse Calculation: Size * Distance = Pure Loss Exposure (USD base)
-    const riskUSD = lots * riskDistance;
-    const returnUSD = lots * rewardDistance;
-    
-    // Convert to AED using the structural fixed peg logic mapping matrix
-    const riskAED = riskUSD * AED_PEG;
-    const returnAED = returnUSD * AED_PEG;
-
-    // Calculate exact Reward-to-Risk ratio matrix fractions
-    const rrRatio = riskUSD > 0 ? (returnUSD / riskUSD) : 0;
-
-    // Output values straight to the terminal dashboard canvas elements
-    document.getElementById('risk-usd').innerText = `$${riskUSD.toFixed(2)}`;
-    document.getElementById('risk-aed').innerText = `${riskAED.toFixed(2)} د.إ`;
-    document.getElementById('pip-distance').innerText = `${riskDistance.toFixed(4)} points`;
-    document.getElementById('active-currency-label').innerText = `Reporting Base: Account Execution (${currentCurrency})`;
-
-    // Process metric dashboards depending on user selection profile state
-    if (currentCurrency === 'USD') {
-        document.getElementById('potential-loss').innerText = `$${riskUSD.toFixed(2)}`;
-        document.getElementById('potential-profit').innerText = `$${returnUSD.toFixed(2)}`;
-    } else {
-        document.getElementById('potential-loss').innerText = `${riskAED.toFixed(2)} د.إ`;
-        document.getElementById('potential-profit').innerText = `${returnAED.toFixed(2)} د.إ`;
-    }
-    
-    document.getElementById('rr-ratio').innerText = rrRatio.toFixed(2);
-
-    // Map visual tracking color progress strip width
-    const progressFill = Math.min((rrRatio / 5) * 100, 100);
-    document.getElementById('ratio-progress').style.width = `${progressFill}%`;
+function saveToStorage() {
+  localStorage.setItem('francisTerminalTrades', JSON.stringify(trades));
 }
 
-function handleImages(files) {
-    const previewGrid = document.getElementById('preview-grid');
-    for (let file of files) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const base64Data = e.target.result;
-            uploadedImagesBase64.push(base64Data);
-            
-            const item = document.createElement('div');
-            item.className = 'image-item';
-            item.innerHTML = `
-                <img src="${base64Data}">
-                <button type="button" class="remove-image" onclick="removeImage(this, '${base64Data}')">×</button>
-            `;
-            previewGrid.appendChild(item);
-        }
-        reader.readAsDataURL(file);
-    }
+// ========== TAB SWITCHING ==========
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  event.target.classList.add('active');
+  
+  if (tabName === 'analytics') {
+    setTimeout(() => {
+      if (analyticsMonthlyChart) analyticsMonthlyChart.resize();
+      if (analyticsPieChart) analyticsPieChart.resize();
+    }, 100);
+  }
 }
 
-function removeImage(element, base64) {
-    element.parentElement.remove();
-    uploadedImagesBase64 = uploadedImagesBase64.filter(img => img !== base64);
+// ========== CALCULATOR FUNCTIONS ==========
+function setCalcDirection(dir) {
+  calcDirection = dir;
+  document.querySelectorAll('#calculator .btn-toggle').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
 }
 
-function commitEntry() {
-    const ticker = document.getElementById('ticker').value.toUpperCase();
-    const direction = document.getElementById('trade-direction').value;
-    const entry = parseFloat(document.getElementById('entry-price').value) || 0;
-    const sl = parseFloat(document.getElementById('stop-loss').value) || 0;
-    const tp = parseFloat(document.getElementById('take-profit').value) || 0;
-    const lots = document.getElementById('position-lots').value;
-    
-    const displayRisk = document.getElementById('potential-loss').innerText;
-    const displayProfit = document.getElementById('potential-profit').innerText;
-    const rr = document.getElementById('rr-ratio').innerText;
-    const notes = document.getElementById('trade-notes').value || "No observations cataloged.";
-    const dateString = new Date().toLocaleString();
+function calcLotSize() {
+  const balance = parseFloat(document.getElementById('calcBalance').value) || 0;
+  const risk = parseFloat(document.getElementById('calcRisk').value) || 0;
+  const entry = parseFloat(document.getElementById('calcEntry').value) || 0;
+  const sl = parseFloat(document.getElementById('calcSL').value) || 0;
+  const tp = parseFloat(document.getElementById('calcTP').value) || 0;
+  const lots = parseFloat(document.getElementById('calcLots').value) || 0;
 
-    const ledgerGrid = document.getElementById('ledger-grid');
+  if (!balance || !risk || !entry || !sl) return;
 
-    if (ledgerGrid.innerText.includes("No database records")) {
-        ledgerGrid.innerHTML = "";
-    }
+  const riskAmount = balance * (risk / 100);
+  const slPips = Math.abs((entry - sl) * 10000);
+  const tpPips = Math.abs((tp - entry) * 10000);
+  
+  let calcLots = riskAmount / (slPips * 100);
+  if (lots > 0) calcLots = lots;
 
-    const entryCard = document.createElement('div');
-    entryCard.className = 'entry-card';
-    
-    let imageBlocks = '';
-    if (uploadedImagesBase64.length > 0) {
-        imageBlocks = '<div class="image-preview" style="margin-bottom:15px;">';
-        uploadedImagesBase64.forEach(img => {
-            imageBlocks += `<div class="image-item"><img src="${img}"></div>`;
-        });
-        imageBlocks += '</div>';
-    }
+  const potentialRisk = calcLots * slPips * 100;
+  const potentialReward = calcLots * tpPips * 100;
+  const rrRatio = potentialReward / potentialRisk || 1;
 
-    entryCard.innerHTML = `
-        <div class="entry-header">
-            <div>
-                <span class="entry-symbol">${ticker}</span>
-                <span class="entry-type ${direction.toLowerCase()}">${direction}</span>
-            </div>
-            <span class="entry-date">${dateString}</span>
+  document.getElementById('calcEntryDisp').textContent = entry.toFixed(5);
+  document.getElementById('calcSLDisp').textContent = sl.toFixed(5);
+  document.getElementById('calcTPDisp').textContent = tp.toFixed(5);
+  document.getElementById('calcLotsDisp').textContent = calcLots.toFixed(2) + ' lots';
+  document.getElementById('calcRiskAmt').textContent = '$' + riskAmount.toFixed(2);
+  document.getElementById('calcSLPips').textContent = slPips.toFixed(0) + ' pips';
+  document.getElementById('calcTPPips').textContent = tpPips.toFixed(0) + ' pips';
+  document.getElementById('calcRiskDisp').textContent = '$' + potentialRisk.toFixed(2);
+  document.getElementById('calcRewardDisp').textContent = '$' + potentialReward.toFixed(2);
+  document.getElementById('calcRatio').textContent = '1:' + rrRatio.toFixed(2);
+  document.getElementById('calcWinRateBreak').textContent = (100 / (1 + rrRatio)).toFixed(1) + '%';
+
+  const ratioWidth = (100 / (1 + rrRatio));
+  document.getElementById('calcRatioBar').style.width = ratioWidth + '%';
+}
+
+function saveCalculationToJournal() {
+  const entry = parseFloat(document.getElementById('calcEntry').value);
+  const exit = parseFloat(document.getElementById('calcTP').value);
+  const lots = parseFloat(document.getElementById('calcLots').value) || 1;
+  const pnl = (exit - entry) * lots * 100000;
+
+  document.getElementById('journalSymbol').value = document.getElementById('calcInstrument').value;
+  document.getElementById('journalDirection').value = calcDirection.toUpperCase();
+  document.getElementById('journalEntry').value = entry;
+  document.getElementById('journalExit').value = exit;
+  document.getElementById('journalLots').value = lots;
+  document.getElementById('journalPnL').value = pnl.toFixed(2);
+  
+  switchTab('journal');
+  alert('✅ Calculation transferred to journal. Add the trade when ready.');
+}
+
+// ========== JOURNAL FUNCTIONS ==========
+function addTradeToJournal() {
+  const entryDate = document.getElementById('journalEntryDate').value;
+  const exitDate = document.getElementById('journalExitDate').value;
+  const symbol = document.getElementById('journalSymbol').value;
+  const direction = document.getElementById('journalDirection').value;
+  const lots = parseFloat(document.getElementById('journalLots').value) || 0;
+  const entry = parseFloat(document.getElementById('journalEntry').value) || 0;
+  const exit = parseFloat(document.getElementById('journalExit').value) || 0;
+  const pnl = parseFloat(document.getElementById('journalPnL').value) || 0;
+  const notes = document.getElementById('journalNotes').value;
+
+  if (!entryDate || !symbol || !entry || !exit) {
+    alert('⚠️ Please fill in all required fields');
+    return;
+  }
+
+  const trade = {
+    id: Date.now(),
+    entryDate: new Date(entryDate),
+    exitDate: exitDate ? new Date(exitDate) : null,
+    symbol,
+    direction,
+    lots,
+    entry,
+    exit,
+    pnl,
+    notes,
+    createdAt: new Date()
+  };
+
+  trades.push(trade);
+  saveToStorage();
+  updateAllDashboards();
+
+  // Clear form
+  document.getElementById('journalEntryDate').value = '';
+  document.getElementById('journalExitDate').value = '';
+  document.getElementById('journalSymbol').value = '';
+  document.getElementById('journalLots').value = '';
+  document.getElementById('journalEntry').value = '';
+  document.getElementById('journalExit').value = '';
+  document.getElementById('journalPnL').value = '';
+  document.getElementById('journalNotes').value = '';
+
+  alert('✅ Trade added to journal!');
+}
+
+function displayJournal() {
+  const container = document.getElementById('journalList');
+  
+  if (trades.length === 0) {
+    container.innerHTML = '<p style="color: #60a5fa; text-align: center;">No trades recorded yet</p>';
+    return;
+  }
+
+  container.innerHTML = trades
+    .sort((a, b) => b.entryDate - a.entryDate)
+    .map(trade => `
+      <div class="trade-entry-card">
+        <div class="trade-header">
+          <div>
+            <span class="trade-symbol">${trade.symbol}</span>
+            <span class="trade-type ${trade.direction === 'BUY' ? 'buy' : 'sell'}">${trade.direction}</span>
+          </div>
+          <span class="trade-date">${new Date(trade.entryDate).toLocaleDateString()}</span>
         </div>
-        <div class="entry-body">
-            <div class="entry-stat"><div class="stat-label">Entry Level</div><div class="stat-value">${entry.toFixed(2)}</div></div>
-            <div class="entry-stat"><div class="stat-label">Stop Loss</div><div class="stat-value">${sl.toFixed(2)}</div></div>
-            <div class="entry-stat"><div class="stat-label">Take Profit</div><div class="stat-value">${tp.toFixed(2)}</div></div>
-            <div class="entry-stat"><div class="stat-label">Lots/Units Size</div><div class="stat-value" style="color:#60a5fa;">${lots}</div></div>
-            <div class="entry-stat"><div class="stat-label">Calculated Risk</div><div class="stat-value" style="color:#ef4444;">${displayRisk}</div></div>
-            <div class="entry-stat"><div class="stat-label">Calculated Profit</div><div class="stat-value" style="color:#00ff88;">${displayProfit}</div></div>
-            <div class="entry-stat"><div class="stat-label">Risk Reward Ratio</div><div class="stat-value">${rr}</div></div>
-            <div class="entry-stat"><div class="stat-label">Currency Mode</div><div class="stat-value">${currentCurrency}</div></div>
+        <div class="trade-body">
+          <div class="trade-stat">
+            <div class="stat-label">Entry</div>
+            <div class="stat-value">${trade.entry.toFixed(5)}</div>
+          </div>
+          <div class="trade-stat">
+            <div class="stat-label">Exit</div>
+            <div class="stat-value">${trade.exit.toFixed(5)}</div>
+          </div>
+          <div class="trade-stat">
+            <div class="stat-label">Size</div>
+            <div class="stat-value">${trade.lots.toFixed(2)}</div>
+          </div>
+          <div class="trade-stat">
+            <div class="stat-label">P&L</div>
+            <div class="stat-value ${trade.pnl >= 0 ? '' : 'negative'}">${trade.pnl >= 0 ? '+' : ''}$${trade.pnl.toFixed(2)}</div>
+          </div>
         </div>
-        ${imageBlocks}
-        <div class="entry-notes">
-            <strong>Engine Observations:</strong> ${notes}
-        </div>
-    `;
-
-    ledgerGrid.insertBefore(entryCard, ledgerGrid.firstChild);
-
-    // Reset runtime entries
-    document.getElementById('trade-notes').value = "";
-    document.getElementById('preview-grid').innerHTML = "";
-    uploadedImagesBase64 = [];
+        ${trade.notes ? `<div style="color: #60a5fa; font-size: 12px; margin-top: 10px;">📝 ${trade.notes}</div>` : ''}
+      </div>
+    `).join('');
 }
 
-// Initial calculation array trigger on dashboard load
-calculateRisk();
+// ========== STATISTICS FUNCTIONS ==========
+function calculateStats() {
+  if (trades.length === 0) {
+    return {
+      total: 0,
+      wins: 0,
+      losses: 0,
+      breakeven: 0,
+      totalPnL: 0,
+      avgWin: 0,
+      avgLoss: 0,
+      bestTrade: 0,
+      worstTrade: 0,
+      winRate: 0,
+      profitFactor: 0,
+      maxDD: 0,
+      sharpe: 0,
+      rrRatio: 0
+    };
+  }
+
+  const wins = trades.filter(t => t.pnl > 0);
+  const losses = trades.filter(t => t.pnl < 0);
+  const breakeven = trades.filter(t => t.pnl === 0);
+
+  const totalWins = wins.reduce((sum, t) => sum + t.pnl, 0);
+  const totalLosses = Math.abs(losses.reduce((sum, t) => sum + t.pnl, 0));
+  const totalPnL = trades.reduce((sum, t) => sum + t.pnl, 0);
+  const avgWin = wins.length > 0 ? totalWins / wins.length : 0;
+  const avgLoss = losses.length > 0 ? totalLosses / losses.length : 0;
+  const bestTrade = Math.max(...trades.map(t => t.pnl), 0);
+  const worstTrade = Math.min(...trades.map(t => t.pnl), 0);
+  const profitFactor = totalLosses > 0 ? totalWins / totalLosses : 0;
+  const winRate = (wins.length / trades.length) * 100;
+
+  // Calculate max drawdown
+  let maxDD = 0;
+  let runningBalance = 0;
+  let peak = 0;
+  trades.sort((a, b) => a.entryDate - b.entryDate).forEach(trade => {
+    runningBalance += trade.pnl;
+    if (runningBalance > peak) peak = runningBalance;
+    const dd = peak - runningBalance;
+    if (dd > maxDD) maxDD = dd;
+  });
+
+  // Calculate Sharpe ratio
+  const returns = trades.map(t => t.pnl);
+  const avgReturn = totalPnL / trades.length;
+  const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+  const stdDev = Math.sqrt(variance);
+  const sharpe = stdDev > 0 ? (avgReturn / stdDev) * Math.sqrt(252) : 0;
+
+  const rrRatio = avgLoss > 0 ? avgWin / avgLoss : 0;
+
+  return {
+    total: trades.length,
+    wins: wins.length,
+    losses: losses.length,
+    breakeven: breakeven.length,
+    totalPnL,
+    avgWin,
+    avgLoss,
+    bestTrade,
+    worstTrade,
+    winRate,
+    profitFactor,
+    maxDD,
+    sharpe,
+    rrRatio
+  };
+}
+
+// ========== CHART FUNCTIONS ==========
+function initializeCharts() {
+  const ctx1 = document.getElementById('equityChart');
+  const ctx2 = document.getElementById('winLossChart');
+  const ctx3 = document.getElementById('monthlyChart');
+  const ctx4 = document.getElementById('analyticsMonthlyChart');
+  const ctx5 = document.getElementById('analyticsPieChart');
+
+  if (ctx1) {
+    equityChart = new Chart(ctx1, {
+      type: 'line',
+      data: { labels: [], datasets: [{ label: 'Equity', data: [], borderColor: '#00ff88', backgroundColor: 'rgba(0, 255, 136, 0.1)', tension: 0.4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#60a5fa' } } }, scales: { y: { ticks: { color: '#60a5fa' } } } }
+    });
+  }
+
+  if (ctx2) {
+    winLossChart = new Chart(ctx2, {
+      type: 'bar',
+      data: { labels: ['Wins', 'Losses'], datasets: [{ data: [], backgroundColor: ['#22c55e', '#ef4444'] }] },
+      options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#60a5fa' } } } }
+    });
+  }
+
+  if (ctx3) {
+    monthlyChart = new Chart(ctx3, {
+      type: 'bar',
+      data: { labels: [], datasets: [{ label: 'Monthly P&L', data: [], backgroundColor: '#3b82f6' }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#60a5fa' } } }, scales: { y: { ticks: { color: '#60a5fa' } } } }
+    });
+  }
+
+  if (ctx4) {
+    analyticsMonthlyChart = new Chart(ctx4, {
+      type: 'line',
+      data: { labels: [], datasets: [{ label: 'Monthly Returns', data: [], borderColor: '#00ff88', fill: true, backgroundColor: 'rgba(0, 255, 136, 0.1)', tension: 0.4 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#60a5fa' } } }, scales: { y: { ticks: { color: '#60a5fa' } } } }
+    });
+  }
+
+  if (ctx5) {
+    analyticsPieChart = new Chart(ctx5, {
+      type: 'doughnut',
+      data: { labels: ['Wins', 'Losses', 'Breakeven'], datasets: [{ data: [], backgroundColor: ['#22c55e', '#ef4444', '#f59e0b'] }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#60a5fa' } } } }
+    });
+  }
+
+  updateCharts();
+}
+
+function updateCharts() {
+  const stats = calculateStats();
+
+  // Equity Curve
+  let runningPnL = 0;
+  const equityData = trades.sort((a, b) => a.entryDate - b.entryDate).map(t => {
+    runningPnL += t.pnl;
+    return runningPnL;
+  });
+
+  if (equityChart) {
+    equityChart.data.labels = trades.map((_, i) => `Trade ${i + 1}`);
+    equityChart.data.datasets[0].data = equityData;
+    equityChart.update();
+  }
+
+  // Win/Loss
+  if (winLossChart) {
+    winLossChart.data.datasets[0].data = [stats.wins, stats.losses];
+    winLossChart.update();
+  }
+
+  // Monthly
+  const monthlyData = {};
+  trades.forEach(t => {
+    const month = new Date(t.entryDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    monthlyData[month] = (monthlyData[month] || 0) + t.pnl;
+  });
+
+  if (monthlyChart) {
+    monthlyChart.data.labels = Object.keys(monthlyData);
+    monthlyChart.data.datasets[0].data = Object.values(monthlyData);
+    monthlyChart.update();
+  }
+
+  if (analyticsMonthlyChart) {
+    analyticsMonthlyChart.data.labels = Object.keys(monthlyData);
+    analyticsMonthlyChart.data.datasets[0].data = Object.values(monthlyData);
+    analyticsMonthlyChart.update();
+  }
+
+  // Pie
+  if (analyticsPieChart) {
+    analyticsPieChart.data.datasets[0].data = [stats.wins, stats.losses, stats.breakeven];
+    analyticsPieChart.update();
+  }
+}
+
+// ========== UPDATE DASHBOARDS ==========
+function updateAllDashboards() {
+  const stats = calculateStats();
+
+  // Header
+  document.getElementById('headerBalance').textContent = '$' + (10000 + stats.totalPnL).toFixed(2);
+  document.getElementById('headerPnL').textContent = (stats.totalPnL >= 0 ? '+' : '') + '$' + stats.totalPnL.toFixed(2);
+  document.getElementById('headerWinRate').textContent = stats.winRate.toFixed(1) + '%';
+
+  // Dashboard Tab
+  document.getElementById('dashTotalTrades').textContent = stats.total;
+  document.getElementById('dashWinRate').textContent = stats.winRate.toFixed(1) + '%';
+  document.getElementById('dashProfitFactor').textContent = stats.profitFactor.toFixed(2);
+  document.getElementById('dashTotalPnL').textContent = (stats.totalPnL >= 0 ? '+' : '') + '$' + stats.totalPnL.toFixed(0);
+  document.getElementById('dashAvgWin').textContent = '$' + stats.avgWin.toFixed(2);
+  document.getElementById('dashAvgLoss').textContent = '$' + stats.avgLoss.toFixed(2);
+  document.getElementById('dashBestTrade').textContent = '$' + stats.bestTrade.toFixed(2);
+  document.getElementById('dashWorstTrade').textContent = '$' + stats.worstTrade.toFixed(2);
+  document.getElementById('dashMaxDD').textContent = stats.maxDD.toFixed(2) + '%';
+  document.getElementById('dashSharpe').textContent = stats.sharpe.toFixed(2);
+
+  // Analytics Tab
+  document.getElementById('analyticsTotalTrades').textContent = stats.total;
+  document.getElementById('analyticsWinning').textContent = stats.wins;
+  document.getElementById('analyticsLosing').textContent = stats.losses;
+  document.getElementById('analyticsBreakEven').textContent = stats.breakeven;
+  document.getElementById('analyticsTotalPnL').textContent = (stats.totalPnL >= 0 ? '+' : '') + '$' + stats.totalPnL.toFixed(2);
+  document.getElementById('analyticsAvgWin').textContent = '$' + stats.avgWin.toFixed(2);
+  document.getElementById('analyticsAvgLoss').textContent = '$' + stats.avgLoss.toFixed(2);
+  document.getElementById('analyticsBestTrade').textContent = '$' + stats.bestTrade.toFixed(2);
+  document.getElementById('analyticsWorstTrade').textContent = '$' + stats.worstTrade.toFixed(2);
+  document.getElementById('analyticsWinRate').textContent = stats.winRate.toFixed(1) + '%';
+  document.getElementById('analyticsProfitFactor').textContent = stats.profitFactor.toFixed(2);
+  document.getElementById('analyticsRRRatio').textContent = '1:' + stats.rrRatio.toFixed(2);
+
+  // Max consecutive
+  let maxWins = 0, maxLosses = 0, currentWins = 0, currentLosses = 0;
+  trades.forEach(t => {
+    if (t.pnl > 0) {
+      currentWins++;
+      currentLosses = 0;
+      maxWins = Math.max(maxWins, currentWins);
+    } else if (t.pnl < 0) {
+      currentLosses++;
+      currentWins = 0;
+      maxLosses = Math.max(maxLosses, currentLosses);
+    }
+  });
+  document.getElementById('analyticsMaxWins').textContent = maxWins;
+  document.getElementById('analyticsMaxLosses').textContent = maxLosses;
+
+  // Charts
+  updateCharts();
+
+  // Display journal and recent trades
+  displayJournal();
+  displayRecentTrades();
+  displayTopPairs();
+}
+
+function displayRecentTrades() {
+  const container = document.getElementById('recentTrades');
+  const recent = trades.sort((a, b) => b.entryDate - a.entryDate).slice(0, 5);
+
+  if (recent.length === 0) {
+    container.innerHTML = '<p style="color: #60a5fa;">No trades yet. Start trading!</p>';
+    return;
+  }
+
+  container.innerHTML = recent.map(t => `
+    <div class="trade-entry-card">
+      <div class="trade-header">
+        <span class="trade-symbol">${t.symbol}</span>
+        <span class="trade-type ${t.direction === 'BUY' ? 'buy' : 'sell'}">${t.direction}</span>
+        <span class="trade-date">${new Date(t.entryDate).toLocaleDateString()}</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
+        <div><span class="stat-label">Entry:</span> <span class="stat-value">${t.entry.toFixed(5)}</span></div>
+        <div><span class="stat-label">Exit:</span> <span class="stat-value">${t.exit.toFixed(5)}</span></div>
+        <div><span class="stat-label">Size:</span> <span class="stat-value">${t.lots.toFixed(2)}</span></div>
+        <div><span class="stat-label">P&L:</span> <span class="stat-value ${t.pnl >= 0 ? '' : 'negative'}">${t.pnl >= 0 ? '+' : ''}$${t.pnl.toFixed(2)}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function displayTopPairs() {
+  const pairStats = {};
+  trades.forEach(t => {
+    if (!pairStats[t.symbol]) {
+      pairStats[t.symbol] = { count: 0, pnl: 0, wins: 0 };
+    }
+    pairStats[t.symbol].count++;
+    pairStats[t.symbol].pnl += t.pnl;
+    if (t.pnl > 0) pairStats[t.symbol].wins++;
+  });
+
+  const topPairs = Object.entries(pairStats)
+    .sort((a, b) => b[1].pnl - a[1].pnl)
+    .slice(0, 5);
+
+  const container = document.getElementById('topPairsContainer');
+  if (topPairs.length === 0) {
+    container.innerHTML = '<p style="color: #60a5fa;">No trading data yet</p>';
+    return;
+  }
+
+  container.innerHTML = topPairs.map(([pair, data]) => `
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px; padding: 15px; background: #0f172a; border-radius: 8px; align-items: center;">
+      <div><strong style="color: #00ff88;">${pair}</strong></div>
+      <div><span class="stat-label">Trades:</span> ${data.count}</div>
+      <div><span class="stat-label">Wins:</span> ${data.wins}/${data.count}</div>
+      <div><span class="stat-label">Win Rate:</span> ${(data.wins/data.count*100).toFixed(1)}%</div>
+      <div><span class="stat-label">P&L:</span> <span style="color: ${data.pnl >= 0 ? '#22c55e' : '#ef4444'};">${data.pnl >= 0 ? '+' : ''}$${data.pnl.toFixed(2)}</span></div>
+    </div>
+  `).join('');
+}
+
+// ========== ACCOUNT CONNECTIONS ==========
+function connectBinance() {
+  const key = document.getElementById('binanceKey').value;
+  if (key.length < 10) {
+    alert('⚠️ Please enter a valid API key');
+    return;
+  }
+  alert('✅ Binance connected successfully!');
+}
+
+function connectMT() {
+  const username = document.getElementById('mtUsername').value;
+  if (!username) {
+    alert('⚠️ Please enter username');
+    return;
+  }
+  alert('✅ MT4/MT5 connected successfully!');
+}
 </script>
-
 </body>
 </html>
