@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Institutional Risk Calculator</title>
+<title>Institutional Trading Terminal</title>
 
 <style>
 
@@ -15,32 +15,70 @@ font-family:Consolas, monospace;
 }
 
 body{
-background:#050505;
+background:#020817;
 color:#d7d7d7;
 padding:20px;
 }
 
 .container{
-max-width:700px;
+max-width:1600px;
 margin:auto;
-background:#0b0b0b;
-border:1px solid #1f1f1f;
+}
+
+/* =========================
+TOP PANEL
+========================= */
+
+.terminal{
+background:#071120;
+border:1px solid #1e2b46;
 border-radius:14px;
 padding:25px;
 }
 
 .title{
-font-size:24px;
+font-size:28px;
 color:#00ffd5;
-margin-bottom:20px;
+margin-bottom:8px;
 }
 
-.panel{
-background:#111;
-border:1px solid #222;
-padding:20px;
-border-radius:10px;
+.sub{
+color:#6f8bb7;
+margin-bottom:25px;
 }
+
+/* =========================
+GRID
+========================= */
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+}
+
+/* =========================
+PANEL
+========================= */
+
+.panel{
+background:#0b1220;
+border:1px solid #23304d;
+border-radius:14px;
+padding:20px;
+}
+
+.panel-title{
+font-size:18px;
+color:#00d0ff;
+margin-bottom:18px;
+border-bottom:1px solid #1c2943;
+padding-bottom:12px;
+}
+
+/* =========================
+INPUTS
+========================= */
 
 .input-group{
 margin-bottom:16px;
@@ -49,27 +87,57 @@ margin-bottom:16px;
 label{
 display:block;
 margin-bottom:6px;
-color:#888;
+color:#7f9bc9;
 }
 
 input,
 select{
 width:100%;
 padding:12px;
-background:#050505;
-border:1px solid #222;
-border-radius:6px;
+background:#050b16;
+border:1px solid #1d2a45;
+border-radius:8px;
 color:#fff;
 outline:none;
 }
 
-.output{
-margin-top:12px;
+input:focus,
+select:focus{
+border-color:#00ffd5;
+}
+
+/* =========================
+BUTTON
+========================= */
+
+button{
+width:100%;
 padding:14px;
-background:#050505;
-border:1px solid #222;
+background:#00ffd5;
+border:none;
 border-radius:8px;
-font-size:17px;
+color:#000;
+font-weight:bold;
+cursor:pointer;
+font-size:15px;
+transition:0.2s;
+}
+
+button:hover{
+opacity:0.85;
+}
+
+/* =========================
+OUTPUTS
+========================= */
+
+.output{
+background:#050b16;
+border:1px solid #1c2943;
+padding:14px;
+border-radius:8px;
+margin-top:12px;
+font-size:16px;
 }
 
 .green{
@@ -88,28 +156,106 @@ color:#00d0ff;
 color:#ffd000;
 }
 
-button{
-width:100%;
-padding:14px;
-background:#050505;
-border:1px solid #00ffd5;
-color:#00ffd5;
-border-radius:8px;
-cursor:pointer;
-font-size:16px;
-margin-top:10px;
-transition:0.2s;
+/* =========================
+STATISTICS
+========================= */
+
+.stats-wrapper{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:16px;
+margin-top:25px;
 }
 
-button:hover{
-background:#00ffd5;
-color:#000;
+.stat-card{
+background:linear-gradient(145deg,#111827,#0b1220);
+border:1px solid #23304d;
+border-radius:12px;
+padding:22px;
+text-align:center;
 }
+
+.stat-title{
+font-size:13px;
+color:#4ea1ff;
+margin-bottom:14px;
+text-transform:uppercase;
+}
+
+.stat-value{
+font-size:32px;
+font-weight:bold;
+color:#00ff95;
+}
+
+.red-stat{
+color:#ff4b4b;
+}
+
+.blue-stat{
+color:#00d0ff;
+}
+
+.yellow-stat{
+color:#ffd000;
+}
+
+/* =========================
+CHART
+========================= */
+
+.chart{
+height:350px;
+background:#050b16;
+border:1px solid #1c2943;
+border-radius:10px;
+margin-top:20px;
+position:relative;
+overflow:hidden;
+}
+
+.line{
+position:absolute;
+height:2px;
+width:100%;
+background:#00ffd5;
+top:50%;
+}
+
+.entry{
+position:absolute;
+left:15%;
+top:42%;
+color:#00ff95;
+font-size:20px;
+font-weight:bold;
+}
+
+.exit{
+position:absolute;
+right:15%;
+top:60%;
+color:#ff4b4b;
+font-size:20px;
+font-weight:bold;
+}
+
+/* =========================
+FOOTER
+========================= */
 
 .footer{
-margin-top:20px;
+margin-top:30px;
 text-align:center;
-color:#555;
+color:#4d6287;
+}
+
+@media(max-width:900px){
+
+.grid{
+grid-template-columns:1fr;
+}
+
 }
 
 </style>
@@ -119,22 +265,38 @@ color:#555;
 
 <div class="container">
 
+<div class="terminal">
+
 <div class="title">
-INSTITUTIONAL LOT SIZE CALCULATOR
+INSTITUTIONAL TRADING TERMINAL
 </div>
 
+<div class="sub">
+AUTO LOT SIZE • AUTO SL • AUTO TP • RISK MANAGEMENT
+</div>
+
+<div class="grid">
+
+<!-- =========================
+LEFT PANEL
+========================= -->
+
 <div class="panel">
+
+<div class="panel-title">
+TRADE EXECUTION
+</div>
 
 <div class="input-group">
 <label>Trading Pair</label>
 
 <select id="pair">
-<option value="BTCUSDT">BTCUSDT</option>
-<option value="ETHUSDT">ETHUSDT</option>
-<option value="XAUUSD">XAUUSD</option>
-<option value="NAS100">NAS100</option>
-<option value="EURUSD">EURUSD</option>
-<option value="GBPUSD">GBPUSD</option>
+<option>BTCUSDT</option>
+<option>ETHUSDT</option>
+<option>XAUUSD</option>
+<option>NAS100</option>
+<option>EURUSD</option>
+<option>GBPUSD</option>
 </select>
 </div>
 
@@ -197,61 +359,194 @@ CALCULATE TRADE
 
 <div class="output">
 Lot Size:
-<span id="lotSize"
-class="green">
+<span id="lotSize" class="green">
 0.00
 </span>
 </div>
 
 <div class="output">
 Auto Stop Loss:
-<span id="slPrice"
-class="red">
+<span id="slPrice" class="red">
 0.00
 </span>
 </div>
 
 <div class="output">
 Auto Take Profit:
-<span id="tpPrice"
-class="blue">
+<span id="tpPrice" class="blue">
 0.00
 </span>
 </div>
 
 <div class="output">
 USD Risk:
-<span id="usdRisk"
-class="yellow">
+<span id="usdRisk" class="yellow">
 0.00
 </span>
 </div>
 
 <div class="output">
 Break-even Win Rate:
-<span id="breakeven"
-class="green">
+<span id="breakeven" class="green">
 0%
 </span>
 </div>
 
 <div class="output">
 Risk Exposure:
-<span id="exposure"
-class="green">
+<span id="exposure" class="green">
 LOW
 </span>
 </div>
 
 </div>
 
+<!-- =========================
+RIGHT PANEL
+========================= -->
+
+<div class="panel">
+
+<div class="panel-title">
+LIVE TRADE VISUAL
+</div>
+
+<div class="chart">
+
+<div class="line"></div>
+
+<div class="entry">
+↑ ENTRY
+</div>
+
+<div class="exit">
+↓ TP
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- =========================
+STATISTICS
+========================= -->
+
+<div class="stats-wrapper">
+
+<div class="stat-card">
+<div class="stat-title">
+TOTAL TRADES
+</div>
+
+<div class="stat-value"
+id="totalTrades">
+0
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+WINNING TRADES
+</div>
+
+<div class="stat-value"
+id="winningTrades">
+0
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+LOSING TRADES
+</div>
+
+<div class="stat-value red-stat"
+id="losingTrades">
+0
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+WIN RATE
+</div>
+
+<div class="stat-value blue-stat"
+id="winRate">
+0%
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+TOTAL P&L (AED)
+</div>
+
+<div class="stat-value"
+id="totalPnlAed">
+0.00 AED
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+TOTAL P&L (USD)
+</div>
+
+<div class="stat-value"
+id="totalPnlUsd">
+0.00 USD
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+AVERAGE WIN (AED)
+</div>
+
+<div class="stat-value"
+id="avgWin">
+0.00 AED
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+AVERAGE LOSS (AED)
+</div>
+
+<div class="stat-value red-stat"
+id="avgLoss">
+0.00 AED
+</div>
+</div>
+
+<div class="stat-card">
+<div class="stat-title">
+PROFIT FACTOR
+</div>
+
+<div class="stat-value yellow-stat"
+id="profitFactor">
+0.00
+</div>
+</div>
+
+</div>
+
 <div class="footer">
-INSTITUTIONAL TERMINAL v7.0
+INSTITUTIONAL TERMINAL v8.0
 </div>
 
 </div>
 
 <script>
+
+/* =========================
+CALCULATOR
+========================= */
 
 function calculateTrade(){
 
@@ -318,7 +613,7 @@ entry - tpDistance;
 
 }
 
-// BREAKEVEN %
+// BREAKEVEN
 
 let breakeven =
 100 / (1 + rr);
@@ -371,7 +666,9 @@ exposure.className = "green";
 
 }
 
-// LIVE AUTO UPDATE
+/* =========================
+AUTO UPDATE
+========================= */
 
 document.querySelectorAll("input, select")
 .forEach(el=>{
@@ -379,6 +676,123 @@ document.querySelectorAll("input, select")
 el.addEventListener("input", calculateTrade);
 
 });
+
+/* =========================
+STATISTICS
+========================= */
+
+let totalTrades = 0;
+let winningTrades = 0;
+let losingTrades = 0;
+
+let totalProfitAed = 0;
+let totalLossAed = 0;
+
+function addTrade(result, amountAed){
+
+totalTrades++;
+
+if(result === "WIN"){
+
+winningTrades++;
+totalProfitAed += amountAed;
+
+}else{
+
+losingTrades++;
+totalLossAed += amountAed;
+
+}
+
+updateStats();
+
+}
+
+function updateStats(){
+
+let usdAed =
+parseFloat(document.getElementById("usdAed").value) || 3.67;
+
+let totalPnlAed =
+totalProfitAed - totalLossAed;
+
+let totalPnlUsd =
+totalPnlAed / usdAed;
+
+let winRate =
+totalTrades > 0
+? (winningTrades / totalTrades) * 100
+: 0;
+
+let avgWin =
+winningTrades > 0
+? totalProfitAed / winningTrades
+: 0;
+
+let avgLoss =
+losingTrades > 0
+? totalLossAed / losingTrades
+: 0;
+
+let profitFactor =
+totalLossAed > 0
+? totalProfitAed / totalLossAed
+: totalProfitAed;
+
+// UPDATE UI
+
+document.getElementById("totalTrades")
+.innerHTML =
+totalTrades;
+
+document.getElementById("winningTrades")
+.innerHTML =
+winningTrades;
+
+document.getElementById("losingTrades")
+.innerHTML =
+losingTrades;
+
+document.getElementById("winRate")
+.innerHTML =
+winRate.toFixed(1) + "%";
+
+document.getElementById("totalPnlAed")
+.innerHTML =
+totalPnlAed.toFixed(2) + " AED";
+
+document.getElementById("totalPnlUsd")
+.innerHTML =
+totalPnlUsd.toFixed(2) + " USD";
+
+document.getElementById("avgWin")
+.innerHTML =
+avgWin.toFixed(2) + " AED";
+
+document.getElementById("avgLoss")
+.innerHTML =
+avgLoss.toFixed(2) + " AED";
+
+document.getElementById("profitFactor")
+.innerHTML =
+profitFactor.toFixed(2);
+
+}
+
+/* =========================
+DEMO DATA
+REMOVE LATER
+========================= */
+
+addTrade("WIN", 320);
+addTrade("WIN", 180);
+addTrade("LOSS", 90);
+addTrade("WIN", 250);
+addTrade("LOSS", 120);
+
+/* =========================
+START
+========================= */
 
 calculateTrade();
 
