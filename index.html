@@ -2,1194 +2,406 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FRANCIS TERMINAL - Professional Trading Dashboard</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Institutional BTC Risk Terminal</title>
+
 <style>
-  * { box-sizing: border-box; }
-  
-  body {
-    margin: 0;
-    background: linear-gradient(135deg, #0a0e27 0%, #0f1729 100%);
-    color: #e2e8f0;
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow-x: hidden;
-  }
-
-  .container {
-    max-width: 1900px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  header {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-bottom: 3px solid #3b82f6;
-    padding: 25px 0;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  header .logo-section {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-  }
-
-  header h1 {
-    margin: 0;
-    font-size: 32px;
-    color: #00ff88;
-    text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
-    font-weight: 800;
-    letter-spacing: -1px;
-  }
-
-  header .badge {
-    background: rgba(59, 130, 246, 0.2);
-    border: 1px solid #3b82f6;
-    color: #60a5fa;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-
-  header p {
-    margin: 5px 0 0 0;
-    color: #60a5fa;
-    font-size: 12px;
-  }
-
-  header .header-stats {
-    display: flex;
-    gap: 30px;
-    padding-right: 20px;
-  }
-
-  .header-stat {
-    text-align: right;
-  }
-
-  .header-stat-label {
-    color: #60a5fa;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .header-stat-value {
-    color: #00ff88;
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .header-stat-value.negative {
-    color: #ef4444;
-  }
-
-  .nav-section {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-    border-bottom: 1px solid #334155;
-    padding-bottom: 0;
-  }
-
-  .nav-btn {
-    padding: 14px 24px;
-    background: transparent;
-    border: none;
-    color: #60a5fa;
-    cursor: pointer;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .nav-btn:hover {
-    color: #00ff88;
-  }
-
-  .nav-btn.active {
-    color: #00ff88;
-    border-bottom-color: #3b82f6;
-  }
-
-  .tab-content {
-    display: none;
-    animation: fadeIn 0.3s ease;
-  }
-
-  .tab-content.active {
-    display: block;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-
-  .grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-
-  .grid-4 {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-
-  @media (max-width: 1600px) {
-    .grid-3 { grid-template-columns: 1fr 1fr; }
-    .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  }
-
-  @media (max-width: 1200px) {
-    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
-    header { flex-direction: column; gap: 15px; }
-    header .header-stats { flex-direction: row; padding-right: 0; }
-  }
-
-  .card {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border: 1px solid #334155;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-  }
-
-  .card:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
-    transform: translateY(-2px);
-  }
-
-  .card h2 {
-    margin: 0 0 20px 0;
-    color: #00ff88;
-    font-size: 18px;
-    border-bottom: 2px solid #3b82f6;
-    padding-bottom: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .form-group {
-    margin-bottom: 18px;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 8px;
-    color: #60a5fa;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  input, select, textarea {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #334155;
-    background: #0f172a;
-    color: #e2e8f0;
-    border-radius: 8px;
-    font-family: 'Monaco', 'Courier New', monospace;
-    transition: all 0.3s ease;
-    font-size: 13px;
-  }
-
-  input:focus, select:focus, textarea:focus {
-    outline: none;
-    border-color: #3b82f6;
-    background: #1e293b;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-  }
-
-  input:disabled, textarea:disabled {
-    background: #0a0e27;
-    opacity: 0.6;
-  }
-
-  .input-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-  }
-
-  .input-row-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 15px;
-  }
-
-  .button-group {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-
-  .btn-toggle {
-    flex: 1;
-    padding: 12px;
-    border: 2px solid #334155;
-    background: transparent;
-    color: #60a5fa;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-size: 12px;
-  }
-
-  .btn-toggle:hover {
-    border-color: #3b82f6;
-  }
-
-  .btn-toggle.active {
-    background: #3b82f6;
-    border-color: #3b82f6;
-    color: white;
-  }
-
-  .method-selector {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .method-btn {
-    padding: 12px;
-    border: 2px solid #334155;
-    background: transparent;
-    color: #60a5fa;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-size: 12px;
-  }
-
-  .method-btn:hover {
-    border-color: #3b82f6;
-  }
-
-  .method-btn.active {
-    background: #a855f7;
-    border-color: #a855f7;
-    color: white;
-  }
-
-  button {
-    width: 100%;
-    padding: 14px;
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: 12px;
-  }
-
-  button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 24px rgba(59, 130, 246, 0.4);
-  }
-
-  button:active {
-    transform: translateY(0);
-  }
-
-  button.success {
-    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  }
-
-  button.danger {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  }
-
-  .metric-panel {
-    background: rgba(59, 130, 246, 0.1);
-    border-left: 4px solid #3b82f6;
-    padding: 18px;
-    border-radius: 8px;
-    margin: 15px 0;
-  }
-
-  .metric-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 12px 0;
-    font-size: 13px;
-    font-family: 'Monaco', monospace;
-  }
-
-  .metric-label {
-    color: #60a5fa;
-    font-weight: 600;
-  }
-
-  .metric-value {
-    color: #00ff88;
-    font-weight: 700;
-    text-align: right;
-  }
-
-  .metric-value.negative {
-    color: #ef4444;
-  }
-
-  .metric-value.warning {
-    color: #f59e0b;
-  }
-
-  .risk-reward-box {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
-    border: 2px solid #22c55e;
-    border-radius: 10px;
-    padding: 25px;
-    margin: 20px 0;
-  }
-
-  .ratio-display {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 15px;
-    margin: 15px 0;
-  }
-
-  .ratio-box {
-    background: #0f172a;
-    border: 1px solid #334155;
-    padding: 15px;
-    border-radius: 8px;
-    text-align: center;
-  }
-
-  .ratio-label {
-    color: #60a5fa;
-    font-size: 11px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-
-  .ratio-value {
-    color: #00ff88;
-    font-size: 28px;
-    font-weight: 700;
-  }
-
-  .ratio-bar {
-    width: 100%;
-    height: 10px;
-    background: #1e293b;
-    border-radius: 5px;
-    margin-top: 12px;
-    overflow: hidden;
-  }
-
-  .ratio-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #22c55e 0%, #00ff88 100%);
-    transition: width 0.3s ease;
-  }
-
-  .auto-field {
-    background: rgba(34, 197, 94, 0.15) !important;
-    border: 1px solid #22c55e !important;
-  }
-
-  .auto-label {
-    color: #22c55e;
-    font-weight: bold;
-  }
-
-  .section-divider {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-    margin: 25px 0;
-  }
-
-  .info-box {
-    background: rgba(59, 130, 246, 0.1);
-    border: 1px solid #3b82f6;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 15px;
-    font-size: 12px;
-    color: #60a5fa;
-  }
-
-  .performance-card {
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-  }
-
-  .performance-card.highlight {
-    border-color: #3b82f6;
-    background: rgba(59, 130, 246, 0.1);
-  }
-
-  .perf-label {
-    color: #60a5fa;
-    font-size: 11px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
-  }
-
-  .perf-value {
-    color: #00ff88;
-    font-size: 24px;
-    font-weight: 700;
-  }
-
-  .perf-value.negative {
-    color: #ef4444;
-  }
-
-  .chart-container {
-    position: relative;
-    height: 300px;
-    margin: 20px 0;
-  }
-
-  .chart-container.large {
-    height: 400px;
-  }
-
-  .stat-card {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border: 1px solid #334155;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
-  }
-
-  .stat-label {
-    color: #60a5fa;
-    font-size: 11px;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-
-  .stat-value {
-    font-size: 32px;
-    font-weight: 800;
-    color: #00ff88;
-    margin-bottom: 5px;
-  }
-
-  .stat-value.negative {
-    color: #ef4444;
-  }
-
-  .trade-entry-card {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border-left: 4px solid #3b82f6;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 15px;
-    border: 1px solid #334155;
-    transition: all 0.3s ease;
-  }
-
-  .trade-entry-card:hover {
-    border-color: #3b82f6;
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
-  }
-
-  .trade-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #334155;
-    padding-bottom: 12px;
-  }
-
-  .trade-symbol {
-    font-size: 18px;
-    font-weight: 800;
-    color: #00ff88;
-  }
-
-  .trade-type {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-
-  .trade-type.buy {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.4);
-  }
-
-  .trade-type.sell {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.4);
-  }
-
-  .trade-date {
-    color: #60a5fa;
-    font-size: 12px;
-  }
-
-  .pnl-section {
-    display: flex;
-    justify-content: space-between;
-    padding: 15px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    margin-top: 12px;
-  }
-
-  .pnl-item {
-    text-align: center;
-    flex: 1;
-  }
-
-  .pnl-label {
-    color: #60a5fa;
-    font-size: 11px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    font-weight: 600;
-  }
-
-  .pnl-value {
-    font-size: 18px;
-    font-weight: 700;
-  }
-
-  .pnl-value.positive {
-    color: #22c55e;
-  }
-
-  .pnl-value.negative {
-    color: #ef4444;
-  }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Consolas,monospace;
+}
+
+body{
+    background:#050505;
+    color:#d7d7d7;
+    padding:20px;
+}
+
+.terminal{
+    border:1px solid #1f1f1f;
+    background:#0b0b0b;
+    padding:20px;
+    border-radius:10px;
+}
+
+.topbar{
+    border-bottom:1px solid #1f1f1f;
+    padding-bottom:15px;
+    margin-bottom:20px;
+}
+
+.title{
+    color:#00ffd5;
+    font-size:24px;
+    font-weight:bold;
+}
+
+.sub{
+    color:#888;
+    margin-top:5px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:20px;
+}
+
+.panel{
+    border:1px solid #1f1f1f;
+    background:#111;
+    border-radius:10px;
+    padding:15px;
+}
+
+.panel-title{
+    color:#00ffd5;
+    margin-bottom:15px;
+    font-size:18px;
+    border-bottom:1px solid #222;
+    padding-bottom:10px;
+}
+
+.input-group{
+    margin-bottom:12px;
+}
+
+label{
+    display:block;
+    margin-bottom:5px;
+    color:#888;
+}
+
+input, select{
+    width:100%;
+    background:#050505;
+    border:1px solid #222;
+    color:#fff;
+    padding:10px;
+    border-radius:5px;
+}
+
+.output{
+    margin-bottom:12px;
+    padding:10px;
+    background:#050505;
+    border:1px solid #1f1f1f;
+    border-radius:5px;
+}
+
+.green{color:#00ff95;}
+.red{color:#ff4b4b;}
+.yellow{color:#ffd000;}
+.blue{color:#00d0ff;}
+
+.bottom{
+    margin-top:20px;
+}
+
+.upload{
+    border:2px dashed #333;
+    padding:25px;
+    text-align:center;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.preview{
+    margin-top:15px;
+    width:100%;
+    border-radius:10px;
+    display:none;
+}
+
+.analytics{
+    margin-top:15px;
+    line-height:1.8;
+}
+
+.footer{
+    margin-top:20px;
+    text-align:center;
+    color:#555;
+}
+
+@media(max-width:1000px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
 </style>
 </head>
 <body>
 
-<header class="container">
-  <div class="logo-section">
-    <h1>🚀 FRANCIS TERMINAL</h1>
-    <span class="badge">Professional Trading</span>
-  </div>
-  <div class="header-stats">
-    <div class="header-stat">
-      <div class="header-stat-label">Account Balance</div>
-      <div class="header-stat-value" id="headerBalance">$0.00</div>
+<div class="terminal">
+
+    <div class="topbar">
+        <div class="title">
+            INSTITUTIONAL BTC RISK TERMINAL
+        </div>
+
+        <div class="sub">
+            EQUITI CFD ENGINE — AED RISK MODEL
+        </div>
     </div>
-    <div class="header-stat">
-      <div class="header-stat-label">Total P&L</div>
-      <div class="header-stat-value" id="headerPnL">+$0.00</div>
-    </div>
-    <div class="header-stat">
-      <div class="header-stat-label">Win Rate</div>
-      <div class="header-stat-value" id="headerWinRate">0%</div>
-    </div>
-  </div>
-</header>
 
-<div class="container">
-  <div class="nav-section">
-    <button class="nav-btn active" onclick="switchTab('calculator')">🧮 Calculator</button>
-    <button class="nav-btn" onclick="switchTab('journal')">📔 Journal</button>
-    <button class="nav-btn" onclick="switchTab('analytics')">📈 Analytics</button>
-    <button class="nav-btn" onclick="switchTab('accounts')">🔗 Accounts</button>
-  </div>
+    <div class="grid">
 
-  <!-- CALCULATOR TAB -->
-  <div id="calculator" class="tab-content active">
-    <div class="grid-2">
-      <div class="card">
-        <h2>⚙️ Trade Setup</h2>
+        <!-- LEFT PANEL -->
+        <div class="panel">
 
-        <div class="form-group">
-          <label>Trading Pair</label>
-          <input type="text" id="calcInstrument" placeholder="EURUSD, BTCUSDT, GBPUSD..." onchange="calcLotSize()" />
-        </div>
-
-        <div class="form-group">
-          <label>Trade Direction</label>
-          <div class="button-group">
-            <button class="btn-toggle active" onclick="setCalcDirection('buy')">🟢 BUY</button>
-            <button class="btn-toggle" onclick="setCalcDirection('sell')">🔴 SELL</button>
-          </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <div class="form-group">
-          <label>Account Balance ($)</label>
-          <input type="number" id="calcBalance" placeholder="10000" step="0.01" onchange="calcLotSize()" />
-        </div>
-
-        <div class="form-group">
-          <label>Risk Per Trade (%)</label>
-          <input type="number" id="calcRisk" placeholder="2" step="0.1" min="0.1" max="10" value="2" onchange="calcLotSize()" />
-        </div>
-
-        <div class="section-divider"></div>
-
-        <div class="input-row">
-          <div class="form-group">
-            <label>Entry Price</label>
-            <input type="number" id="calcEntry" placeholder="1.0850" step="0.00001" onchange="calcLotSize()" />
-          </div>
-          <div class="form-group">
-            <label>Stop Loss Price</label>
-            <input type="number" id="calcSL" placeholder="1.0800" step="0.00001" onchange="calcLotSize()" />
-          </div>
-        </div>
-
-        <div class="input-row">
-          <div class="form-group">
-            <label>Take Profit Price</label>
-            <input type="number" id="calcTP" placeholder="1.0950" step="0.00001" onchange="calcLotSize()" />
-          </div>
-          <div class="form-group">
-            <label class="auto-label">🔄 Position Size (Lots)</label>
-            <input type="number" id="calcLots" placeholder="Auto-calculated" step="0.01" class="auto-field" disabled />
-          </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <button onclick="calcLotSize()" class="success" style="margin-bottom: 15px;">🧮 Calculate Risk</button>
-        <button onclick="saveCalculationToJournal()">💾 Save to Journal</button>
-      </div>
-
-      <div class="card">
-        <h2>📊 Calculation Results</h2>
-
-        <div class="info-box">
-          💡 All calculations update automatically based on your inputs
-        </div>
-
-        <div class="metric-panel">
-          <h3 style="margin: 0 0 15px 0; color: #00ff88; font-size: 14px;">Price Levels</h3>
-          <div class="metric-row">
-            <span class="metric-label">Entry</span>
-            <span class="metric-value" id="calcEntryDisp">0.0000</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Stop Loss</span>
-            <span class="metric-value" id="calcSLDisp">0.0000</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Take Profit</span>
-            <span class="metric-value" id="calcTPDisp">0.0000</span>
-          </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <div class="metric-panel">
-          <h3 style="margin: 0 0 15px 0; color: #00ff88; font-size: 14px;">Position & Risk Metrics</h3>
-          <div class="metric-row">
-            <span class="metric-label">Position Size</span>
-            <span class="metric-value" id="calcLotsDisp">0.00 lots</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Account Risk $</span>
-            <span class="metric-value" id="calcRiskAmt">$0.00</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">Risk % of Account</span>
-            <span class="metric-value" id="calcRiskPct">0%</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">SL Distance</span>
-            <span class="metric-value" id="calcSLPips">0 pips</span>
-          </div>
-          <div class="metric-row">
-            <span class="metric-label">TP Distance</span>
-            <span class="metric-value" id="calcTPPips">0 pips</span>
-          </div>
-        </div>
-
-        <div class="section-divider"></div>
-
-        <div class="risk-reward-box">
-          <h3 style="margin: 0 0 20px 0; color: #22c55e;">🎯 Risk/Reward Analysis</h3>
-          <div class="ratio-display">
-            <div class="ratio-box">
-              <div class="ratio-label">Potential Loss</div>
-              <div class="ratio-value" id="calcRiskDisp">$0</div>
+            <div class="panel-title">
+                TRADE EXECUTION
             </div>
-            <div class="ratio-box">
-              <div class="ratio-label">Potential Profit</div>
-              <div class="ratio-value" id="calcRewardDisp">$0</div>
+
+            <div class="input-group">
+                <label>Trade Type</label>
+                <select id="tradeType">
+                    <option>BUY</option>
+                    <option>SELL</option>
+                </select>
             </div>
-            <div class="ratio-box">
-              <div class="ratio-label">R:R Ratio</div>
-              <div class="ratio-value" id="calcRatio">1:1</div>
+
+            <div class="input-group">
+                <label>Entry Price</label>
+                <input type="number" id="entry" value="79090.63">
             </div>
-          </div>
-          <div class="ratio-bar">
-            <div class="ratio-fill" id="calcRatioBar" style="width: 50%;"></div>
-          </div>
-          <div style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px;">
-            <span style="color: #ef4444;">Risk</span>
-            <span style="color: #22c55e;">Reward</span>
-          </div>
+
+            <div class="input-group">
+                <label>Stop Loss Price</label>
+                <input type="number" id="sl" value="80090.63">
+            </div>
+
+            <div class="input-group">
+                <label>Take Profit Price</label>
+                <input type="number" id="tp" value="76090.63">
+            </div>
+
+            <div class="input-group">
+                <label>Money Risk (AED)</label>
+                <input type="number" id="aedRisk" value="50">
+            </div>
+
+            <div class="input-group">
+                <label>USD/AED Rate</label>
+                <input type="number" id="usdAed" value="3.67">
+            </div>
+
+            <div class="input-group">
+                <label>Leverage</label>
+                <input type="number" id="leverage" value="500">
+            </div>
+
         </div>
 
-        <div class="metric-panel">
-          <div class="metric-row">
-            <span class="metric-label">Win Rate for Breakeven</span>
-            <span class="metric-value" id="calcWinRateBreak">50%</span>
-          </div>
+        <!-- CENTER PANEL -->
+        <div class="panel">
+
+            <div class="panel-title">
+                RISK ANALYTICS
+            </div>
+
+            <div class="output">
+                Stop Distance:
+                <span class="yellow" id="distance">0</span>
+            </div>
+
+            <div class="output">
+                USD Risk:
+                <span class="green" id="usdRisk">0</span>
+            </div>
+
+            <div class="output">
+                Recommended Lot:
+                <span class="blue" id="lot">0</span>
+            </div>
+
+            <div class="output">
+                Risk Reward:
+                <span class="green" id="rr">0</span>
+            </div>
+
+            <div class="output">
+                Break-even Win Rate:
+                <span class="yellow" id="winrate">0</span>
+            </div>
+
+            <div class="output">
+                Margin Usage:
+                <span class="green" id="margin">SAFE</span>
+            </div>
+
+            <div class="output">
+                Exposure Level:
+                <span class="green" id="exposure">LOW</span>
+            </div>
+
+            <div class="output">
+                Daily Drawdown:
+                <span class="red" id="drawdown">50 / 150 AED</span>
+            </div>
+
         </div>
-      </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="panel">
+
+            <div class="panel-title">
+                MACRO FLOW ENGINE
+            </div>
+
+            <div class="output">
+                TOTAL:
+                <span class="green">BULLISH</span>
+            </div>
+
+            <div class="output">
+                TOTAL3:
+                <span class="green">RISK ON</span>
+            </div>
+
+            <div class="output">
+                USDT.D:
+                <span class="red">FALLING</span>
+            </div>
+
+            <div class="output">
+                DXY:
+                <span class="red">WEAK</span>
+            </div>
+
+            <div class="output">
+                BTC.D:
+                <span class="green">RISING</span>
+            </div>
+
+            <div class="output">
+                ETHBTC:
+                <span class="yellow">NEUTRAL</span>
+            </div>
+
+            <div class="output">
+                Market State:
+                <span class="blue">BTC DOMINANCE</span>
+            </div>
+
+        </div>
+
     </div>
-  </div>
 
-  <!-- JOURNAL TAB -->
-  <div id="journal" class="tab-content">
-    <div class="card" style="margin-bottom: 20px;">
-      <h2>📝 Record Trade</h2>
+    <!-- PHOTO ANALYTICS -->
+    <div class="panel bottom">
 
-      <div class="input-row">
-        <div class="form-group">
-          <label>Entry Date & Time</label>
-          <input type="datetime-local" id="journalEntryDate" />
+        <div class="panel-title">
+            TRADE SCREENSHOT ANALYTICS
         </div>
-        <div class="form-group">
-          <label>Exit Date & Time</label>
-          <input type="datetime-local" id="journalExitDate" />
-        </div>
-      </div>
 
-      <div class="input-row-3">
-        <div class="form-group">
-          <label>Trading Pair</label>
-          <input type="text" id="journalSymbol" placeholder="EURUSD" />
-        </div>
-        <div class="form-group">
-          <label>Direction</label>
-          <select id="journalDirection">
-            <option value="BUY">🟢 BUY</option>
-            <option value="SELL">🔴 SELL</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Position Size</label>
-          <input type="number" id="journalLots" placeholder="1.00" step="0.01" />
-        </div>
-      </div>
+        <label class="upload">
+            Upload Trade Screenshot
+            <input type="file" id="imageUpload" hidden>
+        </label>
 
-      <div class="input-row-3">
-        <div class="form-group">
-          <label>Entry Price</label>
-          <input type="number" id="journalEntry" placeholder="0.0000" step="0.00001" />
-        </div>
-        <div class="form-group">
-          <label>Exit Price</label>
-          <input type="number" id="journalExit" placeholder="0.0000" step="0.00001" />
-        </div>
-        <div class="form-group">
-          <label>Profit/Loss ($)</label>
-          <input type="number" id="journalPnL" placeholder="0.00" step="0.01" />
-        </div>
-      </div>
+        <img id="preview" class="preview">
 
-      <div class="form-group">
-        <label>Trade Notes & Analysis</label>
-        <textarea id="journalNotes" placeholder="Entry reason, market conditions, exit strategy..." rows="4"></textarea>
-      </div>
+        <div class="analytics">
+            ✔ BOS Confirmed<br>
+            ✔ Liquidity Sweep Detected<br>
+            ✔ HTF Alignment Strong<br>
+            ⚠ Entry Slightly Late<br>
+            ✔ NY Session Confirmation
+        </div>
 
-      <button onclick="addTradeToJournal()" class="success">✅ Add Trade</button>
     </div>
 
-    <div class="card">
-      <h2>📚 Trade History</h2>
-      <div id="journalList"></div>
-    </div>
-  </div>
-
-  <!-- ANALYTICS TAB -->
-  <div id="analytics" class="tab-content">
-    <div class="grid-4">
-      <div class="stat-card">
-        <div class="stat-label">Total Trades</div>
-        <div class="stat-value" id="analyticsTotalTrades">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Winning Trades</div>
-        <div class="stat-value" id="analyticsWinning">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Losing Trades</div>
-        <div class="stat-value negative" id="analyticsLosing">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Win Rate</div>
-        <div class="stat-value" id="analyticsWinRate">0%</div>
-      </div>
+    <div class="footer">
+        INSTITUTIONAL RISK ENGINE v1.0
     </div>
 
-    <div class="grid-2">
-      <div class="stat-card" style="grid-column: 1;">
-        <div class="stat-label">Total P&L</div>
-        <div class="stat-value" id="analyticsTotalPnL">$0</div>
-      </div>
-      <div class="stat-card" style="grid-column: 2;">
-        <div class="stat-label">Profit Factor</div>
-        <div class="stat-value" id="analyticsProfitFactor">0.00</div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>📊 Performance Breakdown</h2>
-      <div class="metric-panel">
-        <div class="metric-row">
-          <span class="metric-label">Average Win</span>
-          <span class="metric-value" id="analyticsAvgWin">$0</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Average Loss</span>
-          <span class="metric-value negative" id="analyticsAvgLoss">$0</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Best Trade</span>
-          <span class="metric-value" id="analyticsBestTrade">$0</span>
-        </div>
-        <div class="metric-row">
-          <span class="metric-label">Worst Trade</span>
-          <span class="metric-value negative" id="analyticsWorstTrade">$0</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ACCOUNTS TAB -->
-  <div id="accounts" class="tab-content">
-    <div class="card">
-      <h2>🔗 Connected Trading Accounts</h2>
-      <p style="color: #60a5fa; text-align: center; padding: 40px 20px;">Integration coming soon...</p>
-    </div>
-  </div>
 </div>
 
 <script>
-// Global State
-let calcDirection = 'buy';
-let tradeJournal = [];
 
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-  loadTradesFromStorage();
-  updateAnalytics();
+function calculate(){
+
+    let entry = parseFloat(document.getElementById("entry").value);
+    let sl = parseFloat(document.getElementById("sl").value);
+    let tp = parseFloat(document.getElementById("tp").value);
+    let aedRisk = parseFloat(document.getElementById("aedRisk").value);
+    let usdAed = parseFloat(document.getElementById("usdAed").value);
+
+    let stopDistance = Math.abs(entry - sl);
+
+    let usdRisk = aedRisk / usdAed;
+
+    let lot = usdRisk / stopDistance;
+
+    let reward = Math.abs(entry - tp);
+
+    let rr = reward / stopDistance;
+
+    let breakeven = 100 / (1 + rr);
+
+    document.getElementById("distance").innerHTML =
+        stopDistance.toFixed(2) + " pts";
+
+    document.getElementById("usdRisk").innerHTML =
+        usdRisk.toFixed(2) + " USD";
+
+    document.getElementById("lot").innerHTML =
+        lot.toFixed(3) + " BTC";
+
+    document.getElementById("rr").innerHTML =
+        "1 : " + rr.toFixed(2);
+
+    document.getElementById("winrate").innerHTML =
+        breakeven.toFixed(1) + "%";
+
+    if(lot > 0.05){
+        document.getElementById("exposure").innerHTML = "HIGH";
+        document.getElementById("exposure").className = "red";
+    }else if(lot > 0.02){
+        document.getElementById("exposure").innerHTML = "MEDIUM";
+        document.getElementById("exposure").className = "yellow";
+    }else{
+        document.getElementById("exposure").innerHTML = "LOW";
+        document.getElementById("exposure").className = "green";
+    }
+
+}
+
+document.querySelectorAll("input, select").forEach(el=>{
+    el.addEventListener("input", calculate);
 });
 
-// Tab Switching
-function switchTab(tabName) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(tabName).classList.add('active');
-  event.target.classList.add('active');
-}
+calculate();
 
-// Set Trade Direction
-function setCalcDirection(direction) {
-  calcDirection = direction;
-  document.querySelectorAll('.btn-toggle').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  calcLotSize();
-}
+const upload = document.getElementById("imageUpload");
+const preview = document.getElementById("preview");
 
-// ===== MAIN CALCULATION FUNCTION =====
-function calcLotSize() {
-  const balance = parseFloat(document.getElementById('calcBalance').value) || 0;
-  const risk = parseFloat(document.getElementById('calcRisk').value) || 0;
-  const entry = parseFloat(document.getElementById('calcEntry').value) || 0;
-  const sl = parseFloat(document.getElementById('calcSL').value) || 0;
-  const tp = parseFloat(document.getElementById('calcTP').value) || 0;
+upload.addEventListener("change", function(e){
 
-  // Display prices
-  document.getElementById('calcEntryDisp').textContent = entry.toFixed(4);
-  document.getElementById('calcSLDisp').textContent = sl.toFixed(4);
-  document.getElementById('calcTPDisp').textContent = tp.toFixed(4);
+    const file = e.target.files[0];
 
-  // Check if we have minimum required inputs
-  if (!balance || !risk || !entry || !sl) {
-    document.getElementById('calcLotsDisp').textContent = '0.00 lots';
-    document.getElementById('calcRiskAmt').textContent = '$0.00';
-    document.getElementById('calcRiskPct').textContent = '0%';
-    document.getElementById('calcSLPips').textContent = '0 pips';
-    document.getElementById('calcTPPips').textContent = '0 pips';
-    document.getElementById('calcRiskDisp').textContent = '$0';
-    document.getElementById('calcRewardDisp').textContent = '$0';
-    document.getElementById('calcRatio').textContent = '1:1';
-    document.getElementById('calcWinRateBreak').textContent = '50%';
-    return;
-  }
+    if(file){
 
-  // Calculate SL Distance in Pips
-  const slPips = Math.abs((entry - sl) / 0.0001);
-  document.getElementById('calcSLPips').textContent = slPips.toFixed(0) + ' pips';
+        const reader = new FileReader();
 
-  // Calculate Risk Amount ($)
-  const riskAmount = (balance * risk) / 100;
-  document.getElementById('calcRiskAmt').textContent = '$' + riskAmount.toFixed(2);
-  document.getElementById('calcRiskPct').textContent = risk.toFixed(1) + '%';
+        reader.onload = function(event){
 
-  // Calculate Lot Size automatically based on risk
-  // Formula: Lot Size = Risk Amount / (SL Distance in pips * Pip Value)
-  // For most instruments, 1 lot = 100,000 units, 1 pip = $10 per lot (standard forex)
-  const pipValue = 10; // Standard for forex pairs
-  const calculatedLots = riskAmount / (slPips * pipValue);
-  
-  document.getElementById('calcLots').value = calculatedLots.toFixed(2);
-  document.getElementById('calcLotsDisp').textContent = calculatedLots.toFixed(2) + ' lots';
+            preview.src = event.target.result;
+            preview.style.display = "block";
 
-  // Calculate Potential Loss (Risk)
-  document.getElementById('calcRiskDisp').textContent = '$' + riskAmount.toFixed(2);
+        }
 
-  // Calculate TP Distance & Potential Profit
-  if (tp > 0) {
-    const tpPips = Math.abs((tp - entry) / 0.0001);
-    document.getElementById('calcTPPips').textContent = tpPips.toFixed(0) + ' pips';
+        reader.readAsDataURL(file);
 
-    const potentialProfit = (tpPips * pipValue * calculatedLots);
-    document.getElementById('calcRewardDisp').textContent = '$' + potentialProfit.toFixed(2);
+    }
 
-    // Calculate Risk/Reward Ratio
-    const ratio = potentialProfit / riskAmount;
-    document.getElementById('calcRatio').textContent = `1:${ratio.toFixed(2)}`;
+});
 
-    // Calculate ratio bar width
-    const ratioBarWidth = (100 / (1 + ratio));
-    document.getElementById('calcRatioBar').style.width = ratioBarWidth + '%';
-
-    // Calculate win rate for breakeven
-    const breakevenWinRate = (100 / (1 + ratio));
-    document.getElementById('calcWinRateBreak').textContent = breakevenWinRate.toFixed(1) + '%';
-  } else {
-    document.getElementById('calcTPPips').textContent = '0 pips';
-    document.getElementById('calcRewardDisp').textContent = '$0';
-    document.getElementById('calcRatio').textContent = '1:1';
-    document.getElementById('calcRatioBar').style.width = '50%';
-    document.getElementById('calcWinRateBreak').textContent = '50%';
-  }
-}
-
-// Save Calculation to Journal
-function saveCalculationToJournal() {
-  const instrument = document.getElementById('calcInstrument').value;
-  const entry = parseFloat(document.getElementById('calcEntry').value);
-  const sl = parseFloat(document.getElementById('calcSL').value);
-  const tp = parseFloat(document.getElementById('calcTP').value);
-  const lots = parseFloat(document.getElementById('calcLots').value);
-
-  if (!instrument || !entry || !sl || !lots) {
-    alert('❌ Please fill in all required fields');
-    return;
-  }
-
-  document.getElementById('journalSymbol').value = instrument;
-  document.getElementById('journalDirection').value = calcDirection.toUpperCase();
-  document.getElementById('journalLots').value = lots.toFixed(2);
-  document.getElementById('journalEntry').value = entry.toFixed(5);
-  document.getElementById('journalExit').value = tp.toFixed(5);
-  document.getElementById('journalEntryDate').value = new Date().toISOString().slice(0, 16);
-
-  switchTab('journal');
-  alert('✅ Ready to record trade! Fill in exit details and P&L');
-}
-
-// Add Trade to Journal
-function addTradeToJournal() {
-  const entryDate = document.getElementById('journalEntryDate').value;
-  const exitDate = document.getElementById('journalExitDate').value;
-  const symbol = document.getElementById('journalSymbol').value;
-  const direction = document.getElementById('journalDirection').value;
-  const lots = parseFloat(document.getElementById('journalLots').value);
-  const entry = parseFloat(document.getElementById('journalEntry').value);
-  const exit = parseFloat(document.getElementById('journalExit').value);
-  const pnl = parseFloat(document.getElementById('journalPnL').value);
-  const notes = document.getElementById('journalNotes').value;
-
-  if (!symbol || !entry || !exit || !pnl) {
-    alert('❌ Please fill in all required trade fields');
-    return;
-  }
-
-  const trade = {
-    id: Date.now(),
-    entryDate,
-    exitDate,
-    symbol,
-    direction,
-    lots,
-    entry,
-    exit,
-    pnl,
-    notes,
-    timestamp: new Date().toLocaleString()
-  };
-
-  tradeJournal.push(trade);
-  saveTradeToStorage();
-  updateAnalytics();
-  displayJournalEntries();
-
-  // Clear form
-  document.getElementById('journalEntryDate').value = '';
-  document.getElementById('journalExitDate').value = '';
-  document.getElementById('journalSymbol').value = '';
-  document.getElementById('journalLots').value = '';
-  document.getElementById('journalEntry').value = '';
-  document.getElementById('journalExit').value = '';
-  document.getElementById('journalPnL').value = '';
-  document.getElementById('journalNotes').value = '';
-
-  alert('✅ Trade recorded successfully!');
-}
-
-// Display Journal Entries
-function displayJournalEntries() {
-  const container = document.getElementById('journalList');
-  container.innerHTML = '';
-
-  if (tradeJournal.length === 0) {
-    container.innerHTML = '<p style="color: #60a5fa; text-align: center; padding: 20px;">No trades recorded yet</p>';
-    return;
-  }
-
-  tradeJournal.forEach(trade => {
-    const card = document.createElement('div');
-    card.className = 'trade-entry-card';
-    const pnlClass = trade.pnl >= 0 ? 'positive' : 'negative';
-    const tradeType = trade.direction.toLowerCase();
-    
-    card.innerHTML = `
-      <div class="trade-header">
-        <div>
-          <span class="trade-symbol">${trade.symbol}</span>
-          <span class="trade-type ${tradeType}">${trade.direction}</span>
-        </div>
-        <span class="trade-date">${trade.timestamp}</span>
-      </div>
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 15px;">
-        <div class="trade-stat">
-          <div class="stat-label">Entry</div>
-          <div class="stat-value">${trade.entry.toFixed(5)}</div>
-        </div>
-        <div class="trade-stat">
-          <div class="stat-label">Exit</div>
-          <div class="stat-value">${trade.exit.toFixed(5)}</div>
-        </div>
-        <div class="trade-stat">
-          <div class="stat-label">Lot Size</div>
-          <div class="stat-value">${trade.lots.toFixed(2)}</div>
-        </div>
-        <div class="trade-stat">
-          <div class="stat-label">Duration</div>
-          <div class="stat-value">${trade.exitDate ? 'Closed' : 'Open'}</div>
-        </div>
-      </div>
-      <div class="pnl-section">
-        <div class="pnl-item">
-          <div class="pnl-label">P&L</div>
-          <div class="pnl-value ${pnlClass}">$${trade.pnl.toFixed(2)}</div>
-        </div>
-      </div>
-      ${trade.notes ? `<p style="color: #60a5fa; font-size: 12px; margin-top: 10px;">📝 ${trade.notes}</p>` : ''}
-    `;
-    container.appendChild(card);
-  });
-}
-
-// Update Analytics
-function updateAnalytics() {
-  const total = tradeJournal.length;
-  const wins = tradeJournal.filter(t => t.pnl > 0).length;
-  const losses = tradeJournal.filter(t => t.pnl < 0).length;
-  const winRate = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
-
-  const totalPnL = tradeJournal.reduce((sum, t) => sum + t.pnl, 0);
-  const avgWin = wins > 0 ? (tradeJournal.filter(t => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0) / wins).toFixed(2) : 0;
-  const avgLoss = losses > 0 ? (tradeJournal.filter(t => t.pnl < 0).reduce((sum, t) => sum + t.pnl, 0) / losses).toFixed(2) : 0;
-  const bestTrade = total > 0 ? Math.max(...tradeJournal.map(t => t.pnl)).toFixed(2) : 0;
-  const worstTrade = total > 0 ? Math.min(...tradeJournal.map(t => t.pnl)).toFixed(2) : 0;
-
-  const profitFactor = losses > 0 
-    ? (tradeJournal.filter(t => t.pnl > 0).reduce((sum, t) => sum + t.pnl, 0) / Math.abs(tradeJournal.filter(t => t.pnl < 0).reduce((sum, t) => sum + t.pnl, 0))).toFixed(2)
-    : 0;
-
-  // Update Analytics Tab
-  document.getElementById('analyticsTotalTrades').textContent = total;
-  document.getElementById('analyticsWinning').textContent = wins;
-  document.getElementById('analyticsLosing').textContent = losses;
-  document.getElementById('analyticsWinRate').textContent = winRate + '%';
-  document.getElementById('analyticsTotalPnL').textContent = '$' + totalPnL.toFixed(2);
-  document.getElementById('analyticsProfitFactor').textContent = profitFactor;
-  document.getElementById('analyticsAvgWin').textContent = '$' + avgWin;
-  document.getElementById('analyticsAvgLoss').textContent = '$' + avgLoss;
-  document.getElementById('analyticsBestTrade').textContent = '$' + bestTrade;
-  document.getElementById('analyticsWorstTrade').textContent = '$' + worstTrade;
-
-  // Update Header
-  document.getElementById('headerPnL').textContent = (totalPnL >= 0 ? '+' : '') + '$' + totalPnL.toFixed(2);
-  document.getElementById('headerPnL').classList.toggle('negative', totalPnL < 0);
-  document.getElementById('headerWinRate').textContent = winRate + '%';
-
-  displayJournalEntries();
-}
-
-// Storage Functions
-function saveTradeToStorage() {
-  localStorage.setItem('tradeJournal', JSON.stringify(tradeJournal));
-}
-
-function loadTradesFromStorage() {
-  const stored = localStorage.getItem('tradeJournal');
-  tradeJournal = stored ? JSON.parse(stored) : [];
-}
 </script>
+
 </body>
 </html>
