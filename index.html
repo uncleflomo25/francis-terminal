@@ -24,7 +24,7 @@ body{
     border:1px solid #1f1f1f;
     background:#0b0b0b;
     padding:20px;
-    border-radius:10px;
+    border-radius:12px;
 }
 
 .topbar{
@@ -75,7 +75,9 @@ label{
     color:#888;
 }
 
-input, select, button{
+input,
+select,
+button{
     width:100%;
     background:#050505;
     border:1px solid #222;
@@ -105,30 +107,6 @@ button:hover{
 .yellow{color:#ffd000;}
 .blue{color:#00d0ff;}
 
-.chart{
-    height:400px;
-    background:#050505;
-    border:1px solid #222;
-    border-radius:10px;
-    position:relative;
-    overflow:hidden;
-    margin-top:20px;
-}
-
-.arrow{
-    position:absolute;
-    font-size:22px;
-    font-weight:bold;
-}
-
-.entry-arrow{
-    color:#00ff95;
-}
-
-.exit-arrow{
-    color:#ff4b4b;
-}
-
 .stats-grid{
     display:grid;
     grid-template-columns:repeat(2,1fr);
@@ -153,6 +131,30 @@ button:hover{
     color:#00ffd5;
 }
 
+.chart{
+    height:400px;
+    background:#050505;
+    border:1px solid #222;
+    border-radius:10px;
+    position:relative;
+    overflow:hidden;
+    margin-top:20px;
+}
+
+.arrow{
+    position:absolute;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.entry-arrow{
+    color:#00ff95;
+}
+
+.exit-arrow{
+    color:#ff4b4b;
+}
+
 .bottom{
     margin-top:20px;
 }
@@ -172,6 +174,7 @@ button:hover{
     border-radius:10px;
     padding:10px;
     background:#050505;
+    text-align:center;
 }
 
 .preview{
@@ -218,14 +221,14 @@ button:hover{
         </div>
 
         <div class="sub">
-            MT5 • MT4 • BINANCE • BYBIT • RISK ENGINE
+            MT5 • MT4 • UAE BROKERS • CRYPTO EXCHANGES
         </div>
 
     </div>
 
     <div class="grid">
 
-        <!-- LEFT -->
+        <!-- LEFT PANEL -->
         <div class="panel">
 
             <div class="panel-title">
@@ -236,12 +239,15 @@ button:hover{
                 <label>Trading Pair</label>
 
                 <select id="pair">
+
                     <option>BTCUSDT</option>
                     <option>ETHUSDT</option>
                     <option>SOLUSDT</option>
                     <option>XAUUSD</option>
                     <option>NAS100</option>
                     <option>EURUSD</option>
+                    <option>GBPUSD</option>
+
                 </select>
             </div>
 
@@ -249,8 +255,10 @@ button:hover{
                 <label>Trade Type</label>
 
                 <select id="tradeType">
+
                     <option>BUY</option>
                     <option selected>SELL</option>
+
                 </select>
             </div>
 
@@ -438,6 +446,7 @@ button:hover{
                 ACCOUNT CONNECTION
             </div>
 
+            <!-- PLATFORM -->
             <div class="input-group">
 
                 <label>Platform</label>
@@ -461,35 +470,108 @@ button:hover{
                         BYBIT
                     </option>
 
+                    <option value="OKX">
+                        OKX
+                    </option>
+
+                    <option value="KUCOIN">
+                        KUCOIN
+                    </option>
+
+                    <option value="BITGET">
+                        BITGET
+                    </option>
+
+                    <option value="MEXC">
+                        MEXC
+                    </option>
+
+                    <option value="KRAKEN">
+                        KRAKEN
+                    </option>
+
+                    <option value="COINBASE">
+                        COINBASE
+                    </option>
+
                 </select>
 
             </div>
 
-            <!-- MT LOGIN -->
+            <!-- ACCOUNT TYPE -->
+            <div class="input-group">
+
+                <label>Account Type</label>
+
+                <select id="accountType">
+
+                    <option value="LIVE">
+                        LIVE ACCOUNT
+                    </option>
+
+                    <option value="DEMO">
+                        DEMO ACCOUNT
+                    </option>
+
+                </select>
+
+            </div>
+
+            <!-- MT -->
             <div id="mtBox">
 
                 <div class="input-group">
-                    <label>Broker Server</label>
 
-                    <input type="text"
-                    id="brokerServer"
-                    placeholder="Exness-MT5Real">
+                    <label>Broker</label>
+
+                    <select id="brokerServer">
+
+                        <!-- UAE -->
+                        <option>EQUITI UAE - MT5</option>
+                        <option>EQUITI UAE - MT4</option>
+                        <option>ADSS UAE - MT5</option>
+                        <option>ADSS UAE - MT4</option>
+                        <option>MULTIBANK UAE - MT5</option>
+                        <option>MULTIBANK UAE - MT4</option>
+                        <option>XS UAE - MT5</option>
+                        <option>XS UAE - MT4</option>
+
+                        <!-- GLOBAL -->
+                        <option>EXNESS - MT5 REAL</option>
+                        <option>EXNESS - MT4 REAL</option>
+                        <option>IC MARKETS - MT5</option>
+                        <option>IC MARKETS - MT4</option>
+                        <option>PEPPERSTONE - MT5</option>
+                        <option>PEPPERSTONE - MT4</option>
+                        <option>FP MARKETS - MT5</option>
+                        <option>FP MARKETS - MT4</option>
+                        <option>HFM - MT5</option>
+                        <option>HFM - MT4</option>
+                        <option>XM GLOBAL - MT5</option>
+                        <option>XM GLOBAL - MT4</option>
+
+                    </select>
+
                 </div>
 
                 <div class="input-group">
+
                     <label>Account Login</label>
 
                     <input type="text"
                     id="mtLogin"
                     placeholder="12345678">
+
                 </div>
 
                 <div class="input-group">
+
                     <label>Password</label>
 
                     <input type="password"
                     id="mtPassword"
                     placeholder="********">
+
                 </div>
 
             </div>
@@ -499,66 +581,105 @@ button:hover{
             style="display:none;">
 
                 <div class="input-group">
+
                     <label>API KEY</label>
 
                     <input type="text"
                     id="apiKey"
                     placeholder="API KEY">
+
                 </div>
 
                 <div class="input-group">
+
                     <label>SECRET KEY</label>
 
                     <input type="password"
                     id="secretKey"
                     placeholder="SECRET KEY">
+
                 </div>
 
             </div>
 
+            <!-- CONNECT -->
             <button onclick="connectAccount()">
+
                 CONNECT ACCOUNT
+
             </button>
 
+            <!-- STATUS -->
             <div style="margin-top:20px;">
 
                 <div class="output">
+
                     Status:
                     <span id="connectionStatus"
                     class="red">
+
                         DISCONNECTED
+
                     </span>
+
                 </div>
 
                 <div class="output">
-                    Broker:
+
+                    Platform:
                     <span id="brokerName"
                     class="yellow">
+
                         NONE
+
                     </span>
+
                 </div>
 
                 <div class="output">
+
+                    Account Type:
+                    <span id="liveType"
+                    class="blue">
+
+                        NONE
+
+                    </span>
+
+                </div>
+
+                <div class="output">
+
                     Balance:
                     <span id="accountBalance"
                     class="green">
+
                         0.00 USD
+
                     </span>
+
                 </div>
 
                 <div class="output">
+
                     Equity:
                     <span id="accountEquity"
                     class="blue">
+
                         0.00 USD
+
                     </span>
+
                 </div>
 
             </div>
 
+            <!-- CHART -->
             <div class="panel-title"
             style="margin-top:20px;">
+
                 LIVE CHART
+
             </div>
 
             <div class="chart">
@@ -585,7 +706,7 @@ button:hover{
 
     </div>
 
-    <!-- IMAGE -->
+    <!-- SCREENSHOT -->
     <div class="panel bottom">
 
         <div class="panel-title">
@@ -635,7 +756,7 @@ button:hover{
     </div>
 
     <div class="footer">
-        INSTITUTIONAL TERMINAL v5.0
+        INSTITUTIONAL TERMINAL v6.0
     </div>
 
 </div>
@@ -810,11 +931,14 @@ function switchPlatform(){
 
 }
 
-// CONNECT ACCOUNT
+// CONNECT
 function connectAccount(){
 
     let platform =
     document.getElementById("platformSelect").value;
+
+    let accountType =
+    document.getElementById("accountType").value;
 
     document.getElementById("connectionStatus")
     .innerHTML = "CONNECTED";
@@ -825,24 +949,26 @@ function connectAccount(){
     document.getElementById("brokerName")
     .innerHTML = platform;
 
-    // MT5 / MT4
-    if(platform === "MT5" ||
-       platform === "MT4"){
+    document.getElementById("liveType")
+    .innerHTML = accountType;
+
+    // MT
+    if(platform === "MT4" ||
+       platform === "MT5"){
 
         let login =
         document.getElementById("mtLogin").value;
 
-        let server =
-        document.getElementById("brokerServer").value;
-
         let password =
         document.getElementById("mtPassword").value;
 
+        let broker =
+        document.getElementById("brokerServer").value;
+
         if(login === "" ||
-           server === "" ||
            password === ""){
 
-            alert("ENTER MT LOGIN DETAILS");
+            alert("ENTER LOGIN DETAILS");
 
             return;
 
@@ -875,11 +1001,16 @@ function connectAccount(){
         document.getElementById("exitArrow")
         .style.top = "240px";
 
-        alert(platform + " CONNECTED");
+        alert(
+            broker +
+            " CONNECTED (" +
+            accountType +
+            ")"
+        );
 
     }
 
-    // EXCHANGE
+    // CRYPTO
     else{
 
         let api =
@@ -924,7 +1055,12 @@ function connectAccount(){
         document.getElementById("exitArrow")
         .style.top = "260px";
 
-        alert(platform + " API CONNECTED");
+        alert(
+            platform +
+            " API CONNECTED (" +
+            accountType +
+            ")"
+        );
 
     }
 
@@ -964,4 +1100,4 @@ upload.addEventListener("change", function(e){
 </script>
 
 </body>
-                </html>
+                    </html>
