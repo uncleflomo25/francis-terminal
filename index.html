@@ -1,207 +1,378 @@
-// ===== AUTO CALCULATE FROM LOT SIZE =====
-function calculateFromLotSize() {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Trade Journal</title>
 
-  const balance =
-    parseFloat(document.getElementById('accountBalance').value) || 0;
-
-  const entryPrice =
-    parseFloat(document.getElementById('entryPrice').value) || 0;
-
-  const lotSize =
-    parseFloat(document.getElementById('slLotSize').value) || 0;
-
-  const riskPercentage =
-    parseFloat(document.getElementById('riskPercentage').value) || 0;
-
-  if (!balance || !entryPrice || !lotSize || !riskPercentage) {
-    return;
-  }
-
-  // Risk money
-  const riskAED = balance * (riskPercentage / 100);
-
-  // Price movement
-  const move = riskAED / (lotSize * 100000);
-
-  let slPrice = 0;
-
-  if (currentDirection === 'buy') {
-    slPrice = entryPrice - move;
-  } else {
-    slPrice = entryPrice + move;
-  }
-
-  document.getElementById('slPriceLotAuto').value =
-    slPrice.toFixed(5);
-
-  calculateLotSize();
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-// ===== MAIN CALCULATOR =====
-function calculateLotSize() {
+body{
+  background:#081018;
+  color:#fff;
+  font-family:Arial;
+  padding:20px;
+}
+
+.container{
+  max-width:1400px;
+  margin:auto;
+}
+
+.card{
+  background:#111827;
+  border:1px solid #1f2937;
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+h1{
+  margin-bottom:20px;
+  color:#00ff88;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+@media(max-width:900px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+label{
+  display:block;
+  margin-bottom:6px;
+  color:#60a5fa;
+  font-size:13px;
+}
+
+input,select{
+  width:100%;
+  padding:12px;
+  border:none;
+  outline:none;
+  background:#0f172a;
+  color:white;
+  border-radius:8px;
+  margin-bottom:15px;
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:8px;
+  background:#2563eb;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  opacity:.9;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.result{
+  background:#0f172a;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+
+.result span{
+  float:right;
+  color:#00ff88;
+}
+
+.mode-buttons{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.mode-buttons button{
+  flex:1;
+}
+
+.active{
+  background:#00aa66 !important;
+}
+
+.rr{
+  font-size:30px;
+  text-align:center;
+  color:#00ff88;
+  margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📊 ADVANCED TRADE JOURNAL</h1>
+
+<div class="grid">
+
+<div class="card">
+
+<label>Account Balance (AED)</label>
+<input type="number" id="balance" placeholder="10000">
+
+<label>Trade Direction</label>
+
+<div class="mode-buttons">
+<button id="buyBtn" class="active" onclick="setDirection('buy')">BUY</button>
+<button id="sellBtn" onclick="setDirection('sell')">SELL</button>
+</div>
+
+<label>Entry Price</label>
+<input type="number" id="entry" placeholder="1.1000" step="0.00001">
+
+<label>Take Profit Price</label>
+<input type="number" id="tp" placeholder="1.1200" step="0.00001">
+
+<label>Calculation Mode</label>
+
+<div class="mode-buttons">
+<button id="riskBtn" class="active" onclick="setMode('risk')">Risk %</button>
+<button id="lotBtn" onclick="setMode('lot')">Lot Size</button>
+</div>
+
+<div id="riskMode">
+
+<label>Risk %</label>
+<input type="number" id="riskPercent" placeholder="2">
+
+<label>Stop Loss Price</label>
+<input type="number" id="sl" placeholder="1.0950" step="0.00001">
+
+</div>
+
+<div id="lotMode" style="display:none;">
+
+<label>Lot Size</label>
+<input type="number" id="lotInput" placeholder="0.10" step="0.01">
+
+<label>Stop Loss Price</label>
+<input type="number" id="slLot" placeholder="1.0950" step="0.00001">
+
+</div>
+
+<button onclick="calculate()">CALCULATE</button>
+
+</div>
+
+<div class="card">
+
+<div class="result">
+Account Balance
+<span id="r_balance">0 AED</span>
+</div>
+
+<div class="result">
+Risk Amount
+<span id="r_risk">0 AED</span>
+</div>
+
+<div class="result">
+Risk %
+<span id="r_riskPercent">0%</span>
+</div>
+
+<div class="result">
+Lot Size
+<span id="r_lot">0.00</span>
+</div>
+
+<div class="result">
+SL Points
+<span id="r_slPoints">0</span>
+</div>
+
+<div class="result">
+Potential Profit
+<span id="r_profit">0 AED</span>
+</div>
+
+<div class="result">
+Potential Loss
+<span id="r_loss">0 AED</span>
+</div>
+
+<div class="rr" id="rrRatio">
+1:1
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let direction = 'buy';
+let mode = 'risk';
+
+function setDirection(dir){
+
+  direction = dir;
+
+  document.getElementById('buyBtn').classList.remove('active');
+  document.getElementById('sellBtn').classList.remove('active');
+
+  if(dir === 'buy'){
+    document.getElementById('buyBtn').classList.add('active');
+  }else{
+    document.getElementById('sellBtn').classList.add('active');
+  }
+}
+
+function setMode(m){
+
+  mode = m;
+
+  document.getElementById('riskBtn').classList.remove('active');
+  document.getElementById('lotBtn').classList.remove('active');
+
+  if(m === 'risk'){
+
+    document.getElementById('riskBtn').classList.add('active');
+
+    document.getElementById('riskMode').style.display = 'block';
+    document.getElementById('lotMode').style.display = 'none';
+
+  }else{
+
+    document.getElementById('lotBtn').classList.add('active');
+
+    document.getElementById('riskMode').style.display = 'none';
+    document.getElementById('lotMode').style.display = 'block';
+  }
+}
+
+function calculate(){
 
   const balance =
-    parseFloat(document.getElementById('accountBalance').value) || 0;
+    parseFloat(document.getElementById('balance').value) || 0;
 
-  const entryPrice =
-    parseFloat(document.getElementById('entryPrice').value) || 0;
+  const entry =
+    parseFloat(document.getElementById('entry').value) || 0;
 
-  let slPrice = 0;
+  const tp =
+    parseFloat(document.getElementById('tp').value) || 0;
 
-  // ===== GET SL =====
-  if (slMethod === 'manual') {
-    slPrice =
-      parseFloat(document.getElementById('slPriceManual').value) || 0;
+  let sl = 0;
+  let lot = 0;
+  let riskAED = 0;
+  let riskPercent = 0;
+
+  if(mode === 'risk'){
+
+    riskPercent =
+      parseFloat(document.getElementById('riskPercent').value) || 0;
+
+    sl =
+      parseFloat(document.getElementById('sl').value) || 0;
+
+    if(!balance || !entry || !sl || !riskPercent){
+      alert('Fill all fields');
+      return;
+    }
+
+    riskAED =
+      balance * (riskPercent / 100);
+
+    const slDistance =
+      Math.abs(entry - sl);
+
+    lot =
+      riskAED / (slDistance * 100000);
+
+  }else{
+
+    lot =
+      parseFloat(document.getElementById('lotInput').value) || 0;
+
+    sl =
+      parseFloat(document.getElementById('slLot').value) || 0;
+
+    if(!balance || !entry || !sl || !lot){
+      alert('Fill all fields');
+      return;
+    }
+
+    const slDistance =
+      Math.abs(entry - sl);
+
+    riskAED =
+      slDistance * lot * 100000;
+
+    riskPercent =
+      (riskAED / balance) * 100;
   }
 
-  if (slMethod === 'points') {
-    slPrice =
-      parseFloat(document.getElementById('slPriceAuto').value) || 0;
-  }
+  const slPoints =
+    Math.abs(entry - sl) / 0.0001;
 
-  if (slMethod === 'lotsize') {
-    slPrice =
-      parseFloat(document.getElementById('slPriceLotAuto').value) || 0;
-  }
+  let profitAED = 0;
 
-  let tpPrice =
-    parseFloat(document.getElementById('tpPrice').value) ||
-    parseFloat(document.getElementById('tpPriceAuto').value) || 0;
-
-  // ===== LOT SIZE =====
-  let lotSize =
-    parseFloat(document.getElementById('slLotSize').value) ||
-    parseFloat(document.getElementById('lotSize').value) || 0;
-
-  // ===== BASIC VALIDATION =====
-  if (!balance) return;
-  if (!entryPrice) return;
-  if (!slPrice) return;
-  if (!lotSize) return;
-
-  // ===== SL DISTANCE =====
-  const slDistance = Math.abs(entryPrice - slPrice);
-
-  // ===== POINTS =====
-  const slPoints = slDistance / 0.0001;
-
-  // ===== RISK MONEY =====
-  const riskAED =
-    slDistance * lotSize * 100000;
-
-  const riskUSD =
-    riskAED / exchangeRate;
-
-  // ===== AUTO RISK % =====
-  const autoRisk =
-    (riskAED / balance) * 100;
-
-  document.getElementById('riskPercentage').value =
-    autoRisk.toFixed(2);
-
-  // ===== DISPLAY =====
-  document.getElementById('displayBalance').textContent =
-    balance.toFixed(2) + ' AED';
-
-  document.getElementById('riskAmountAED').textContent =
-    riskAED.toFixed(2) + ' AED';
-
-  document.getElementById('riskAmountUSD').textContent =
-    riskUSD.toFixed(2) + ' USD';
-
-  document.getElementById('riskMetric').textContent =
-    riskAED.toFixed(0);
-
-  document.getElementById('slPointsDisplay').textContent =
-    slPoints.toFixed(1) + ' pts';
-
-  document.getElementById('slPriceDisplay').textContent =
-    slPrice.toFixed(5);
-
-  document.getElementById('calculatedLotSize').textContent =
-    lotSize.toFixed(2);
-
-  document.getElementById('potentialLossAED').textContent =
-    riskAED.toFixed(2) + ' AED';
-
-  document.getElementById('potentialLossUSD').textContent =
-    riskUSD.toFixed(2) + ' USD';
-
-  // ===== TP =====
-  if (tpPrice > 0) {
+  if(tp){
 
     const tpDistance =
-      Math.abs(tpPrice - entryPrice);
+      Math.abs(tp - entry);
 
-    const tpPoints =
-      tpDistance / 0.0001;
-
-    const profitAED =
-      tpDistance * lotSize * 100000;
-
-    const profitUSD =
-      profitAED / exchangeRate;
-
-    document.getElementById('tpPointsDisplay').textContent =
-      tpPoints.toFixed(1) + ' pts';
-
-    document.getElementById('tpPriceDisplay').textContent =
-      tpPrice.toFixed(5);
-
-    document.getElementById('potentialProfitAED').textContent =
-      profitAED.toFixed(2) + ' AED';
-
-    document.getElementById('potentialProfitUSD').textContent =
-      profitUSD.toFixed(2) + ' USD';
-
-    document.getElementById('rewardMetric').textContent =
-      profitAED.toFixed(0);
-
-    // ===== RR =====
-    const rr =
-      profitAED / riskAED;
-
-    document.getElementById('rrRatio').textContent =
-      '1:' + rr.toFixed(2);
-
-    // ===== BAR =====
-    const width =
-      Math.min(rr * 30, 100);
-
-    document.getElementById('ratioFill').style.width =
-      width + '%';
-
-    // ===== BREAKEVEN =====
-    const be =
-      100 / (1 + rr);
-
-    document.getElementById('breakevenRate').textContent =
-      be.toFixed(1) + '%';
-
-  } else {
-
-    document.getElementById('tpPointsDisplay').textContent =
-      '0 pts';
-
-    document.getElementById('tpPriceDisplay').textContent =
-      '0.00000';
-
-    document.getElementById('potentialProfitAED').textContent =
-      '0 AED';
-
-    document.getElementById('potentialProfitUSD').textContent =
-      '0 USD';
-
-    document.getElementById('rewardMetric').textContent =
-      '0';
-
-    document.getElementById('rrRatio').textContent =
-      '1:1';
-
-    document.getElementById('ratioFill').style.width =
-      '50%';
-
-    document.getElementById('breakevenRate').textContent =
-      '50%';
+    profitAED =
+      tpDistance * lot * 100000;
   }
+
+  const rr =
+    riskAED > 0 ? profitAED / riskAED : 0;
+
+  document.getElementById('r_balance').innerHTML =
+    balance.toFixed(2) + ' AED';
+
+  document.getElementById('r_risk').innerHTML =
+    riskAED.toFixed(2) + ' AED';
+
+  document.getElementById('r_riskPercent').innerHTML =
+    riskPercent.toFixed(2) + '%';
+
+  document.getElementById('r_lot').innerHTML =
+    lot.toFixed(2);
+
+  document.getElementById('r_slPoints').innerHTML =
+    slPoints.toFixed(1);
+
+  document.getElementById('r_profit').innerHTML =
+    profitAED.toFixed(2) + ' AED';
+
+  document.getElementById('r_loss').innerHTML =
+    riskAED.toFixed(2) + ' AED';
+
+  document.getElementById('rrRatio').innerHTML =
+    '1 : ' + rr.toFixed(2);
 }
+
+</script>
+
+</body>
+</html>
