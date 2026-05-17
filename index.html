@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Institutional BTC Risk Terminal</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Consolas,monospace;
+    font-family:Consolas, monospace;
 }
 
 body{
@@ -131,6 +132,7 @@ input, select{
         grid-template-columns:1fr;
     }
 }
+
 </style>
 </head>
 <body>
@@ -160,18 +162,13 @@ input, select{
                 <label>Trade Type</label>
                 <select id="tradeType">
                     <option>BUY</option>
-                    <option>SELL</option>
+                    <option selected>SELL</option>
                 </select>
             </div>
 
             <div class="input-group">
                 <label>Entry Price</label>
                 <input type="number" id="entry" value="79090.63">
-            </div>
-
-            <div class="input-group">
-                <label>Stop Loss Price</label>
-                <input type="number" id="sl" value="80090.63">
             </div>
 
             <div class="input-group">
@@ -185,6 +182,11 @@ input, select{
             </div>
 
             <div class="input-group">
+                <label>Stop Distance (Points)</label>
+                <input type="number" id="stopPoints" value="1000">
+            </div>
+
+            <div class="input-group">
                 <label>USD/AED Rate</label>
                 <input type="number" id="usdAed" value="3.67">
             </div>
@@ -192,6 +194,11 @@ input, select{
             <div class="input-group">
                 <label>Leverage</label>
                 <input type="number" id="leverage" value="500">
+            </div>
+
+            <div class="input-group">
+                <label>Auto Stop Loss Price</label>
+                <input type="number" id="sl" readonly>
             </div>
 
         </div>
@@ -211,6 +218,11 @@ input, select{
             <div class="output">
                 USD Risk:
                 <span class="green" id="usdRisk">0</span>
+            </div>
+
+            <div class="output">
+                AED Risk:
+                <span class="green" id="aedRiskOut">0</span>
             </div>
 
             <div class="output">
@@ -291,7 +303,7 @@ input, select{
 
     </div>
 
-    <!-- PHOTO ANALYTICS -->
+    <!-- SCREENSHOT ANALYTICS -->
     <div class="panel bottom">
 
         <div class="panel-title">
@@ -316,7 +328,7 @@ input, select{
     </div>
 
     <div class="footer">
-        INSTITUTIONAL RISK ENGINE v1.0
+        INSTITUTIONAL RISK ENGINE v2.0
     </div>
 
 </div>
@@ -325,60 +337,120 @@ input, select{
 
 function calculate(){
 
-    let entry = parseFloat(document.getElementById("entry").value);
-    let sl = parseFloat(document.getElementById("sl").value);
-    let tp = parseFloat(document.getElementById("tp").value);
-    let aedRisk = parseFloat(document.getElementById("aedRisk").value);
-    let usdAed = parseFloat(document.getElementById("usdAed").value);
+    let entry =
+    parseFloat(document.getElementById("entry").value);
 
-    let stopDistance = Math.abs(entry - sl);
+    let tp =
+    parseFloat(document.getElementById("tp").value);
 
+    let aedRisk =
+    parseFloat(document.getElementById("aedRisk").value);
+
+    let usdAed =
+    parseFloat(document.getElementById("usdAed").value);
+
+    let stopDistance =
+    parseFloat(document.getElementById("stopPoints").value);
+
+    let tradeType =
+    document.getElementById("tradeType").value;
+
+    // AED → USD
     let usdRisk = aedRisk / usdAed;
 
+    // AUTO LOT SIZE
     let lot = usdRisk / stopDistance;
 
-    let reward = Math.abs(entry - tp);
+    // AUTO STOP LOSS
+    let sl;
 
+    if(tradeType === "SELL"){
+
+        sl = entry + stopDistance;
+
+    }else{
+
+        sl = entry - stopDistance;
+
+    }
+
+    // REWARD DISTANCE
+    let reward =
+    Math.abs(entry - tp);
+
+    // RR
     let rr = reward / stopDistance;
 
+    // BREAKEVEN WIN RATE
     let breakeven = 100 / (1 + rr);
 
+    // UPDATE OUTPUTS
+    document.getElementById("sl").value =
+    sl.toFixed(2);
+
     document.getElementById("distance").innerHTML =
-        stopDistance.toFixed(2) + " pts";
+    stopDistance.toFixed(0) + " pts";
 
     document.getElementById("usdRisk").innerHTML =
-        usdRisk.toFixed(2) + " USD";
+    usdRisk.toFixed(2) + " USD";
+
+    document.getElementById("aedRiskOut").innerHTML =
+    aedRisk.toFixed(2) + " AED";
 
     document.getElementById("lot").innerHTML =
-        lot.toFixed(3) + " BTC";
+    lot.toFixed(3) + " BTC";
 
     document.getElementById("rr").innerHTML =
-        "1 : " + rr.toFixed(2);
+    "1 : " + rr.toFixed(2);
 
     document.getElementById("winrate").innerHTML =
-        breakeven.toFixed(1) + "%";
+    breakeven.toFixed(1) + "%";
 
+    // EXPOSURE ENGINE
     if(lot > 0.05){
-        document.getElementById("exposure").innerHTML = "HIGH";
-        document.getElementById("exposure").className = "red";
-    }else if(lot > 0.02){
-        document.getElementById("exposure").innerHTML = "MEDIUM";
-        document.getElementById("exposure").className = "yellow";
-    }else{
-        document.getElementById("exposure").innerHTML = "LOW";
-        document.getElementById("exposure").className = "green";
+
+        document.getElementById("exposure").innerHTML =
+        "HIGH";
+
+        document.getElementById("exposure").className =
+        "red";
+
+    }
+    else if(lot > 0.02){
+
+        document.getElementById("exposure").innerHTML =
+        "MEDIUM";
+
+        document.getElementById("exposure").className =
+        "yellow";
+
+    }
+    else{
+
+        document.getElementById("exposure").innerHTML =
+        "LOW";
+
+        document.getElementById("exposure").className =
+        "green";
+
     }
 
 }
 
 document.querySelectorAll("input, select").forEach(el=>{
+
     el.addEventListener("input", calculate);
+
 });
 
 calculate();
 
-const upload = document.getElementById("imageUpload");
-const preview = document.getElementById("preview");
+// IMAGE PREVIEW
+const upload =
+document.getElementById("imageUpload");
+
+const preview =
+document.getElementById("preview");
 
 upload.addEventListener("change", function(e){
 
@@ -404,4 +476,4 @@ upload.addEventListener("change", function(e){
 </script>
 
 </body>
-</html>
+    </html>
