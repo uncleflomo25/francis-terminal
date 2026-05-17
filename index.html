@@ -1,11 +1,20 @@
-<!DOCTYPE html>  <html lang="en">    <head>      <meta charset="UTF-8">      
-<meta name="viewport" content="width=device-width, initial-scale=1.0">      
-<title>Institutional Trading Terminal</title>  <style>    *{  
-margin:0;  
-padding:0;  
-box-sizing:border-box;  
-font-family:Consolas, monospace;  
-}  body{
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Institutional Trading Terminal</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Consolas, monospace;
+}
+
+body{
 background:#050505;
 color:#d7d7d7;
 padding:20px;
@@ -16,6 +25,8 @@ border:1px solid #1f1f1f;
 background:#0b0b0b;
 padding:20px;
 border-radius:12px;
+max-width:1600px;
+margin:auto;
 }
 
 .topbar{
@@ -75,10 +86,12 @@ border:1px solid #222;
 color:#fff;
 padding:10px;
 border-radius:5px;
+outline:none;
 }
 
 button{
 cursor:pointer;
+transition:0.2s;
 }
 
 button:hover{
@@ -140,10 +153,14 @@ font-weight:bold;
 
 .entry-arrow{
 color:#00ff95;
+top:120px;
+left:100px;
 }
 
 .exit-arrow{
 color:#ff4b4b;
+top:260px;
+left:250px;
 }
 
 .bottom{
@@ -156,6 +173,7 @@ padding:25px;
 text-align:center;
 border-radius:10px;
 cursor:pointer;
+display:block;
 }
 
 .preview-wrapper{
@@ -166,12 +184,14 @@ border-radius:10px;
 padding:10px;
 background:#050505;
 text-align:center;
+min-height:300px;
 }
 
 .preview{
 max-width:100%;
 display:none;
 transform-origin:center;
+transition:0.2s;
 }
 
 .zoom-controls{
@@ -199,479 +219,222 @@ grid-template-columns:1fr;
 
 }
 
-</style>  </head>
+</style>
+</head>
 
-<body>  <div class="terminal">  <div class="topbar">    <div class="title">      
-    INSTITUTIONAL TRADING TERMINAL      
-</div>      <div class="sub">      
-    MT5 • MT4 • UAE BROKERS • CRYPTO EXCHANGES      
-</div>  </div>    <div class="grid">    <!-- LEFT -->      
-<div class="panel">      <div class="panel-title">      
-    TRADE EXECUTION      
-</div>      
+<body>
 
-<div class="input-group">      
-    <label>Trading Pair</label>      
+<div class="terminal">
 
-    <select id="pair">      
-        <option>BTCUSDT</option>      
-        <option>ETHUSDT</option>      
-        <option>SOLUSDT</option>      
-        <option>XAUUSD</option>      
-        <option>NAS100</option>      
-        <option>EURUSD</option>      
-        <option>GBPUSD</option>      
-    </select>      
-</div>      
-
-<div class="input-group">      
-    <label>Trade Type</label>      
-
-    <select id="tradeType">      
-        <option>BUY</option>      
-        <option selected>SELL</option>      
-    </select>      
-</div>      
-
-<div class="input-group">      
-    <label>Entry Price</label>      
-
-    <input type="number"      
-    id="entry"      
-    value="79090.63">      
-</div>      
-
-<div class="input-group">      
-    <label>Take Profit</label>      
-
-    <input type="number"      
-    id="tp"      
-    value="76090.63">      
-</div>      
-
-<div class="input-group">      
-    <label>Money Risk (AED)</label>      
-
-    <input type="number"      
-    id="aedRisk"      
-    value="50">      
-</div>      
-
-<div class="input-group">      
-    <label>Stop Distance (Points)</label>      
-
-    <input type="number"      
-    id="stopPoints"      
-    value="1000">      
-</div>      
-
-<div class="input-group">      
-    <label>USD/AED</label>      
-
-    <input type="number"      
-    id="usdAed"      
-    value="3.67">      
-</div>      
-
-<div class="input-group">      
-    <label>Auto Stop Loss</label>      
-
-    <input type="number"      
-    id="sl"      
-    readonly>      
-</div>      
-
-<div class="input-group">      
-    <label>Recommended Lot Size</label>      
-
-    <input type="text"      
-    id="lotInput"      
-    readonly>      
+<div class="topbar">
+<div class="title">
+INSTITUTIONAL TRADING TERMINAL
 </div>
 
-</div>      <!-- CENTER -->      <div class="panel">      <div class="panel-title">      
-    RISK ANALYTICS      
-</div>      
+<div class="sub">
+MT5 • MT4 • UAE BROKERS • CRYPTO EXCHANGES
+</div>
+</div>
 
-<div class="output">      
-    Stop Distance:      
-    <span id="distance"      
-    class="yellow">0</span>      
-</div>      
+<div class="grid">
 
-<div class="output">      
-    USD Risk:      
-    <span id="usdRisk"      
-    class="green">0</span>      
-</div>      
+<!-- LEFT PANEL -->
 
-<div class="output">      
-    AED Risk:      
-    <span id="aedRiskOut"      
-    class="green">0</span>      
-</div>      
+<div class="panel">
 
-<div class="output">      
-    RR Ratio:      
-    <span id="rr"      
-    class="blue">0</span>      
-</div>      
+<div class="panel-title">
+TRADE EXECUTION
+</div>
 
-<div class="output">      
-    Break-even Rate:      
-    <span id="winrate"      
-    class="yellow">0</span>      
-</div>      
+<div class="input-group">
+<label>Trading Pair</label>
+<select id="pair">
+<option>BTCUSDT</option>
+<option>ETHUSDT</option>
+<option>SOLUSDT</option>
+<option>XAUUSD</option>
+<option>NAS100</option>
+<option>EURUSD</option>
+<option>GBPUSD</option>
+</select>
+</div>
 
-<div class="output">      
-    Exposure:      
-    <span id="exposure"      
-    class="green">LOW</span>      
-</div>      
+<div class="input-group">
+<label>Trade Type</label>
+<select id="tradeType">
+<option>BUY</option>
+<option selected>SELL</option>
+</select>
+</div>
 
-<div class="panel-title"      
-style="margin-top:20px;">      
-    ACCOUNT P&L      
-</div>      
+<div class="input-group">
+<label>Entry Price</label>
+<input type="number" id="entry" value="79090.63">
+</div>
 
-<div class="stats-grid">      
+<div class="input-group">
+<label>Take Profit</label>
+<input type="number" id="tp" value="76090.63">
+</div>
 
-    <div class="stat-box">      
-        <div class="stat-title">      
-            Total P&L      
-        </div>      
+<div class="input-group">
+<label>Money Risk (AED)</label>
+<input type="number" id="aedRisk" value="50">
+</div>
 
-        <div class="stat-value green"      
-        id="totalPnL">      
-            +0 AED      
-        </div>      
-    </div>      
+<div class="input-group">
+<label>Stop Distance (Points)</label>
+<input type="number" id="stopPoints" value="1000">
+</div>
 
-    <div class="stat-box">      
-        <div class="stat-title">      
-            Total Trades      
-        </div>      
+<div class="input-group">
+<label>USD/AED</label>
+<input type="number" id="usdAed" value="3.67">
+</div>
 
-        <div class="stat-value"      
-        id="totalTrades">      
-            0      
-        </div>      
-    </div>      
+<div class="input-group">
+<label>Auto Stop Loss</label>
+<input type="number" id="sl" readonly>
+</div>
 
-    <div class="stat-box">      
-        <div class="stat-title">      
-            Win Trades      
-        </div>      
-
-        <div class="stat-value green"      
-        id="winTrades">      
-            0      
-        </div>      
-    </div>      
-
-    <div class="stat-box">      
-        <div class="stat-title">      
-            Lose Trades      
-        </div>      
-
-        <div class="stat-value red"      
-        id="loseTrades">      
-            0      
-        </div>      
-    </div>      
-
-    <div class="stat-box">      
-        <div class="stat-title">      
-            Win Ratio      
-        </div>      
-
-        <div class="stat-value blue"      
-        id="winRatio">      
-            0%      
-        </div>      
-    </div>      
-
-    <div class="stat-box">      
-        <div class="stat-title">      
-            Profit Factor      
-        </div>      
-
-        <div class="stat-value yellow">      
-            2.1      
-        </div>      
-    </div>      
+<div class="input-group">
+<label>Recommended Lot Size</label>
+<input type="text" id="lotInput" readonly>
+</div>
 
 </div>
 
-</div>      <!-- RIGHT -->      <div class="panel">      <div class="panel-title">      
-    ACCOUNT CONNECTION      
-</div>      
-
-<!-- PLATFORM -->      
-<div class="input-group">      
-
-    <label>Platform</label>      
-
-    <select id="platformSelect"      
-    onchange="switchPlatform()">      
-
-        <option value="MT5">      
-            MT5      
-        </option>      
-
-        <option value="MT4">      
-            MT4      
-        </option>      
-
-        <option value="BINANCE">      
-            BINANCE      
-        </option>      
-
-        <option value="BYBIT">      
-            BYBIT      
-        </option>      
-
-        <option value="OKX">      
-            OKX      
-        </option>      
-
-        <option value="KUCOIN">      
-            KUCOIN      
-        </option>      
-
-        <option value="BITGET">      
-            BITGET      
-        </option>      
-
-        <option value="MEXC">      
-            MEXC      
-        </option>      
-
-        <option value="KRAKEN">      
-            KRAKEN      
-        </option>      
-
-        <option value="COINBASE">      
-            COINBASE      
-        </option>      
-
-    </select>      
-
-</div>      
-
-<!-- ACCOUNT TYPE -->      
-<div class="input-group">      
-
-    <label>Account Type</label>      
-
-    <select id="accountType">      
-
-        <option value="LIVE">      
-            LIVE ACCOUNT      
-        </option>      
-
-        <option value="DEMO">      
-            DEMO ACCOUNT      
-        </option>      
-
-    </select>      
-
-</div>      
-
-<!-- MT -->      
-<div id="mtBox">      
-
-    <div class="input-group">      
-
-        <label>Broker</label>      
-
-        <select id="brokerServer">      
-
-            <option>EQUITI UAE - MT5</option>      
-            <option>EQUITI UAE - MT4</option>      
-            <option>ADSS UAE - MT5</option>      
-            <option>ADSS UAE - MT4</option>      
-            <option>MULTIBANK UAE - MT5</option>      
-            <option>MULTIBANK UAE - MT4</option>      
-            <option>XS UAE - MT5</option>      
-            <option>XS UAE - MT4</option>      
-            <option>EXNESS - MT5 REAL</option>      
-            <option>EXNESS - MT4 REAL</option>      
-            <option>IC MARKETS - MT5</option>      
-            <option>IC MARKETS - MT4</option>      
-            <option>PEPPERSTONE - MT5</option>      
-            <option>PEPPERSTONE - MT4</option>      
-            <option>FP MARKETS - MT5</option>      
-            <option>FP MARKETS - MT4</option>      
-            <option>HFM - MT5</option>      
-            <option>HFM - MT4</option>      
-            <option>XM GLOBAL - MT5</option>      
-            <option>XM GLOBAL - MT4</option>      
-
-        </select>      
-
-    </div>      
-
-    <div class="input-group">      
-
-        <label>Account Login</label>      
-
-        <input type="text"      
-        id="mtLogin"      
-        placeholder="12345678">      
-
-    </div>      
-
-    <div class="input-group">      
-
-        <label>Password</label>      
-
-        <input type="password"      
-        id="mtPassword"      
-        placeholder="********">      
-
-    </div>      
-
-</div>      
-
-<!-- CRYPTO -->      
-<div id="apiBox"      
-style="display:none;">      
-
-    <div class="input-group">      
-
-        <label>API KEY</label>      
-
-        <input type="text"      
-        id="apiKey"      
-        placeholder="API KEY">      
-
-    </div>      
-
-    <div class="input-group">      
-
-        <label>SECRET KEY</label>      
-
-        <input type="password"      
-        id="secretKey"      
-        placeholder="SECRET KEY">      
-
-    </div>      
-
-</div>      
-
-<!-- CONNECT -->      
-<button onclick="connectAccount()">      
-    CONNECT ACCOUNT      
-</button>      
-
-<!-- STATUS -->      
-<div style="margin-top:20px;">      
-
-    <div class="output">      
-        Status:      
-        <span id="connectionStatus"      
-        class="red">      
-            DISCONNECTED      
-        </span>      
-    </div>      
-
-    <div class="output">      
-        Platform:      
-        <span id="brokerName"      
-        class="yellow">      
-            NONE      
-        </span>      
-    </div>      
-
-    <div class="output">      
-        Account Type:      
-        <span id="liveType"      
-        class="blue">      
-            NONE      
-        </span>      
-    </div>      
-
-    <div class="output">      
-        Balance:      
-        <span id="accountBalance"      
-        class="green">      
-            0.00 USD      
-        </span>      
-    </div>      
-
-    <div class="output">      
-        Equity:      
-        <span id="accountEquity"      
-        class="blue">      
-            0.00 USD      
-        </span>      
-    </div>      
-
-</div>      
-
-<!-- LIVE CHART -->      
-<div class="panel-title"      
-style="margin-top:20px;">      
-    LIVE CHART      
-</div>      
-
-<div class="chart">      
-
-    <div class="arrow entry-arrow"      
-    id="entryArrow"      
-    style="top:120px; left:100px;">      
-
-        ↑ ENTRY      
-
-    </div>      
-
-    <div class="arrow exit-arrow"      
-    id="exitArrow"      
-    style="top:260px; left:250px;">      
-
-        ↓ EXIT      
-
-    </div>      
+<!-- CENTER PANEL -->
+
+<div class="panel">
+
+<div class="panel-title">
+RISK ANALYTICS
+</div>
+
+<div class="output">
+Stop Distance:
+<span id="distance" class="yellow">0</span>
+</div>
+
+<div class="output">
+USD Risk:
+<span id="usdRisk" class="green">0</span>
+</div>
+
+<div class="output">
+AED Risk:
+<span id="aedRiskOut" class="green">0</span>
+</div>
+
+<div class="output">
+RR Ratio:
+<span id="rr" class="blue">0</span>
+</div>
+
+<div class="output">
+Break-even Rate:
+<span id="winrate" class="yellow">0</span>
+</div>
+
+<div class="output">
+Exposure:
+<span id="exposure" class="green">LOW</span>
+</div>
 
 </div>
 
-</div>  </div>    <!-- SCREENSHOT -->    <div class="panel bottom">    <div class="panel-title">      
-    TRADE SCREENSHOT ANALYTICS      
-</div>      <label class="upload">      Upload Trade Screenshot      
+<!-- RIGHT PANEL -->
 
-<input type="file"      
-id="imageUpload"      
-hidden>
+<div class="panel">
 
-</label>      <div class="zoom-controls">      <button onclick="zoomIn()">      
-    ZOOM IN      
-</button>      
+<div class="panel-title">
+LIVE CHART
+</div>
 
-<button onclick="zoomOut()">      
-    ZOOM OUT      
+<div class="chart">
+
+<div class="arrow entry-arrow">
+↑ ENTRY
+</div>
+
+<div class="arrow exit-arrow">
+↓ EXIT
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SCREENSHOT -->
+
+<div class="panel bottom">
+
+<div class="panel-title">
+TRADE SCREENSHOT ANALYTICS
+</div>
+
+<label class="upload">
+
+UPLOAD TRADE SCREENSHOT
+
+<input type="file" id="imageUpload" hidden>
+
+</label>
+
+<div class="zoom-controls">
+
+<button onclick="zoomIn()">
+ZOOM IN
 </button>
 
-</div>      <div class="preview-wrapper">      <img id="preview"      
-class="preview">
+<button onclick="zoomOut()">
+ZOOM OUT
+</button>
 
-</div>      <div class="analytics">      ✔ BOS Confirmed<br>      
-✔ Liquidity Sweep Detected<br>      
-✔ Entry Confirmation<br>      
-✔ Trend Alignment<br>      
-✔ Session Analysis<br>      
+</div>
+
+<div class="preview-wrapper">
+
+<img id="preview" class="preview">
+
+</div>
+
+<div class="analytics">
+
+✔ BOS Confirmed<br>
+✔ Liquidity Sweep Detected<br>
+✔ Entry Confirmation<br>
+✔ Trend Alignment<br>
+✔ Session Analysis<br>
 ✔ Structure Shift
 
-</div>  </div>    <div class="footer">      
-    INSTITUTIONAL TERMINAL v6.0      
-</div>  </div>  <script>    let scale = 1;  // ZOOM
+</div>
+
+</div>
+
+<div class="footer">
+INSTITUTIONAL TERMINAL v6.0
+</div>
+
+</div>
+
+<script>
+
+let scale = 1;
+
+/* =========================
+ZOOM
+========================= */
+
 function zoomIn(){
 
 scale += 0.1;
 
 document.getElementById("preview")
-.style.transform =
-scale(${scale});
+.style.transform = `scale(${scale})`;
 
 }
 
@@ -680,34 +443,34 @@ function zoomOut(){
 scale -= 0.1;
 
 if(scale < 0.2){
-
 scale = 0.2;
-
 }
 
 document.getElementById("preview")
-.style.transform =
-scale(${scale});
+.style.transform = `scale(${scale})`;
 
 }
 
-// CALCULATOR
+/* =========================
+CALCULATOR
+========================= */
+
 function calculate(){
 
 let entry =
-parseFloat(document.getElementById("entry").value);
+parseFloat(document.getElementById("entry").value) || 0;
 
 let tp =
-parseFloat(document.getElementById("tp").value);
+parseFloat(document.getElementById("tp").value) || 0;
 
 let aedRisk =
-parseFloat(document.getElementById("aedRisk").value);
+parseFloat(document.getElementById("aedRisk").value) || 0;
 
 let usdAed =
-parseFloat(document.getElementById("usdAed").value);
+parseFloat(document.getElementById("usdAed").value) || 1;
 
 let stopDistance =
-parseFloat(document.getElementById("stopPoints").value);
+parseFloat(document.getElementById("stopPoints").value) || 1;
 
 let tradeType =
 document.getElementById("tradeType").value;
@@ -736,6 +499,10 @@ Math.abs(entry - tp);
 let rr =
 reward / stopDistance;
 
+if(!isFinite(rr)){
+rr = 0;
+}
+
 let breakeven =
 100 / (1 + rr);
 
@@ -760,37 +527,33 @@ breakeven.toFixed(1) + "%";
 document.getElementById("lotInput").value =
 lot.toFixed(3);
 
+const exposure =
+document.getElementById("exposure");
+
 if(lot > 0.05){
 
-document.getElementById("exposure")      
-.innerHTML = "HIGH";      
-
-document.getElementById("exposure")      
-.className = "red";
+exposure.innerHTML = "HIGH";
+exposure.className = "red";
 
 }
-
 else if(lot > 0.02){
 
-document.getElementById("exposure")      
-.innerHTML = "MEDIUM";      
-
-document.getElementById("exposure")      
-.className = "yellow";
+exposure.innerHTML = "MEDIUM";
+exposure.className = "yellow";
 
 }
-
 else{
 
-document.getElementById("exposure")      
-.innerHTML = "LOW";      
-
-document.getElementById("exposure")      
-.className = "green";
+exposure.innerHTML = "LOW";
+exposure.className = "green";
 
 }
 
 }
+
+/* =========================
+LIVE INPUT UPDATE
+========================= */
 
 document.querySelectorAll("input, select")
 .forEach(el=>{
@@ -801,189 +564,10 @@ el.addEventListener("input", calculate);
 
 calculate();
 
-// SWITCH PLATFORM
-function switchPlatform(){
+/* =========================
+IMAGE UPLOAD
+========================= */
 
-let platform =
-document.getElementById("platformSelect").value;
-
-if(platform === "MT4" ||
-platform === "MT5"){
-
-document.getElementById("mtBox")      
-.style.display = "block";      
-
-document.getElementById("apiBox")      
-.style.display = "none";
-
-}
-
-else{
-
-document.getElementById("mtBox")      
-.style.display = "none";      
-
-document.getElementById("apiBox")      
-.style.display = "block";
-
-}
-
-}
-
-// CONNECT ACCOUNT
-function connectAccount(){
-
-let platform =
-document.getElementById("platformSelect").value;
-
-let accountType =
-document.getElementById("accountType").value;
-
-// MT4 / MT5
-if(platform === "MT4" ||
-platform === "MT5"){
-
-let login =      
-document.getElementById("mtLogin").value;      
-
-let password =      
-document.getElementById("mtPassword").value;      
-
-let broker =      
-document.getElementById("brokerServer").value;      
-
-if(login === "" ||      
-   password === ""){      
-
-    alert("ENTER LOGIN DETAILS");      
-    return;      
-
-}      
-
-document.getElementById("connectionStatus")      
-.innerHTML = "CONNECTED";      
-
-document.getElementById("connectionStatus")      
-.className = "green";      
-
-document.getElementById("brokerName")      
-.innerHTML = broker;      
-
-document.getElementById("liveType")      
-.innerHTML = accountType;      
-
-document.getElementById("accountBalance")      
-.innerHTML = "15,420 USD";      
-
-document.getElementById("accountEquity")      
-.innerHTML = "15,880 USD";      
-
-document.getElementById("totalPnL")      
-.innerHTML = "+4,850 AED";      
-
-document.getElementById("totalTrades")      
-.innerHTML = "214";      
-
-document.getElementById("winTrades")      
-.innerHTML = "136";      
-
-document.getElementById("loseTrades")      
-.innerHTML = "78";      
-
-document.getElementById("winRatio")      
-.innerHTML = "63%";      
-
-document.getElementById("entryArrow")      
-.style.top = "120px";      
-
-document.getElementById("exitArrow")      
-.style.top = "240px";      
-
-setTimeout(()=>{      
-
-    alert(      
-        broker +      
-        " CONNECTED (" +      
-        accountType +      
-        ")"      
-    );      
-
-},200);
-
-}
-
-// CRYPTO
-else{
-
-let api =      
-document.getElementById("apiKey").value;      
-
-let secret =      
-document.getElementById("secretKey").value;      
-
-if(api === "" ||      
-   secret === ""){      
-
-    alert("ENTER API KEYS");      
-    return;      
-
-}      
-
-document.getElementById("connectionStatus")      
-.innerHTML = "CONNECTED";      
-
-document.getElementById("connectionStatus")      
-.className = "green";      
-
-document.getElementById("brokerName")      
-.innerHTML = platform;      
-
-document.getElementById("liveType")      
-.innerHTML = accountType;      
-
-document.getElementById("accountBalance")      
-.innerHTML = "12,600 USD";      
-
-document.getElementById("accountEquity")      
-.innerHTML = "13,020 USD";      
-
-document.getElementById("totalPnL")      
-.innerHTML = "+2,940 AED";      
-
-document.getElementById("totalTrades")      
-.innerHTML = "148";      
-
-document.getElementById("winTrades")      
-.innerHTML = "82";      
-
-document.getElementById("loseTrades")      
-.innerHTML = "66";      
-
-document.getElementById("winRatio")      
-.innerHTML = "55%";      
-
-document.getElementById("entryArrow")      
-.style.top = "140px";      
-
-document.getElementById("exitArrow")      
-.style.top = "260px";      
-
-setTimeout(()=>{      
-
-    alert(      
-        platform +      
-        " API CONNECTED (" +      
-        accountType +      
-        ")"      
-    );      
-
-},200);
-
-}
-
-}
-
-// IMAGE UPLOAD
 const upload =
 document.getElementById("imageUpload");
 
@@ -996,17 +580,17 @@ const file = e.target.files[0];
 
 if(file){
 
-const reader = new FileReader();      
+const reader = new FileReader();
 
-reader.onload = function(event){      
+reader.onload = function(event){
 
-    preview.src =      
-    event.target.result;      
+preview.src =
+event.target.result;
 
-    preview.style.display =      
-    "block";      
+preview.style.display =
+"block";
 
-}      
+}
 
 reader.readAsDataURL(file);
 
@@ -1014,6 +598,7 @@ reader.readAsDataURL(file);
 
 });
 
-</script>  </body>
+</script>
 
+</body>
 </html>
