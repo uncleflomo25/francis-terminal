@@ -1,963 +1,224 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Professional Synthetic BTC Terminal</title>
+<!-- ===================================================== -->
+<!-- AUTO RISK CALCULATION BASED ON LOT SIZE -->
+<!-- ===================================================== -->
 
-<style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+<!-- REPLACE THIS OLD INPUT -->
 
-body{
-  background:#070b14;
-  color:#dbeafe;
-  font-family:Arial, Helvetica, sans-serif;
-  overflow:hidden;
-}
-
-.app{
-  width:100vw;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-.toolbar{
-  height:55px;
-  background:#0f172a;
-  border-bottom:2px solid #2563eb;
-  display:flex;
-  align-items:center;
-  padding:0 20px;
-  gap:20px;
-}
-
-.logo{
-  color:#00ffff;
-  font-weight:bold;
-  letter-spacing:1px;
-}
-
-.timeframes{
-  display:flex;
-  gap:8px;
-}
-
-.tf-btn{
-  background:#132038;
-  color:#dbeafe;
-  border:1px solid #2563eb;
-  padding:6px 12px;
-  cursor:pointer;
-  border-radius:4px;
-  font-size:11px;
-}
-
-.tf-btn.active{
-  background:#2563eb;
-  color:#fff;
-}
-
-.info{
-  margin-left:auto;
-  display:flex;
-  gap:20px;
-  font-size:12px;
-}
-
-.main{
-  flex:1;
-  display:flex;
-}
-
-.left{
-  width:180px;
-  background:#0f172a;
-  border-right:2px solid #1e3a8a;
-  padding:15px;
-}
-
-.right{
-  width:240px;
-  background:#0f172a;
-  border-left:2px solid #1e3a8a;
-  padding:15px;
-}
-
-.chart-wrap{
-  flex:1;
-  position:relative;
-}
-
-canvas{
-  width:100%;
-  height:100%;
-  display:block;
-}
-
-.panel-title{
-  color:#3b82f6;
-  margin-bottom:10px;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.metric{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:8px;
-  font-size:12px;
-}
-
-.green{
-  color:#10b981;
-}
-
-.red{
-  color:#ef4444;
-}
-
-.blue{
-  color:#00ffff;
-}
-
-.indicator{
-  padding:8px;
-  background:#132038;
-  border:1px solid #2563eb;
-  margin-bottom:8px;
-  cursor:pointer;
-  border-radius:4px;
-  font-size:12px;
-}
-
-.indicator.active{
-  background:#2563eb;
-}
-
-.bottom{
-  height:100px;
-  background:#0f172a;
-  border-top:2px solid #1e3a8a;
-  padding:10px;
-  display:flex;
-  gap:40px;
-  font-size:11px;
-}
-
-.book{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-<div class="toolbar">
-
-<div class="logo">
-🔥 SYNTHETIC BTC FLOW TERMINAL
+<div class="form-group">
+  <label>Risk Amount (AED)</label>
+  <input 
+    type="number"
+    id="riskAEDInput"
+    placeholder="e.g., 500 AED"
+    step="1"
+    onchange="calculateLotSize()"
+  />
 </div>
 
-<div class="timeframes" id="timeframes"></div>
+<!-- ===================================================== -->
+<!-- WITH THIS NEW AUTO RISK DISPLAY -->
+<!-- ===================================================== -->
 
-<div class="info" id="ticker"></div>
-
+<div class="form-group">
+  <label>Lot Size</label>
+  <input
+    type="number"
+    id="lotSize"
+    placeholder="e.g. 0.10"
+    step="0.01"
+    onchange="calculateLotSize()"
+  />
 </div>
 
-<div class="main">
-
-<div class="left">
-
-<div class="panel-title">INDICATORS</div>
-
-<div class="indicator active" data-indicator="price">Candles</div>
-<div class="indicator" data-indicator="ma20">MA20</div>
-<div class="indicator" data-indicator="ema">EMA12</div>
-<div class="indicator" data-indicator="volume">Volume</div>
-
-</div>
-
-<div class="chart-wrap">
-<canvas id="chart"></canvas>
-</div>
-
-<div class="right" id="rightPanel"></div>
-
-</div>
-
-<div class="bottom" id="bottom"></div>
-
+<div class="form-group">
+  <label class="auto-label">🔄 Auto Risk Amount (AED)</label>
+  <input
+    type="number"
+    id="riskAEDInput"
+    readonly
+    class="auto-calculated-field"
+    placeholder="Auto Calculated"
+  />
 </div>
 
 <script>
 
-// =========================
-// CANVAS
-// =========================
+// =====================================================
+// FULL AUTO RISK CALCULATION BASED ON LOT SIZE
+// =====================================================
 
-const canvas = document.getElementById("chart");
-const ctx = canvas.getContext("2d");
+function calculateLotSize() {
 
-let width,height;
+  // =========================================
+  // INPUTS
+  // =========================================
 
-function resize(){
+  const balance =
+    parseFloat(document.getElementById('accountBalance').value) || 0;
 
-  width = canvas.parentElement.clientWidth;
-  height = canvas.parentElement.clientHeight;
+  const entryPrice =
+    parseFloat(document.getElementById('entryPrice').value) || 0;
 
-  canvas.width = width;
-  canvas.height = height;
-}
+  const lotSize =
+    parseFloat(document.getElementById('lotSize').value) || 0;
 
-window.addEventListener("resize",resize);
-resize();
+  let slPrice = 0;
 
-// =========================
-// SETTINGS
-// =========================
+  // =========================================
+  // SL METHOD
+  // =========================================
 
-const PADDING = {
-  top:40,
-  bottom:60,
-  left:80,
-  right:40
-};
+  if (slMethod === 'manual') {
 
-const TIMEFRAMES = ["1M","5M","15M","1H","4H","1D"];
+    slPrice =
+      parseFloat(document.getElementById('slPriceManual').value) || 0;
 
-const TF_MS = {
-  "1M":60000,
-  "5M":300000,
-  "15M":900000,
-  "1H":3600000,
-  "4H":14400000,
-  "1D":86400000
-};
+  } else if (slMethod === 'points') {
 
-let currentTimeframe = "1M";
+    slPrice =
+      parseFloat(document.getElementById('slPriceAuto').value) || 0;
 
-let currentIndicators = new Set(["price"]);
+  } else if (slMethod === 'lotsize') {
 
-let candles = [];
-
-let syntheticData = {
-  btc:68000,
-  total:2.5,
-  usdtd:5.4,
-  ethbtc:0.055
-};
-
-let currentCandleStart = Date.now();
-
-// =========================
-// SYNTHETIC ENGINE
-// =========================
-
-function calculateSynthetic(){
-
-  const btcFlow =
-      (syntheticData.btc / 100000) * 0.45;
-
-  const totalFlow =
-      syntheticData.total * 0.30;
-
-  const ethFlow =
-      syntheticData.ethbtc * 0.15;
-
-  const stablePressure =
-      syntheticData.usdtd * 0.10;
-
-  return (
-      btcFlow +
-      totalFlow +
-      ethFlow -
-      stablePressure
-  ) * 100000;
-}
-
-// =========================
-// GENERATE INITIAL DATA
-// =========================
-
-function generateCandles(count){
-
-  candles = [];
-
-  let base = calculateSynthetic();
-
-  for(let i=0;i<count;i++){
-
-    let trend =
-      Math.sin(i*0.015)*280;
-
-    let flow =
-      Math.sin(i*0.08)*120;
-
-    let sweep =
-      Math.sin(i*0.003)*500;
-
-    let noise =
-      (Math.random()-0.5)*30;
-
-    let change =
-      trend + flow + sweep + noise;
-
-    let open = base;
-    let close = open + change;
-
-    let high = Math.max(open,close) + Math.random()*40;
-    let low = Math.min(open,close) - Math.random()*40;
-
-    if(Math.random() > 0.97){
-
-      high += 250;
-      low -= 250;
-    }
-
-    let volume =
-      Math.floor(Math.random()*50000)+50000;
-
-    let delta =
-      change > 0
-      ? 0.65
-      : 0.35;
-
-    let buyVol =
-      Math.floor(volume*delta);
-
-    let sellVol =
-      volume-buyVol;
-
-    candles.push({
-
-      time:
-      Date.now() -
-      ((count-i)*60000),
-
-      open,
-      high,
-      low,
-      close,
-
-      volume,
-      buyVol,
-      sellVol
-
-    });
-
-    base = close;
-  }
-}
-
-generateCandles(120);
-
-// =========================
-// TIMEFRAME BUTTONS
-// =========================
-
-const tfContainer =
-document.getElementById("timeframes");
-
-TIMEFRAMES.forEach(tf=>{
-
-  let btn =
-  document.createElement("button");
-
-  btn.innerText = tf;
-
-  btn.className =
-  "tf-btn" +
-  (tf===currentTimeframe
-  ?" active":"");
-
-  btn.onclick = ()=>{
-
-    document
-    .querySelectorAll(".tf-btn")
-    .forEach(x=>x.classList.remove("active"));
-
-    btn.classList.add("active");
-
-    currentTimeframe = tf;
-
-    loadTimeframe(tf);
-  };
-
-  tfContainer.appendChild(btn);
-});
-
-function loadTimeframe(tf){
-
-  let count = 120;
-
-  switch(tf){
-
-    case "1M":
-      count = 150;
-      break;
-
-    case "5M":
-      count = 120;
-      break;
-
-    case "15M":
-      count = 100;
-      break;
-
-    case "1H":
-      count = 80;
-      break;
-
-    case "4H":
-      count = 70;
-      break;
-
-    case "1D":
-      count = 60;
-      break;
+    slPrice =
+      parseFloat(document.getElementById('slPriceLotAuto').value) || 0;
   }
 
-  generateCandles(count);
+  const tpPrice =
+    parseFloat(document.getElementById('tpPrice').value) ||
+    parseFloat(document.getElementById('tpPriceAuto').value) || 0;
 
-  draw();
-}
+  // =========================================
+  // DISPLAY BALANCE
+  // =========================================
 
-// =========================
-// HELPERS
-// =========================
+  document.getElementById('displayBalance').textContent =
+    balance.toFixed(2) + ' AED';
 
-function getBounds(){
+  // =========================================
+  // VALIDATION
+  // =========================================
 
-  let highs =
-  candles.map(x=>x.high);
-
-  let lows =
-  candles.map(x=>x.low);
-
-  let max =
-  Math.max(...highs);
-
-  let min =
-  Math.min(...lows);
-
-  let range =
-  max-min;
-
-  return {
-
-    max:max+range*0.1,
-    min:min-range*0.1,
-    range:range*1.2
-  };
-}
-
-function y(price,b){
-
-  return PADDING.top +
-  ((b.max-price)/b.range)*
-  (height-PADDING.top-PADDING.bottom);
-}
-
-// =========================
-// DRAW
-// =========================
-
-function drawBackground(){
-
-  ctx.fillStyle="#070b14";
-  ctx.fillRect(0,0,width,height);
-
-  ctx.strokeStyle="#132038";
-
-  for(let i=0;i<8;i++){
-
-    let yy =
-    PADDING.top +
-    i*((height-PADDING.top-PADDING.bottom)/8);
-
-    ctx.beginPath();
-
-    ctx.moveTo(PADDING.left,yy);
-    ctx.lineTo(width-PADDING.right,yy);
-
-    ctx.stroke();
-  }
-}
-
-function drawCandles(){
-
-  let b = getBounds();
-
-  let visible =
-  candles.slice(-80);
-
-  let chartW =
-  width-PADDING.left-PADDING.right;
-
-  let cw =
-  chartW/visible.length;
-
-  visible.forEach((c,i)=>{
-
-    let x =
-    PADDING.left +
-    i*cw;
-
-    let center =
-    x+cw/2;
-
-    let yo = y(c.open,b);
-    let yc = y(c.close,b);
-    let yh = y(c.high,b);
-    let yl = y(c.low,b);
-
-    let bull =
-    c.close>=c.open;
-
-    ctx.strokeStyle =
-    bull
-    ?"#10b981"
-    :"#ef4444";
-
-    ctx.beginPath();
-
-    ctx.moveTo(center,yh);
-    ctx.lineTo(center,yl);
-
-    ctx.stroke();
-
-    ctx.fillStyle =
-    bull
-    ?"#10b981"
-    :"#ef4444";
-
-    ctx.fillRect(
-      center-cw*0.3,
-      Math.min(yo,yc),
-      cw*0.6,
-      Math.abs(yc-yo)||2
-    );
-  });
-}
-
-function drawMA(period,color){
-
-  let ma=[];
-
-  for(let i=0;i<candles.length;i++){
-
-    if(i<period){
-
-      ma.push(null);
-      continue;
-    }
-
-    let sum=0;
-
-    for(let j=i-period;j<i;j++){
-
-      sum += candles[j].close;
-    }
-
-    ma.push(sum/period);
+  if (!entryPrice || !slPrice || !lotSize) {
+    return;
   }
 
-  let b = getBounds();
+  // =========================================
+  // STOP LOSS POINTS
+  // =========================================
 
-  let visible =
-  candles.slice(-80);
+  const slPoints =
+    Math.abs((entryPrice - slPrice) / 0.0001);
 
-  let chartW =
-  width-PADDING.left-PADDING.right;
+  document.getElementById('slPointsDisplay').textContent =
+    slPoints.toFixed(0) + ' pts';
 
-  let cw =
-  chartW/visible.length;
+  document.getElementById('slPriceDisplay').textContent =
+    slPrice.toFixed(4);
 
-  ctx.strokeStyle=color;
-  ctx.lineWidth=2;
+  // =========================================
+  // AUTO RISK CALCULATION
+  // =========================================
 
-  ctx.beginPath();
+  const riskAED =
+    (slPoints * 0.0001 * lotSize * 100000);
 
-  visible.forEach((c,i)=>{
+  const riskUSD =
+    riskAED / exchangeRate;
 
-    let idx =
-    candles.length-visible.length+i;
+  // =========================================
+  // DISPLAY AUTO RISK
+  // =========================================
 
-    if(!ma[idx]) return;
+  document.getElementById('riskAEDInput').value =
+    riskAED.toFixed(2);
 
-    let xx =
-    PADDING.left+i*cw+cw/2;
+  document.getElementById('riskAmountAED').textContent =
+    riskAED.toFixed(2) + ' AED';
 
-    let yy =
-    y(ma[idx],b);
+  document.getElementById('riskAmountUSD').textContent =
+    riskUSD.toFixed(2) + ' USD';
 
-    if(i===0)
-      ctx.moveTo(xx,yy);
-    else
-      ctx.lineTo(xx,yy);
-  });
+  document.getElementById('riskMetric').textContent =
+    riskAED.toFixed(0);
 
-  ctx.stroke();
-}
+  // =========================================
+  // DISPLAY LOT SIZE
+  // =========================================
 
-function drawVolume(){
+  document.getElementById('calculatedLotSize').textContent =
+    lotSize.toFixed(2);
 
-  let visible =
-  candles.slice(-80);
+  // =========================================
+  // POTENTIAL LOSS
+  // =========================================
 
-  let max =
-  Math.max(...visible.map(x=>x.volume));
+  document.getElementById('potentialLossAED').textContent =
+    riskAED.toFixed(2) + ' AED';
 
-  let chartW =
-  width-PADDING.left-PADDING.right;
+  document.getElementById('potentialLossUSD').textContent =
+    riskUSD.toFixed(2) + ' USD';
 
-  let cw =
-  chartW/visible.length;
+  // =========================================
+  // TP CALCULATIONS
+  // =========================================
 
-  visible.forEach((c,i)=>{
+  if (tpPrice > 0) {
 
-    let h =
-    (c.volume/max)*100;
+    const tpPoints =
+      Math.abs((tpPrice - entryPrice) / 0.0001);
 
-    ctx.fillStyle =
-    c.close>=c.open
-    ?"rgba(16,185,129,0.3)"
-    :"rgba(239,68,68,0.3)";
+    const potentialProfitAED =
+      (tpPoints * 0.0001 * lotSize * 100000);
 
-    ctx.fillRect(
+    const potentialProfitUSD =
+      potentialProfitAED / exchangeRate;
 
-      PADDING.left+i*cw+cw*0.2,
+    document.getElementById('tpPointsDisplay').textContent =
+      tpPoints.toFixed(0) + ' pts';
 
-      height-PADDING.bottom-h,
+    document.getElementById('tpPriceDisplay').textContent =
+      tpPrice.toFixed(4);
 
-      cw*0.6,
+    document.getElementById('potentialProfitAED').textContent =
+      potentialProfitAED.toFixed(2) + ' AED';
 
-      h
-    );
-  });
-}
+    document.getElementById('potentialProfitUSD').textContent =
+      potentialProfitUSD.toFixed(2) + ' USD';
 
-function draw(){
+    document.getElementById('rewardMetric').textContent =
+      potentialProfitAED.toFixed(0);
 
-  drawBackground();
+    // =========================================
+    // RR RATIO
+    // =========================================
 
-  if(currentIndicators.has("volume"))
-    drawVolume();
+    const rrRatio =
+      potentialProfitAED / riskAED;
 
-  if(currentIndicators.has("price"))
-    drawCandles();
+    document.getElementById('rrRatio').textContent =
+      '1:' + rrRatio.toFixed(2);
 
-  if(currentIndicators.has("ma20"))
-    drawMA(20,"#facc15");
+    // =========================================
+    // BREAKEVEN %
+    // =========================================
 
-  if(currentIndicators.has("ema"))
-    drawMA(12,"#00ffff");
-}
+    const breakevenRate =
+      (100 / (1 + rrRatio));
 
-// =========================
-// INDICATORS
-// =========================
+    document.getElementById('breakevenRate').textContent =
+      breakevenRate.toFixed(1) + '%';
 
-document
-.querySelectorAll(".indicator")
-.forEach(el=>{
+    // =========================================
+    // RR BAR
+    // =========================================
 
-  el.onclick = ()=>{
+    const ratioFillWidth =
+      (100 / (1 + rrRatio));
 
-    let ind =
-    el.dataset.indicator;
-
-    if(currentIndicators.has(ind)){
-
-      currentIndicators.delete(ind);
-      el.classList.remove("active");
-
-    }else{
-
-      currentIndicators.add(ind);
-      el.classList.add("active");
-    }
-
-    draw();
-  };
-});
-
-// =========================
-// STRUCTURE
-// =========================
-
-function detectStructure(){
-
-  let len =
-  candles.length;
-
-  if(len<5)
-    return "NEUTRAL";
-
-  let c1 =
-  candles[len-1].close;
-
-  let c2 =
-  candles[len-2].close;
-
-  let c3 =
-  candles[len-3].close;
-
-  if(c1>c2 && c2>c3)
-    return "BULLISH";
-
-  if(c1<c2 && c2<c3)
-    return "BEARISH";
-
-  return "RANGING";
-}
-
-// =========================
-// RIGHT PANEL
-// =========================
-
-function updateRightPanel(){
-
-  let c =
-  candles[candles.length-1];
-
-  document
-  .getElementById("rightPanel")
-  .innerHTML = `
-
-  <div class="panel-title">
-  MARKET DATA
-  </div>
-
-  <div class="metric">
-  <span>BTC</span>
-  <span class="blue">
-  $${syntheticData.btc.toFixed(0)}
-  </span>
-  </div>
-
-  <div class="metric">
-  <span>TOTAL</span>
-  <span class="blue">
-  ${syntheticData.total.toFixed(2)}T
-  </span>
-  </div>
-
-  <div class="metric">
-  <span>USDT.D</span>
-  <span class="blue">
-  ${syntheticData.usdtd.toFixed(2)}%
-  </span>
-  </div>
-
-  <br>
-
-  <div class="panel-title">
-  STRUCTURE
-  </div>
-
-  <div class="metric">
-  <span>State</span>
-  <span class="green">
-  ${detectStructure()}
-  </span>
-  </div>
-
-  <div class="metric">
-  <span>Close</span>
-  <span class="blue">
-  ${c.close.toFixed(2)}
-  </span>
-  </div>
-
-  <div class="metric">
-  <span>Volume</span>
-  <span class="blue">
-  ${(c.volume/1000).toFixed(1)}K
-  </span>
-  </div>
-
-  `;
-}
-
-// =========================
-// TICKER
-// =========================
-
-function updateTicker(){
-
-  let c =
-  candles[candles.length-1];
-
-  document
-  .getElementById("ticker")
-  .innerHTML = `
-
-  <div>
-  BTC:
-  <span class="blue">
-  $${syntheticData.btc.toFixed(0)}
-  </span>
-  </div>
-
-  <div>
-  SYNTH:
-  <span class="blue">
-  ${c.close.toFixed(2)}
-  </span>
-  </div>
-
-  <div>
-  STRUCTURE:
-  <span class="green">
-  ${detectStructure()}
-  </span>
-  </div>
-  `;
-}
-
-// =========================
-// ORDERBOOK
-// =========================
-
-function updateBottom(){
-
-  let c =
-  candles[candles.length-1];
-
-  let bids="";
-  let asks="";
-
-  for(let i=0;i<5;i++){
-
-    bids += `
-    <div>
-    ${(c.close-(i*15)).toFixed(2)}
-    | ${(Math.random()*5).toFixed(2)}
-    </div>
-    `;
-
-    asks += `
-    <div>
-    ${(c.close+(i*15)).toFixed(2)}
-    | ${(Math.random()*5).toFixed(2)}
-    </div>
-    `;
+    document.getElementById('ratioFill').style.width =
+      ratioFillWidth + '%';
   }
-
-  document
-  .getElementById("bottom")
-  .innerHTML = `
-
-  <div class="book">
-
-  <div class="panel-title">
-  BIDS
-  </div>
-
-  ${bids}
-
-  </div>
-
-  <div class="book">
-
-  <div class="panel-title">
-  ASKS
-  </div>
-
-  ${asks}
-
-  </div>
-  `;
 }
-
-// =========================
-// LIVE ENGINE
-// =========================
-
-function updateEngine(){
-
-  let last =
-  candles[candles.length-1];
-
-  let now =
-  Date.now();
-
-  let smoothFlow =
-  Math.sin(now*0.0000015)*8;
-
-  last.close += smoothFlow;
-
-  last.high =
-  Math.max(last.high,last.close);
-
-  last.low =
-  Math.min(last.low,last.close);
-
-  last.volume +=
-  Math.floor(Math.random()*800);
-
-  syntheticData.btc +=
-  Math.sin(now*0.0000008)*5;
-
-  syntheticData.total +=
-  Math.sin(now*0.0000005)*0.001;
-
-  syntheticData.usdtd +=
-  Math.sin(now*0.0000003)*0.001;
-
-  if(
-    now-currentCandleStart
-    >= TF_MS[currentTimeframe]
-  ){
-
-    currentCandleStart = now;
-
-    candles.push({
-
-      time:now,
-
-      open:last.close,
-      high:last.close,
-      low:last.close,
-      close:last.close,
-
-      volume:0,
-      buyVol:0,
-      sellVol:0
-    });
-
-    if(candles.length>200)
-      candles.shift();
-  }
-
-  draw();
-  updateRightPanel();
-  updateTicker();
-  updateBottom();
-}
-
-// =========================
-// START
-// =========================
-
-draw();
-updateRightPanel();
-updateTicker();
-updateBottom();
-
-setInterval(updateEngine,1000);
 
 </script>
-
-</body>
-</html>
