@@ -73,13 +73,9 @@ Markets
 
 <div onclick="switchMarket('ETHUSDT')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">ETHUSD</div>
 
-<div onclick="switchMarket('XAUUSD')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">XAUUSD</div>
 
-<div onclick="switchMarket('R_25')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">V25</div>
 
-<div onclick="switchMarket('R_75')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">V75</div>
-
-<div onclick="switchMarket('R_100')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">V100</div>
+<div onclick="switchMarket('LX_SYNTH')" class="market rounded-2xl border border-emerald-500 bg-zinc-900 p-4 text-emerald-400 font-bold">LX SYNTH</div>
 
 </div>
 </div>
@@ -269,6 +265,92 @@ function syntheticFeed(startPrice){
 
 }
 
+function syntheticCryptoBasket(){
+
+    if(socket) socket.close()
+
+    clearInterval(demoInterval)
+
+    const candles = []
+
+    let btc = 105000
+    let eth = 2500
+    let total3 = 950000000000
+    let usdt = 4.8
+
+    for(let i=0;i<300;i++){
+
+        btc += (Math.random()-0.48) * 800
+        eth += (Math.random()-0.48) * 40
+        total3 += (Math.random()-0.48) * 9000000000
+        usdt += (Math.random()-0.52) * 0.08
+
+        const synth =
+            (btc * 0.35)
+            + (eth * 0.20)
+            + ((total3 / 1000000000) * 0.20)
+            - (usdt * 0.15 * 1000)
+
+        const open = synth
+
+        const close = open + (Math.random()-0.5)*500
+
+        const high = Math.max(open,close) + Math.random()*120
+
+        const low = Math.min(open,close) - Math.random()*120
+
+        candles.push({
+            time:1642425322 + (i*60),
+            open,
+            high,
+            low,
+            close
+        })
+
+    }
+
+    candleSeries.setData(candles)
+
+    demoInterval = setInterval(()=>{
+
+        const last = candles[candles.length-1]
+
+        btc += (Math.random()-0.48) * 600
+        eth += (Math.random()-0.48) * 25
+        total3 += (Math.random()-0.48) * 6000000000
+        usdt += (Math.random()-0.52) * 0.05
+
+        const synth =
+            (btc * 0.35)
+            + (eth * 0.20)
+            + ((total3 / 1000000000) * 0.20)
+            - (usdt * 0.15 * 1000)
+
+        const open = last.close
+
+        const close = synth
+
+        const high = Math.max(open,close) + Math.random()*80
+
+        const low = Math.min(open,close) - Math.random()*80
+
+        const candle = {
+            time:last.time + 60,
+            open,
+            high,
+            low,
+            close
+        }
+
+        candleSeries.update(candle)
+
+        document.getElementById('livePrice').innerHTML =
+            Number(close).toLocaleString()
+
+    },1000)
+
+}
+
 function switchMarket(symbol){
 
     document.getElementById('marketName').innerHTML = symbol
@@ -281,20 +363,10 @@ function switchMarket(symbol){
         loadBinance('ETHUSDT')
     }
 
-    else if(symbol === 'XAUUSD'){
-        syntheticFeed(3200)
-    }
+    
 
-    else if(symbol === 'R_25'){
-        syntheticFeed(25000)
-    }
-
-    else if(symbol === 'R_75'){
-        syntheticFeed(75000)
-    }
-
-    else if(symbol === 'R_100'){
-        syntheticFeed(100000)
+    else if(symbol === 'LX_SYNTH'){
+        syntheticCryptoBasket()
     }
 
 }
