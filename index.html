@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>Liquidity X Trading Platform</title>
+<title>Liquidity X Real-Time Trading Platform</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -20,60 +20,30 @@ body{
     margin:0;
     overflow:hidden;
     background:#050505;
-    font-family:Arial, sans-serif;
+    font-family:Arial,sans-serif;
     color:white;
 }
 
-::-webkit-scrollbar{
-    width:6px;
-    height:6px;
-}
-
-::-webkit-scrollbar-thumb{
-    background:#222;
-    border-radius:20px;
-}
-
-.market-item{
-    transition:0.2s;
-    cursor:pointer;
-}
-
-.market-item:hover{
-    background:#151515;
-    border-color:#00ff88;
-}
-
-.active-market{
-    border-color:#00ff88;
-    background:#101010;
-}
-
-.time-btn{
-    transition:0.2s;
-}
-
-.time-btn:hover{
-    background:#202020;
-}
-
-.active-time{
-    background:#00ff88;
-    color:black;
-    font-weight:bold;
-}
-
-#tvchart{
+#chart{
     width:100%;
     height:100%;
 }
 
-.glow{
-    box-shadow:0 0 20px rgba(0,255,136,0.15);
+.market{
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.market:hover{
+    border-color:#00ff88;
+}
+
+.active{
+    border-color:#00ff88;
+    background:#101010;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -90,47 +60,31 @@ body{
             </h1>
 
             <p class="text-zinc-500 text-sm mt-1">
-                Institutional Trading Terminal
+                Real-Time Trading Platform
             </p>
 
         </div>
 
         <div class="p-4">
 
-            <button class="w-full p-3 rounded-2xl bg-emerald-500 text-black font-bold glow">
+            <button class="w-full p-3 rounded-2xl bg-emerald-500 text-black font-bold">
                 Connect Wallet
             </button>
 
         </div>
 
-        <div class="px-4 pb-2 text-zinc-500 text-xs uppercase tracking-widest">
+        <div class="px-4 pb-2 text-xs text-zinc-500 uppercase tracking-widest">
             Markets
         </div>
 
-        <div class="flex-1 overflow-auto px-3 space-y-2 pb-4">
+        <div class="flex-1 overflow-auto px-3 space-y-2">
 
-            <div class="market-item active-market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+            <div onclick="switchMarket('btcusdt')" class="market active rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
                 BTCUSD
             </div>
 
-            <div class="market-item rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+            <div onclick="switchMarket('ethusdt')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
                 ETHUSD
-            </div>
-
-            <div class="market-item rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                XAUUSD
-            </div>
-
-            <div class="market-item rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                V25
-            </div>
-
-            <div class="market-item rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                V75
-            </div>
-
-            <div class="market-item rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                V100
             </div>
 
         </div>
@@ -140,41 +94,37 @@ body{
     <!-- MAIN -->
     <div class="flex-1 flex flex-col overflow-hidden">
 
-        <!-- TOP BAR -->
-        <div class="h-16 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between px-6">
+        <!-- TOP -->
+        <div class="h-16 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between px-6">
 
             <div>
 
-                <div class="text-2xl font-bold">
+                <div id="pairName" class="text-2xl font-bold">
                     BTCUSD
                 </div>
 
-                <div class="text-sm text-zinc-500">
-                    Liquidity Flow Engine
+                <div class="text-zinc-500 text-sm">
+                    Binance Real-Time Feed
                 </div>
 
             </div>
 
             <div class="flex gap-2">
 
-                <button class="time-btn px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800">
+                <button onclick="changeInterval('1m')" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800">
                     1M
                 </button>
 
-                <button class="time-btn px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800">
+                <button onclick="changeInterval('5m')" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800">
                     5M
                 </button>
 
-                <button class="time-btn active-time px-4 py-2 rounded-xl">
+                <button onclick="changeInterval('1h')" class="px-4 py-2 rounded-xl bg-emerald-500 text-black font-bold">
                     1H
                 </button>
 
-                <button class="time-btn px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800">
+                <button onclick="changeInterval('4h')" class="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800">
                     4H
-                </button>
-
-                <button class="time-btn px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800">
-                    1D
                 </button>
 
             </div>
@@ -185,55 +135,47 @@ body{
         <div class="flex-1 flex overflow-hidden">
 
             <!-- CHART -->
-            <div class="flex-1 relative bg-[#050505]">
+            <div class="flex-1 relative bg-black">
 
-                <div class="absolute top-5 left-5 z-10 bg-black/50 backdrop-blur-md border border-zinc-800 rounded-2xl px-5 py-4">
+                <div class="absolute top-5 left-5 z-10 bg-black/70 backdrop-blur-md border border-zinc-800 rounded-2xl px-5 py-4">
 
                     <div id="livePrice" class="text-5xl font-black">
-                        103,428
+                        Loading...
                     </div>
 
-                    <div id="livePercent" class="text-emerald-400 text-lg font-bold">
-                        +2.42%
+                    <div class="text-emerald-400 text-lg">
+                        LIVE MARKET
                     </div>
 
                 </div>
 
-                <div id="tvchart"></div>
+                <div id="chart"></div>
 
             </div>
 
             <!-- ORDER PANEL -->
-            <div class="w-96 bg-zinc-950 border-l border-zinc-800 flex flex-col overflow-auto">
+            <div class="w-96 bg-zinc-950 border-l border-zinc-800 p-5 overflow-auto">
 
-                <div class="p-5 border-b border-zinc-800">
+                <h2 class="text-2xl font-bold mb-5">
+                    Trade Panel
+                </h2>
 
-                    <h2 class="text-2xl font-bold">
-                        Trade Panel
-                    </h2>
+                <div class="space-y-5">
 
-                </div>
-
-                <div class="p-5 space-y-5">
-
-                    <select class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 outline-none">
+                    <select class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4">
 
                         <option>BTCUSD</option>
                         <option>ETHUSD</option>
-                        <option>XAUUSD</option>
-                        <option>V25</option>
-                        <option>V75</option>
-                        <option>V100</option>
 
                     </select>
 
                     <div class="grid grid-cols-2 gap-3">
 
-                        <button class="rounded-2xl p-4 bg-emerald-500 text-black font-black text-lg glow">
+                        <button class="rounded-2xl bg-emerald-500 text-black font-black p-4">
                             BUY
                         </button>
 
-                        <button class="rounded-2xl p-4 bg-red-500 text-white font-black text-lg">
+                        <button class="rounded-2xl bg-red-500 text-white font-black p-4">
                             SELL
                         </button>
 
@@ -242,101 +184,11 @@ body{
                     <input
                         type="number"
                         placeholder="Order Size"
-                        class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 outline-none">
+                        class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4">
 
-                    <div>
-
-                        <div class="flex justify-between mb-2 text-sm text-zinc-500">
-
-                            <span>Leverage</span>
-
-                            <span>50x</span>
-
-                        </div>
-
-                        <input type="range" min="1" max="100" value="50" class="w-full">
-
-                    </div>
-
-                    <div class="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 space-y-4">
-
-                        <div class="flex justify-between">
-                            <span class="text-zinc-400">Margin</span>
-                            <span>$245</span>
-                        </div>
-
-                        <div class="flex justify-between">
-                            <span class="text-zinc-400">Liquidation</span>
-                            <span>101,230</span>
-                        </div>
-
-                        <div class="flex justify-between">
-                            <span class="text-zinc-400">Fees</span>
-                            <span>0.04%</span>
-                        </div>
-
-                    </div>
-
-                    <button class="w-full rounded-2xl bg-emerald-500 text-black font-black p-4 text-lg glow">
+                    <button class="w-full rounded-2xl bg-emerald-500 text-black font-black p-4">
                         Execute Trade
                     </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- POSITIONS -->
-        <div class="h-64 border-t border-zinc-800 bg-zinc-950 overflow-auto">
-
-            <div class="px-6 py-4 border-b border-zinc-800">
-
-                <h2 class="text-xl font-bold">
-                    Open Positions
-                </h2>
-
-            </div>
-
-            <div class="p-4 space-y-3">
-
-                <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 flex justify-between items-center">
-
-                    <div>
-
-                        <div class="font-bold text-lg">
-                            BTCUSD LONG
-                        </div>
-
-                        <div class="text-zinc-500 text-sm mt-1">
-                            Entry: 103420
-                        </div>
-
-                    </div>
-
-                    <div class="text-emerald-400 text-2xl font-black">
-                        +245.20
-                    </div>
-
-                </div>
-
-                <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 flex justify-between items-center">
-
-                    <div>
-
-                        <div class="font-bold text-lg">
-                            XAUUSD SHORT
-                        </div>
-
-                        <div class="text-zinc-500 text-sm mt-1">
-                            Entry: 3218
-                        </div>
-
-                    </div>
-
-                    <div class="text-red-400 text-2xl font-black">
-                        -42.80
-                    </div>
 
                 </div>
 
@@ -350,153 +202,190 @@ body{
 
 <script>
 
-// =========================
+// =============================
+// GLOBAL VARIABLES
+// =============================
+
+let currentSymbol = 'btcusdt'
+let currentInterval = '1h'
+
+let candleSeries
+let socket
+
+// =============================
 // CREATE CHART
-// =========================
+// =============================
 
-const chartContainer = document.getElementById("tvchart")
+const chart = LightweightCharts.createChart(
+    document.getElementById('chart'),
+    {
 
-const chart = LightweightCharts.createChart(chartContainer, {
-
-    layout: {
-        background: {
-            color: "#050505"
+        layout:{
+            background:{ color:'#050505' },
+            textColor:'#888'
         },
-        textColor: "#888"
-    },
 
-    grid: {
-        vertLines: {
-            color: "#111"
+        grid:{
+            vertLines:{ color:'#111' },
+            horzLines:{ color:'#111' }
         },
-        horzLines: {
-            color: "#111"
+
+        width:window.innerWidth - 640,
+        height:window.innerHeight - 64,
+
+        rightPriceScale:{
+            borderColor:'#222'
+        },
+
+        timeScale:{
+            borderColor:'#222',
+            timeVisible:true
         }
-    },
 
-    width: chartContainer.clientWidth,
-    height: chartContainer.clientHeight,
-
-    crosshair: {
-        mode: 1
-    },
-
-    rightPriceScale: {
-        borderColor: "#222"
-    },
-
-    timeScale: {
-        borderColor: "#222",
-        timeVisible: true
     }
+)
+
+candleSeries = chart.addCandlestickSeries({
+
+    upColor:'#00ff88',
+    downColor:'#ff4444',
+
+    borderUpColor:'#00ff88',
+    borderDownColor:'#ff4444',
+
+    wickUpColor:'#00ff88',
+    wickDownColor:'#ff4444'
 
 })
 
-// =========================
-// CANDLE SERIES
-// =========================
+// =============================
+// LOAD HISTORICAL DATA
+// =============================
 
-const candleSeries = chart.addCandlestickSeries({
+async function loadCandles(){
 
-    upColor: "#00ff88",
-    downColor: "#ff4444",
+    const url =
+    `https://api.binance.com/api/v3/klines?symbol=${currentSymbol.toUpperCase()}&interval=${currentInterval}&limit=500`
 
-    borderUpColor: "#00ff88",
-    borderDownColor: "#ff4444",
+    const response = await fetch(url)
 
-    wickUpColor: "#00ff88",
-    wickDownColor: "#ff4444"
+    const data = await response.json()
 
-})
+    const candles = data.map(d => ({
 
-// =========================
-// GENERATE MARKET DATA
-// =========================
+        time:d[0] / 1000,
 
-const data = []
+        open:parseFloat(d[1]),
+        high:parseFloat(d[2]),
+        low:parseFloat(d[3]),
+        close:parseFloat(d[4])
 
-let price = 103000
+    }))
 
-for(let i = 0; i < 250; i++){
+    candleSeries.setData(candles)
 
-    const open = price
+    const last = candles[candles.length - 1]
 
-    const move = (Math.random() - 0.5) * 1500
+    document.getElementById('livePrice').innerHTML =
+        last.close.toLocaleString()
 
-    const close = open + move
-
-    const high = Math.max(open, close) + Math.random() * 300
-
-    const low = Math.min(open, close) - Math.random() * 300
-
-    data.push({
-
-        time: 1642425322 + (i * 3600),
-
-        open: Number(open.toFixed(2)),
-        high: Number(high.toFixed(2)),
-        low: Number(low.toFixed(2)),
-        close: Number(close.toFixed(2))
-
-    })
-
-    price = close
 }
 
-candleSeries.setData(data)
+// =============================
+// LIVE WEBSOCKET
+// =============================
 
-// =========================
-// AUTO RESIZE
-// =========================
+function connectSocket(){
 
-window.addEventListener("resize", () => {
+    if(socket){
+        socket.close()
+    }
+
+    socket = new WebSocket(
+
+        `wss://stream.binance.com:9443/ws/${currentSymbol}@kline_${currentInterval}`
+
+    )
+
+    socket.onmessage = (event) => {
+
+        const message = JSON.parse(event.data)
+
+        const k = message.k
+
+        const candle = {
+
+            time:k.t / 1000,
+
+            open:parseFloat(k.o),
+            high:parseFloat(k.h),
+            low:parseFloat(k.l),
+            close:parseFloat(k.c)
+
+        }
+
+        candleSeries.update(candle)
+
+        document.getElementById('livePrice').innerHTML =
+            candle.close.toLocaleString()
+
+    }
+
+}
+
+// =============================
+// SWITCH MARKET
+// =============================
+
+function switchMarket(symbol){
+
+    currentSymbol = symbol
+
+    document.getElementById('pairName').innerHTML =
+        symbol.toUpperCase()
+
+    loadCandles()
+
+    connectSocket()
+
+}
+
+// =============================
+// CHANGE INTERVAL
+// =============================
+
+function changeInterval(interval){
+
+    currentInterval = interval
+
+    loadCandles()
+
+    connectSocket()
+
+}
+
+// =============================
+// RESIZE
+// =============================
+
+window.addEventListener('resize',()=>{
 
     chart.applyOptions({
 
-        width: chartContainer.clientWidth,
-        height: chartContainer.clientHeight
+        width:window.innerWidth - 640,
+        height:window.innerHeight - 64
 
     })
 
 })
 
-// =========================
-// LIVE PRICE UPDATE
-// =========================
+// =============================
+// INITIALIZE
+// =============================
 
-const livePrice = document.getElementById("livePrice")
+loadCandles()
 
-setInterval(() => {
-
-    const last = data[data.length - 1]
-
-    const open = last.close
-
-    const close = open + (Math.random() - 0.5) * 1200
-
-    const high = Math.max(open, close) + Math.random() * 200
-
-    const low = Math.min(open, close) - Math.random() * 200
-
-    const candle = {
-
-        time: last.time + 3600,
-
-        open: Number(open.toFixed(2)),
-        high: Number(high.toFixed(2)),
-        low: Number(low.toFixed(2)),
-        close: Number(close.toFixed(2))
-
-    }
-
-    data.push(candle)
-
-    candleSeries.update(candle)
-
-    livePrice.innerHTML =
-        Math.round(close).toLocaleString()
-
-}, 3000)
+connectSocket()
 
 </script>
 
