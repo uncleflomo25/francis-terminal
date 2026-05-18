@@ -1,592 +1,168 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+let broker =      
+document.getElementById("brokerServer").value;      
 
-<title>Liquidity X Institutional Terminal</title>
+if(login === ""       
+   password === ""){      
 
-<script src="https://cdn.tailwindcss.com"></script>
+    alert("ENTER LOGIN DETAILS");      
+    return;      
 
-<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
+}      
 
-<style>
+document.getElementById("connectionStatus")      
+.innerHTML = "CONNECTED";      
 
-*{
-    box-sizing:border-box;
-}
+document.getElementById("connectionStatus")      
+.className = "green";      
 
-body{
-    margin:0;
-    overflow:hidden;
-    background:#050505;
-    color:white;
-    font-family:Arial,sans-serif;
-}
+document.getElementById("brokerName")      
+.innerHTML = broker;      
 
-.market{
-    cursor:pointer;
-    transition:0.2s;
-}
+document.getElementById("liveType")      
+.innerHTML = accountType;      
 
-.market:hover{
-    border-color:#00ff88;
-    background:#111;
-}
+document.getElementById("accountBalance")      
+.innerHTML = "15,420 USD";      
 
-.tf{
-    transition:0.2s;
-}
+document.getElementById("accountEquity")      
+.innerHTML = "15,880 USD";      
 
-#chart{
-    width:100%;
-    height:100%;
-}
+document.getElementById("totalPnL")      
+.innerHTML = "+4,850 AED";      
 
-</style>
-</head>
+document.getElementById("totalTrades")      
+.innerHTML = "214";      
 
-<body>
+document.getElementById("winTrades")      
+.innerHTML = "136";      
 
-<div class="h-screen w-full flex overflow-hidden">
+document.getElementById("loseTrades")      
+.innerHTML = "78";      
 
-    <!-- SIDEBAR -->
-    <div class="w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col">
+document.getElementById("winRatio")      
+.innerHTML = "63%";      
 
-        <div class="p-5 border-b border-zinc-800">
+document.getElementById("entryArrow")      
+.style.top = "120px";      
 
-            <h1 class="text-3xl font-black text-emerald-400">
-                LIQUIDITY X
-            </h1>
+document.getElementById("exitArrow")      
+.style.top = "240px";      
 
-            <p class="text-zinc-500 text-sm mt-1">
-                Institutional Synthetic Engine
-            </p>
+setTimeout(()=>{      
 
-        </div>
+    alert(      
+        broker +      
+        " CONNECTED (" +      
+        accountType +      
+        ")"      
+    );      
 
-        <div class="p-4">
-
-            <button
-                class="w-full p-3 rounded-2xl bg-emerald-500 text-black font-bold">
-                Connect Wallet
-            </button>
-
-        </div>
-
-        <div class="px-4 pb-2 text-xs uppercase tracking-widest text-zinc-500">
-            Markets
-        </div>
-
-        <div class="flex-1 overflow-auto px-3 space-y-2 pb-5">
-
-            <div
-                onclick="switchMarket('BTCUSDT')"
-                class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                BTCUSD
-            </div>
-
-            <div
-                onclick="switchMarket('ETHUSDT')"
-                class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
-                ETHUSD
-            </div>
-
-            <div
-                onclick="switchMarket('LX_SYNTH')"
-                class="market rounded-2xl border border-emerald-500 bg-zinc-900 p-4 text-emerald-400 font-bold">
-                LX SYNTH
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- MAIN -->
-    <div class="flex-1 flex flex-col overflow-hidden">
-
-        <!-- TOPBAR -->
-        <div class="h-20 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between px-6">
-
-            <div>
-
-                <div
-                    id="marketName"
-                    class="text-2xl font-bold">
-                    LX SYNTH
-                </div>
-
-                <div class="text-zinc-500 text-sm">
-                    Real-Time Institutional Composite Market
-                </div>
-
-            </div>
-
-            <!-- TF -->
-            <div class="flex gap-2">
-
-                <button onclick="setTimeframe(event,'1m')"
-                        class="tf px-4 py-2 rounded-xl bg-emerald-500 text-black font-bold">
-                    1M
-                </button>
-
-                <button onclick="setTimeframe(event,'5m')"
-                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
-                    5M
-                </button>
-
-                <button onclick="setTimeframe(event,'15m')"
-                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
-                    15M
-                </button>
-
-                <button onclick="setTimeframe(event,'1h')"
-                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
-                    1H
-                </button>
-
-                <button onclick="setTimeframe(event,'4h')"
-                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
-                    4H
-                </button>
-
-                <button onclick="setTimeframe(event,'1d')"
-                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
-                    1D
-                </button>
-
-                <button onclick="setTimeframe(event,'1w')"
-                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
-                    1W
-                </button>
-
-            </div>
-
-            <div
-                id="livePrice"
-                class="text-4xl font-black text-emerald-400">
-                Loading...
-            </div>
-
-        </div>
-
-        <!-- CHART -->
-        <div class="flex-1 relative bg-black">
-
-            <div id="chart"></div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<script>
-
-// =====================================
-// CHART
-// =====================================
-
-const chart = LightweightCharts.createChart(
-    document.getElementById('chart'),
-    {
-
-        layout:{
-            background:{ color:'#050505' },
-            textColor:'#888'
-        },
-
-        grid:{
-            vertLines:{ color:'#111' },
-            horzLines:{ color:'#111' }
-        },
-
-        width:window.innerWidth - 256,
-        height:window.innerHeight - 80,
-
-        rightPriceScale:{
-            borderColor:'#222'
-        },
-
-        timeScale:{
-            borderColor:'#222',
-            timeVisible:true
-        }
-
-    }
-)
-
-const candleSeries = chart.addCandlestickSeries({
-
-    upColor:'#00ff88',
-    downColor:'#ff4444',
-
-    borderUpColor:'#00ff88',
-    borderDownColor:'#ff4444',
-
-    wickUpColor:'#00ff88',
-    wickDownColor:'#ff4444'
-
-})
-
-// =====================================
-// GLOBALS
-// =====================================
-
-let btcSocket = null
-let ethSocket = null
-
-let btcPrice = 0
-let ethPrice = 0
-
-let usdtDominance = 4.80
-
-let currentMarket = 'LX_SYNTH'
-
-let currentTimeframe = '1m'
-
-let lxCurrentCandle = null
-
-let lxInterval = null
-
-// =====================================
-// TF MAP
-// =====================================
-
-const tfSeconds = {
-
-    '1m':60,
-    '5m':300,
-    '15m':900,
-    '1h':3600,
-    '4h':14400,
-    '1d':86400,
-    '1w':604800
+},200);
 
 }
 
-// =====================================
-// CLOSE SOCKETS
-// =====================================
+// CRYPTO
+else{
 
-function closeSockets(){
+let api =      
+document.getElementById("apiKey").value;      
 
-    if(btcSocket){
+let secret =      
+document.getElementById("secretKey").value;      
 
-        btcSocket.close()
+if(api === ""       
+   secret === ""){      
 
-    }
+    alert("ENTER API KEYS");      
+    return;      
 
-    if(ethSocket){
+}      
 
-        ethSocket.close()
+document.getElementById("connectionStatus")      
+.innerHTML = "CONNECTED";      
 
-    }
+document.getElementById("connectionStatus")      
+.className = "green";      
 
-    if(lxInterval){
+document.getElementById("brokerName")      
+.innerHTML = platform;      
 
-        clearInterval(lxInterval)
+document.getElementById("liveType")      
+.innerHTML = accountType;      
 
-    }
+document.getElementById("accountBalance")      
+.innerHTML = "12,600 USD";      
 
-}
+document.getElementById("accountEquity")      
+.innerHTML = "13,020 USD";      
 
-// =====================================
-// BTC
-// =====================================
+document.getElementById("totalPnL")      
+.innerHTML = "+2,940 AED";      
 
-function connectBTC(){
+document.getElementById("totalTrades")      
+.innerHTML = "148";      
 
-    closeSockets()
+document.getElementById("winTrades")      
+.innerHTML = "82";      
 
-    candleSeries.setData([])
+document.getElementById("loseTrades")      
+.innerHTML = "66";      
 
-    document.getElementById('marketName').innerHTML =
-        'BTCUSD'
+document.getElementById("winRatio")      
+.innerHTML = "55%";      
 
-    btcSocket = new WebSocket(
-        `wss://stream.binance.com:9443/ws/btcusdt@kline_${currentTimeframe}`
-    )
+document.getElementById("entryArrow")      
+.style.top = "140px";      
 
-    btcSocket.onmessage = (event)=>{
+document.getElementById("exitArrow")      
+.style.top = "260px";      
 
-        const msg = JSON.parse(event.data)
+setTimeout(()=>{      
 
-        const k = msg.k
+    alert(      
+        platform +      
+        " API CONNECTED (" +      
+        accountType +      
+        ")"      
+    );      
 
-        candleSeries.update({
-
-            time:k.t / 1000,
-
-            open:parseFloat(k.o),
-            high:parseFloat(k.h),
-            low:parseFloat(k.l),
-            close:parseFloat(k.c)
-
-        })
-
-        document.getElementById('livePrice').innerHTML =
-            Number(k.c).toLocaleString()
-
-    }
-
-}
-
-// =====================================
-// ETH
-// =====================================
-
-function connectETH(){
-
-    closeSockets()
-
-    candleSeries.setData([])
-
-    document.getElementById('marketName').innerHTML =
-        'ETHUSD'
-
-    ethSocket = new WebSocket(
-        `wss://stream.binance.com:9443/ws/ethusdt@kline_${currentTimeframe}`
-    )
-
-    ethSocket.onmessage = (event)=>{
-
-        const msg = JSON.parse(event.data)
-
-        const k = msg.k
-
-        candleSeries.update({
-
-            time:k.t / 1000,
-
-            open:parseFloat(k.o),
-            high:parseFloat(k.h),
-            low:parseFloat(k.l),
-            close:parseFloat(k.c)
-
-        })
-
-        document.getElementById('livePrice').innerHTML =
-            Number(k.c).toLocaleString()
-
-    }
+},200);
 
 }
 
-// =====================================
-// LX SYNTH
-// =====================================
+}
 
-function connectLX(){
+// IMAGE UPLOAD
+const upload =
+document.getElementById("imageUpload");
 
-    closeSockets()
+const preview =
+document.getElementById("preview");
 
-    candleSeries.setData([])
+upload.addEventListener("change", function(e){
 
-    document.getElementById('marketName').innerHTML =
-        'LX SYNTH'
+const file = e.target.files[0];
 
-    btcSocket = new WebSocket(
-        'wss://stream.binance.com:9443/ws/btcusdt@trade'
-    )
+if(file){
 
-    ethSocket = new WebSocket(
-        'wss://stream.binance.com:9443/ws/ethusdt@trade'
-    )
+const reader = new FileReader();      
 
-    btcSocket.onmessage = (event)=>{
+reader.onload = function(event){      
 
-        const data = JSON.parse(event.data)
+    preview.src =      
+    event.target.result;      
 
-        btcPrice = parseFloat(data.p)
+    preview.style.display =      
+    "block";      
 
-    }
+}      
 
-    ethSocket.onmessage = (event)=>{
-
-        const data = JSON.parse(event.data)
-
-        ethPrice = parseFloat(data.p)
-
-    }
-
-    // =====================================
-    // STABLE UPDATE LOOP
-    // =====================================
-
-    lxInterval = setInterval(()=>{
-
-        if(!btcPrice || !ethPrice) return
-
-        usdtDominance +=
-            (Math.random() - 0.52) * 0.003
-
-        const lxPrice =
-
-            (
-                btcPrice * 0.65
-            )
-
-            +
-
-            (
-                ethPrice * 0.25
-            )
-
-            -
-
-            (
-                usdtDominance * 1000 * 0.10
-            )
-
-        buildLXCandle(lxPrice)
-
-    },1000)
+reader.readAsDataURL(file);
 
 }
 
-// =====================================
-// BUILD CANDLE
-// =====================================
+});
 
-function buildLXCandle(price){
+</script>  </body>
 
-    const bucket =
-        tfSeconds[currentTimeframe]
-
-    const candleTime =
-        Math.floor(Date.now()/1000/bucket)*bucket
-
-    // NEW CANDLE
-    if(
-        !lxCurrentCandle
-        ||
-        lxCurrentCandle.time !== candleTime
-    ){
-
-        lxCurrentCandle = {
-
-            time:candleTime,
-
-            open:price,
-            high:price,
-            low:price,
-            close:price
-
-        }
-
-    }
-
-    // UPDATE
-    lxCurrentCandle.high =
-        Math.max(
-            lxCurrentCandle.high,
-            price
-        )
-
-    lxCurrentCandle.low =
-        Math.min(
-            lxCurrentCandle.low,
-            price
-        )
-
-    lxCurrentCandle.close = price
-
-    candleSeries.update(lxCurrentCandle)
-
-    document.getElementById('livePrice').innerHTML =
-        price.toLocaleString(
-            undefined,
-            {
-                maximumFractionDigits:2
-            }
-        )
-
-}
-
-// =====================================
-// SWITCH MARKET
-// =====================================
-
-function switchMarket(symbol){
-
-    currentMarket = symbol
-
-    if(symbol === 'BTCUSDT'){
-
-        connectBTC()
-
-    }
-
-    else if(symbol === 'ETHUSDT'){
-
-        connectETH()
-
-    }
-
-    else if(symbol === 'LX_SYNTH'){
-
-        connectLX()
-
-    }
-
-}
-
-// =====================================
-// TIMEFRAME
-// =====================================
-
-function setTimeframe(event,tf){
-
-    currentTimeframe = tf
-
-    document.querySelectorAll('.tf')
-    .forEach(btn=>{
-
-        btn.classList.remove(
-            'bg-emerald-500',
-            'text-black',
-            'font-bold'
-        )
-
-        btn.classList.add('bg-zinc-800')
-
-    })
-
-    event.target.classList.remove('bg-zinc-800')
-
-    event.target.classList.add(
-        'bg-emerald-500',
-        'text-black',
-        'font-bold'
-    )
-
-    switchMarket(currentMarket)
-
-}
-
-// =====================================
-// RESIZE
-// =====================================
-
-window.addEventListener('resize',()=>{
-
-    chart.applyOptions({
-
-        width:window.innerWidth - 256,
-        height:window.innerHeight - 80
-
-    })
-
-})
-
-// =====================================
-// INIT
-// =====================================
-
-connectLX()
-
-</script>
-
-</body>
 </html>
