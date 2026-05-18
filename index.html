@@ -1,26 +1,27 @@
-# Liquidity X — TradingView Style Trading Platform
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>Liquidity X Trading Platform</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 
 <style>
+
 *{
     box-sizing:border-box;
 }
 
 body{
     margin:0;
-    background:#050505;
     overflow:hidden;
+    background:#050505;
     font-family:Arial, sans-serif;
+    color:white;
 }
 
 ::-webkit-scrollbar{
@@ -39,13 +40,13 @@ body{
 }
 
 .market-item:hover{
-    background:#171717;
+    background:#151515;
     border-color:#00ff88;
 }
 
 .active-market{
     border-color:#00ff88;
-    background:#111;
+    background:#101010;
 }
 
 .time-btn{
@@ -53,7 +54,7 @@ body{
 }
 
 .time-btn:hover{
-    background:#222;
+    background:#202020;
 }
 
 .active-time{
@@ -70,30 +71,36 @@ body{
 .glow{
     box-shadow:0 0 20px rgba(0,255,136,0.15);
 }
+
 </style>
+
 </head>
 
 <body>
 
-<div class="h-screen w-full flex overflow-hidden bg-black text-white">
+<div class="h-screen w-full flex overflow-hidden">
 
     <!-- SIDEBAR -->
     <div class="w-64 bg-zinc-950 border-r border-zinc-800 flex flex-col">
 
         <div class="p-5 border-b border-zinc-800">
-            <h1 class="text-3xl font-black tracking-wide text-emerald-400">
+
+            <h1 class="text-3xl font-black text-emerald-400">
                 LIQUIDITY X
             </h1>
 
             <p class="text-zinc-500 text-sm mt-1">
-                Institutional Non-Custodial Terminal
+                Institutional Trading Terminal
             </p>
+
         </div>
 
         <div class="p-4">
-            <button class="w-full rounded-2xl bg-emerald-500 hover:bg-emerald-400 transition p-3 font-bold text-black glow">
+
+            <button class="w-full p-3 rounded-2xl bg-emerald-500 text-black font-bold glow">
                 Connect Wallet
             </button>
+
         </div>
 
         <div class="px-4 pb-2 text-zinc-500 text-xs uppercase tracking-widest">
@@ -130,21 +137,22 @@ body{
 
     </div>
 
-
     <!-- MAIN -->
     <div class="flex-1 flex flex-col overflow-hidden">
 
-        <!-- TOPBAR -->
-        <div class="h-16 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between px-6">
+        <!-- TOP BAR -->
+        <div class="h-16 border-b border-zinc-800 bg-zinc-950 flex items-center justify-between px-6">
 
             <div>
-                <div id="pairName" class="text-2xl font-bold">
+
+                <div class="text-2xl font-bold">
                     BTCUSD
                 </div>
 
-                <div class="text-zinc-500 text-sm">
+                <div class="text-sm text-zinc-500">
                     Liquidity Flow Engine
                 </div>
+
             </div>
 
             <div class="flex gap-2">
@@ -173,20 +181,19 @@ body{
 
         </div>
 
-
         <!-- CENTER -->
         <div class="flex-1 flex overflow-hidden">
 
             <!-- CHART -->
-            <div class="flex-1 relative bg-[#050505] overflow-hidden">
+            <div class="flex-1 relative bg-[#050505]">
 
-                <div class="absolute top-6 left-6 z-10 backdrop-blur-md bg-black/40 border border-zinc-800 rounded-2xl px-5 py-4">
+                <div class="absolute top-5 left-5 z-10 bg-black/50 backdrop-blur-md border border-zinc-800 rounded-2xl px-5 py-4">
 
-                    <div class="text-5xl font-black tracking-tight">
+                    <div id="livePrice" class="text-5xl font-black">
                         103,428
                     </div>
 
-                    <div class="text-emerald-400 text-lg font-semibold mt-1">
+                    <div id="livePercent" class="text-emerald-400 text-lg font-bold">
                         +2.42%
                     </div>
 
@@ -196,14 +203,15 @@ body{
 
             </div>
 
-
             <!-- ORDER PANEL -->
             <div class="w-96 bg-zinc-950 border-l border-zinc-800 flex flex-col overflow-auto">
 
                 <div class="p-5 border-b border-zinc-800">
+
                     <h2 class="text-2xl font-bold">
                         Trade Panel
                     </h2>
+
                 </div>
 
                 <div class="p-5 space-y-5">
@@ -221,11 +229,11 @@ body{
 
                     <div class="grid grid-cols-2 gap-3">
 
-                        <button class="rounded-2xl p-4 bg-emerald-500 text-black font-black text-lg glow hover:scale-[1.02] transition">
+                        <button class="rounded-2xl p-4 bg-emerald-500 text-black font-black text-lg glow">
                             BUY
                         </button>
 
-                        <button class="rounded-2xl p-4 bg-red-500 text-white font-black text-lg hover:scale-[1.02] transition">
+                        <button class="rounded-2xl p-4 bg-red-500 text-white font-black text-lg">
                             SELL
                         </button>
 
@@ -237,12 +245,17 @@ body{
                         class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4 outline-none">
 
                     <div>
+
                         <div class="flex justify-between mb-2 text-sm text-zinc-500">
+
                             <span>Leverage</span>
+
                             <span>50x</span>
+
                         </div>
 
                         <input type="range" min="1" max="100" value="50" class="w-full">
+
                     </div>
 
                     <div class="rounded-2xl bg-zinc-900 border border-zinc-800 p-5 space-y-4">
@@ -262,14 +275,9 @@ body{
                             <span>0.04%</span>
                         </div>
 
-                        <div class="flex justify-between">
-                            <span class="text-zinc-400">Funding</span>
-                            <span class="text-emerald-400">+0.002%</span>
-                        </div>
-
                     </div>
 
-                    <button class="w-full rounded-2xl bg-emerald-500 hover:bg-emerald-400 transition text-black font-black p-4 text-lg glow">
+                    <button class="w-full rounded-2xl bg-emerald-500 text-black font-black p-4 text-lg glow">
                         Execute Trade
                     </button>
 
@@ -279,14 +287,15 @@ body{
 
         </div>
 
-
         <!-- POSITIONS -->
-        <div class="h-64 bg-zinc-950 border-t border-zinc-800 overflow-auto">
+        <div class="h-64 border-t border-zinc-800 bg-zinc-950 overflow-auto">
 
             <div class="px-6 py-4 border-b border-zinc-800">
+
                 <h2 class="text-xl font-bold">
                     Open Positions
                 </h2>
+
             </div>
 
             <div class="p-4 space-y-3">
@@ -294,6 +303,7 @@ body{
                 <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 flex justify-between items-center">
 
                     <div>
+
                         <div class="font-bold text-lg">
                             BTCUSD LONG
                         </div>
@@ -301,6 +311,7 @@ body{
                         <div class="text-zinc-500 text-sm mt-1">
                             Entry: 103420
                         </div>
+
                     </div>
 
                     <div class="text-emerald-400 text-2xl font-black">
@@ -312,6 +323,7 @@ body{
                 <div class="rounded-2xl border border-zinc-800 bg-zinc-900 p-5 flex justify-between items-center">
 
                     <div>
+
                         <div class="font-bold text-lg">
                             XAUUSD SHORT
                         </div>
@@ -319,6 +331,7 @@ body{
                         <div class="text-zinc-500 text-sm mt-1">
                             Entry: 3218
                         </div>
+
                     </div>
 
                     <div class="text-red-400 text-2xl font-black">
@@ -335,95 +348,96 @@ body{
 
 </div>
 
-
 <script>
 
 // =========================
-// CREATE TRADINGVIEW STYLE CHART
+// CREATE CHART
 // =========================
 
-const chart = LightweightCharts.createChart(document.getElementById('tvchart'), {
+const chartContainer = document.getElementById("tvchart")
+
+const chart = LightweightCharts.createChart(chartContainer, {
 
     layout: {
         background: {
-            color: '#050505'
+            color: "#050505"
         },
-        textColor: '#888'
+        textColor: "#888"
     },
 
     grid: {
         vertLines: {
-            color: '#111'
+            color: "#111"
         },
         horzLines: {
-            color: '#111'
+            color: "#111"
         }
     },
 
-    width: window.innerWidth - 640,
-    height: window.innerHeight - 320,
+    width: chartContainer.clientWidth,
+    height: chartContainer.clientHeight,
 
     crosshair: {
-        mode: LightweightCharts.CrosshairMode.Normal,
+        mode: 1
     },
 
     rightPriceScale: {
-        borderColor: '#222',
+        borderColor: "#222"
     },
 
     timeScale: {
-        borderColor: '#222',
-        timeVisible: true,
-        secondsVisible: false,
-    },
+        borderColor: "#222",
+        timeVisible: true
+    }
 
-});
-
+})
 
 // =========================
-// REAL CANDLESTICK SERIES
+// CANDLE SERIES
 // =========================
 
 const candleSeries = chart.addCandlestickSeries({
 
-    upColor: '#00ff88',
-    downColor: '#ff4444',
+    upColor: "#00ff88",
+    downColor: "#ff4444",
 
-    borderUpColor: '#00ff88',
-    borderDownColor: '#ff4444',
+    borderUpColor: "#00ff88",
+    borderDownColor: "#ff4444",
 
-    wickUpColor: '#00ff88',
-    wickDownColor: '#ff4444',
+    wickUpColor: "#00ff88",
+    wickDownColor: "#ff4444"
 
-});
-
+})
 
 // =========================
-// GENERATE REALISTIC MARKET DATA
+// GENERATE MARKET DATA
 // =========================
 
 const data = []
 
-let price = 100000
+let price = 103000
 
-for(let i = 0; i < 300; i++){
+for(let i = 0; i < 250; i++){
 
     const open = price
 
-    const volatility = Math.random() * 1200
+    const move = (Math.random() - 0.5) * 1500
 
-    const close = open + (Math.random() - 0.5) * volatility
+    const close = open + move
 
-    const high = Math.max(open, close) + Math.random() * 500
+    const high = Math.max(open, close) + Math.random() * 300
 
-    const low = Math.min(open, close) - Math.random() * 500
+    const low = Math.min(open, close) - Math.random() * 300
 
     data.push({
+
         time: 1642425322 + (i * 3600),
+
         open: Number(open.toFixed(2)),
         high: Number(high.toFixed(2)),
         low: Number(low.toFixed(2)),
-        close: Number(close.toFixed(2)),
+        close: Number(close.toFixed(2))
+
     })
 
     price = close
@@ -431,69 +445,60 @@ for(let i = 0; i < 300; i++){
 
 candleSeries.setData(data)
 
-
 // =========================
-// RESPONSIVE CHART
+// AUTO RESIZE
 // =========================
 
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
 
     chart.applyOptions({
-        width: window.innerWidth - 640,
-        height: window.innerHeight - 320,
+
+        width: chartContainer.clientWidth,
+        height: chartContainer.clientHeight
+
     })
 
 })
 
+// =========================
+// LIVE PRICE UPDATE
+// =========================
 
-// =========================
-// LIVE PRICE SIMULATION
-// =========================
+const livePrice = document.getElementById("livePrice")
 
 setInterval(() => {
 
     const last = data[data.length - 1]
 
-    const newTime = last.time + 3600
-
     const open = last.close
 
-    const close = open + (Math.random() - 0.5) * 900
+    const close = open + (Math.random() - 0.5) * 1200
 
-    const high = Math.max(open, close) + Math.random() * 250
+    const high = Math.max(open, close) + Math.random() * 200
 
-    const low = Math.min(open, close) - Math.random() * 250
+    const low = Math.min(open, close) - Math.random() * 200
 
     const candle = {
-        time: newTime,
-        open,
-        high,
-        low,
-        close
+
+        time: last.time + 3600,
+
+        open: Number(open.toFixed(2)),
+        high: Number(high.toFixed(2)),
+        low: Number(low.toFixed(2)),
+        close: Number(close.toFixed(2))
+
     }
 
     data.push(candle)
 
     candleSeries.update(candle)
 
-}, 4000)
+    livePrice.innerHTML =
+        Math.round(close).toLocaleString()
+
+}, 3000)
 
 </script>
 
 </body>
 </html>
-```
-
-Open the HTML file in your browser.
-
-This version includes:
-
-* Real TradingView-style candlestick chart
-* Zoom support
-* Dragging/panning
-* Crosshair
-* Real candle wicks and bodies
-* Live candle updates
-* Professional dark institutional UI
-* Responsive resizing
-* Multi-market terminal layout
