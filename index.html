@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liquidity X Institutional Synthetic Engine</title>
+<title>Liquidity X Institutional Terminal</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
@@ -30,6 +30,10 @@ body{
 .market:hover{
     border-color:#00ff88;
     background:#111;
+}
+
+.tf{
+    transition:0.2s;
 }
 
 #chart{
@@ -97,7 +101,7 @@ body{
     <div class="flex-1 flex flex-col overflow-hidden">
 
         <!-- TOPBAR -->
-        <div class="h-16 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between px-6">
+        <div class="h-20 bg-zinc-950 border-b border-zinc-800 flex items-center justify-between px-6">
 
             <div>
 
@@ -109,6 +113,46 @@ body{
                 <div class="text-zinc-500 text-sm">
                     Real-Time Institutional Composite Market
                 </div>
+
+            </div>
+
+            <!-- TIMEFRAMES -->
+            <div class="flex gap-2">
+
+                <button onclick="setTimeframe('1m')"
+                        class="tf px-4 py-2 rounded-xl bg-emerald-500 text-black font-bold">
+                    1M
+                </button>
+
+                <button onclick="setTimeframe('5m')"
+                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
+                    5M
+                </button>
+
+                <button onclick="setTimeframe('15m')"
+                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
+                    15M
+                </button>
+
+                <button onclick="setTimeframe('1h')"
+                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
+                    1H
+                </button>
+
+                <button onclick="setTimeframe('4h')"
+                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
+                    4H
+                </button>
+
+                <button onclick="setTimeframe('1d')"
+                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
+                    1D
+                </button>
+
+                <button onclick="setTimeframe('1w')"
+                        class="tf px-4 py-2 rounded-xl bg-zinc-800">
+                    1W
+                </button>
 
             </div>
 
@@ -151,7 +195,7 @@ const chart = LightweightCharts.createChart(
         },
 
         width:window.innerWidth - 256,
-        height:window.innerHeight - 64,
+        height:window.innerHeight - 80,
 
         rightPriceScale:{
             borderColor:'#222'
@@ -194,8 +238,26 @@ let lxCurrentCandle = null
 
 let currentMarket = 'LX_SYNTH'
 
+let currentTimeframe = '1m'
+
 // =====================================
-// BTC REAL-TIME
+// TF MAP
+// =====================================
+
+const tfMap = {
+
+    '1m':'1m',
+    '5m':'5m',
+    '15m':'15m',
+    '1h':'1h',
+    '4h':'4h',
+    '1d':'1d',
+    '1w':'1w'
+
+}
+
+// =====================================
+// BTC
 // =====================================
 
 function connectBTC(){
@@ -206,7 +268,7 @@ function connectBTC(){
         'BTCUSD'
 
     btcSocket = new WebSocket(
-        'wss://stream.binance.com:9443/ws/btcusdt@kline_1m'
+        `wss://stream.binance.com:9443/ws/btcusdt@kline_${tfMap[currentTimeframe]}`
     )
 
     btcSocket.onmessage = (event)=>{
@@ -236,7 +298,7 @@ function connectBTC(){
 }
 
 // =====================================
-// ETH REAL-TIME
+// ETH
 // =====================================
 
 function connectETH(){
@@ -247,7 +309,7 @@ function connectETH(){
         'ETHUSD'
 
     ethSocket = new WebSocket(
-        'wss://stream.binance.com:9443/ws/ethusdt@kline_1m'
+        `wss://stream.binance.com:9443/ws/ethusdt@kline_${tfMap[currentTimeframe]}`
     )
 
     ethSocket.onmessage = (event)=>{
@@ -277,7 +339,7 @@ function connectETH(){
 }
 
 // =====================================
-// LX SYNTH ENGINE
+// LX SYNTH
 // =====================================
 
 function connectLX(){
@@ -325,16 +387,8 @@ function updateLX(){
 
     if(!btcPrice || !ethPrice) return
 
-    // =====================================
-    // USDT.D PRESSURE
-    // =====================================
-
     usdtDominance +=
         (Math.random() - 0.52) * 0.01
-
-    // =====================================
-    // INSTITUTIONAL FORMULA
-    // =====================================
 
     const lxPrice =
 
@@ -354,12 +408,23 @@ function updateLX(){
             usdtDominance * 1000 * 0.10
         )
 
-    const time =
-        Math.floor(Date.now()/60000) * 60
+    const tfSeconds = {
 
-    // =====================================
-    // CREATE CANDLE
-    // =====================================
+        '1m':60,
+        '5m':300,
+        '15m':900,
+        '1h':3600,
+        '4h':14400,
+        '1d':86400,
+        '1w':604800
+
+    }
+
+    const bucket =
+        tfSeconds[currentTimeframe]
+
+    const time =
+        Math.floor(Date.now()/1000/bucket)*bucket
 
     if(
         !lxCurrentCandle
@@ -434,19 +499,64 @@ function switchMarket(symbol){
 
     currentMarket = symbol
 
-    if(symbol === 'BTCUSDT'){
+    reloadMarket()
+
+}
+
+// =====================================
+// SET TF
+// =====================================
+
+function setTimeframe(tf){
+
+    currentTimeframe = tf
+
+    document.querySelectorAll('.tf')
+        .forEach(btn=>{
+
+            btn.classList.remove(
+                'bg-emerald-500',
+                'text-black',
+                'font-bold'
+            )
+
+            btn.classList.add('bg-zinc-800')
+
+        })
+
+    event.target.classList.remove('bg-zinc-800')
+
+    event.target.classList.add(
+        'bg-emerald-500',
+        'text-black',
+        'font-bold'
+    )
+
+    reloadMarket()
+
+}
+
+// =====================================
+// RELOAD
+// =====================================
+
+function reloadMarket(){
+
+    candleSeries.setData([])
+
+    if(currentMarket === 'BTCUSDT'){
 
         connectBTC()
 
     }
 
-    else if(symbol === 'ETHUSDT'){
+    else if(currentMarket === 'ETHUSDT'){
 
         connectETH()
 
     }
 
-    else if(symbol === 'LX_SYNTH'){
+    else if(currentMarket === 'LX_SYNTH'){
 
         connectLX()
 
@@ -463,7 +573,7 @@ window.addEventListener('resize',()=>{
     chart.applyOptions({
 
         width:window.innerWidth - 256,
-        height:window.innerHeight - 64
+        height:window.innerHeight - 80
 
     })
 
