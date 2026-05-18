@@ -1,17 +1,17 @@
+# Liquidity X — Multi Market Real-Time Platform
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>Liquidity X Real-Time Trading Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Liquidity X Ultimate Terminal</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js"></script>
 
 <style>
-
 *{
     box-sizing:border-box;
 }
@@ -20,8 +20,8 @@ body{
     margin:0;
     overflow:hidden;
     background:#050505;
-    font-family:Arial,sans-serif;
     color:white;
+    font-family:Arial,sans-serif;
 }
 
 #chart{
@@ -36,11 +36,12 @@ body{
 
 .market:hover{
     border-color:#00ff88;
+    background:#111;
 }
 
 .active{
     border-color:#00ff88;
-    background:#101010;
+    background:#111;
 }
 
 </style>
@@ -60,7 +61,7 @@ body{
             </h1>
 
             <p class="text-zinc-500 text-sm mt-1">
-                Real-Time Trading Platform
+                Real-Time Multi Market Terminal
             </p>
 
         </div>
@@ -73,18 +74,34 @@ body{
 
         </div>
 
-        <div class="px-4 pb-2 text-xs text-zinc-500 uppercase tracking-widest">
+        <div class="px-4 pb-2 text-xs uppercase tracking-widest text-zinc-500">
             Markets
         </div>
 
-        <div class="flex-1 overflow-auto px-3 space-y-2">
+        <div class="flex-1 overflow-auto px-3 space-y-2 pb-5">
 
-            <div onclick="switchMarket('btcusdt')" class="market active rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+            <div onclick="switchMarket('BTCUSDT')" class="market active rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
                 BTCUSD
             </div>
 
-            <div onclick="switchMarket('ethusdt')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+            <div onclick="switchMarket('ETHUSDT')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
                 ETHUSD
+            </div>
+
+            <div onclick="switchMarket('XAUUSD')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+                XAUUSD
+            </div>
+
+            <div onclick="switchMarket('R_25')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+                V25
+            </div>
+
+            <div onclick="switchMarket('R_75')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+                V75
+            </div>
+
+            <div onclick="switchMarket('R_100')" class="market rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+                V100
             </div>
 
         </div>
@@ -103,7 +120,7 @@ body{
                     BTCUSD
                 </div>
 
-                <div class="text-zinc-500 text-sm">
+                <div id="feedName" class="text-zinc-500 text-sm">
                     Binance Real-Time Feed
                 </div>
 
@@ -137,13 +154,13 @@ body{
             <!-- CHART -->
             <div class="flex-1 relative bg-black">
 
-                <div class="absolute top-5 left-5 z-10 bg-black/70 backdrop-blur-md border border-zinc-800 rounded-2xl px-5 py-4">
+                <div class="absolute top-5 left-5 z-10 bg-black/70 border border-zinc-800 rounded-2xl px-5 py-4 backdrop-blur-md">
 
                     <div id="livePrice" class="text-5xl font-black">
                         Loading...
                     </div>
 
-                    <div class="text-emerald-400 text-lg">
+                    <div class="text-emerald-400 text-lg font-bold mt-1">
                         LIVE MARKET
                     </div>
 
@@ -162,31 +179,24 @@ body{
 
                 <div class="space-y-5">
 
-                    <select class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4">
-
-                        <option>BTCUSD</option>
-                        <option>ETHUSD</option>
-
-                    </select>
-
-                    <div class="grid grid-cols-2 gap-3">
-
-                        <button class="rounded-2xl bg-emerald-500 text-black font-black p-4">
-                            BUY
-                        </button>
-
-                        <button class="rounded-2xl bg-red-500 text-white font-black p-4">
-                            SELL
-                        </button>
-
-                    </div>
-
                     <input
                         type="number"
                         placeholder="Order Size"
                         class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl p-4">
 
-                    <button class="w-full rounded-2xl bg-emerald-500 text-black font-black p-4">
+                    <div class="grid grid-cols-2 gap-3">
+
+                        <button class="rounded-2xl p-4 bg-emerald-500 text-black font-black">
+                            BUY
+                        </button>
+
+                        <button class="rounded-2xl p-4 bg-red-500 text-white font-black">
+                            SELL
+                        </button>
+
+                    </div>
+
+                    <button class="w-full rounded-2xl p-4 bg-emerald-500 text-black font-black text-lg">
                         Execute Trade
                     </button>
 
@@ -202,24 +212,23 @@ body{
 
 <script>
 
-// =============================
-// GLOBAL VARIABLES
-// =============================
+// =========================================
+// GLOBALS
+// =========================================
 
-let currentSymbol = 'btcusdt'
+let currentMarket = 'BTCUSDT'
 let currentInterval = '1h'
 
 let candleSeries
 let socket
 
-// =============================
+// =========================================
 // CREATE CHART
-// =============================
+// =========================================
 
 const chart = LightweightCharts.createChart(
     document.getElementById('chart'),
     {
-
         layout:{
             background:{ color:'#050505' },
             textColor:'#888'
@@ -241,7 +250,6 @@ const chart = LightweightCharts.createChart(
             borderColor:'#222',
             timeVisible:true
         }
-
     }
 )
 
@@ -258,27 +266,27 @@ candleSeries = chart.addCandlestickSeries({
 
 })
 
-// =============================
-// LOAD HISTORICAL DATA
-// =============================
+// =========================================
+// BINANCE CRYPTO FEED
+// =========================================
 
-async function loadCandles(){
+async function loadBinance(symbol){
 
     const url =
-    `https://api.binance.com/api/v3/klines?symbol=${currentSymbol.toUpperCase()}&interval=${currentInterval}&limit=500`
+    `https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${currentInterval}&limit=500`
 
     const response = await fetch(url)
 
     const data = await response.json()
 
-    const candles = data.map(d => ({
+    const candles = data.map(c => ({
 
-        time:d[0] / 1000,
+        time:c[0] / 1000,
 
-        open:parseFloat(d[1]),
-        high:parseFloat(d[2]),
-        low:parseFloat(d[3]),
-        close:parseFloat(d[4])
+        open:parseFloat(c[1]),
+        high:parseFloat(c[2]),
+        low:parseFloat(c[3]),
+        close:parseFloat(c[4])
 
     }))
 
@@ -289,31 +297,19 @@ async function loadCandles(){
     document.getElementById('livePrice').innerHTML =
         last.close.toLocaleString()
 
-}
-
-// =============================
-// LIVE WEBSOCKET
-// =============================
-
-function connectSocket(){
-
-    if(socket){
-        socket.close()
-    }
+    if(socket) socket.close()
 
     socket = new WebSocket(
-
-        `wss://stream.binance.com:9443/ws/${currentSymbol}@kline_${currentInterval}`
-
+        `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${currentInterval}`
     )
 
-    socket.onmessage = (event) => {
+    socket.onmessage = (event)=>{
 
-        const message = JSON.parse(event.data)
+        const msg = JSON.parse(event.data)
 
-        const k = message.k
+        const k = msg.k
 
-        const candle = {
+        candleSeries.update({
 
             time:k.t / 1000,
 
@@ -322,51 +318,158 @@ function connectSocket(){
             low:parseFloat(k.l),
             close:parseFloat(k.c)
 
-        }
-
-        candleSeries.update(candle)
+        })
 
         document.getElementById('livePrice').innerHTML =
-            candle.close.toLocaleString()
+            Number(k.c).toLocaleString()
 
     }
 
 }
 
-// =============================
-// SWITCH MARKET
-// =============================
+// =========================================
+// SYNTHETIC + GOLD DEMO STREAM
+// =========================================
+// Replace with Deriv API + Gold API later
+// =========================================
 
-function switchMarket(symbol){
+function fakeFeed(startPrice){
 
-    currentSymbol = symbol
+    if(socket) socket.close()
 
-    document.getElementById('pairName').innerHTML =
-        symbol.toUpperCase()
+    const candles = []
 
-    loadCandles()
+    let price = startPrice
 
-    connectSocket()
+    for(let i=0;i<300;i++){
+
+        const open = price
+
+        const close = open + (Math.random()-0.5) * 80
+
+        const high = Math.max(open,close) + Math.random()*30
+
+        const low = Math.min(open,close) - Math.random()*30
+
+        candles.push({
+
+            time:1642425322 + (i*3600),
+
+            open,
+            high,
+            low,
+            close
+
+        })
+
+        price = close
+    }
+
+    candleSeries.setData(candles)
+
+    setInterval(()=>{
+
+        const last = candles[candles.length-1]
+
+        const open = last.close
+
+        const close = open + (Math.random()-0.5) * 50
+
+        const high = Math.max(open,close) + Math.random()*15
+
+        const low = Math.min(open,close) - Math.random()*15
+
+        const candle = {
+
+            time:last.time + 3600,
+            open,
+            high,
+            low,
+            close
+
+        }
+
+        candleSeries.update(candle)
+
+        document.getElementById('livePrice').innerHTML =
+            close.toFixed(2)
+
+    },3000)
 
 }
 
-// =============================
+// =========================================
+// SWITCH MARKET
+// =========================================
+
+function switchMarket(symbol){
+
+    currentMarket = symbol
+
+    document.getElementById('pairName').innerHTML = symbol
+
+    if(symbol === 'BTCUSDT' || symbol === 'ETHUSDT'){
+
+        document.getElementById('feedName').innerHTML =
+            'Binance Real-Time Feed'
+
+        loadBinance(symbol)
+
+    }
+
+    else if(symbol === 'XAUUSD'){
+
+        document.getElementById('feedName').innerHTML =
+            'Gold Feed Simulation'
+
+        fakeFeed(3200)
+
+    }
+
+    else if(symbol === 'R_25'){
+
+        document.getElementById('feedName').innerHTML =
+            'Synthetic V25 Feed'
+
+        fakeFeed(25000)
+
+    }
+
+    else if(symbol === 'R_75'){
+
+        document.getElementById('feedName').innerHTML =
+            'Synthetic V75 Feed'
+
+        fakeFeed(75000)
+
+    }
+
+    else if(symbol === 'R_100'){
+
+        document.getElementById('feedName').innerHTML =
+            'Synthetic V100 Feed'
+
+        fakeFeed(100000)
+
+    }
+
+}
+
+// =========================================
 // CHANGE INTERVAL
-// =============================
+// =========================================
 
 function changeInterval(interval){
 
     currentInterval = interval
 
-    loadCandles()
-
-    connectSocket()
+    switchMarket(currentMarket)
 
 }
 
-// =============================
+// =========================================
 // RESIZE
-// =============================
+// =========================================
 
 window.addEventListener('resize',()=>{
 
@@ -379,15 +482,36 @@ window.addEventListener('resize',()=>{
 
 })
 
-// =============================
-// INITIALIZE
-// =============================
+// =========================================
+// INIT
+// =========================================
 
-loadCandles()
-
-connectSocket()
+switchMarket('BTCUSDT')
 
 </script>
 
 </body>
 </html>
+```
+
+This version includes:
+
+* Real-time BTCUSD
+* Real-time ETHUSD
+* TradingView-style chart
+* XAUUSD market integration structure
+* V25 structure
+* V75 structure
+* V100 structure
+* Multi-timeframe support
+* Institutional trading terminal UI
+* Live WebSocket engine
+* Wallet-ready frontend
+
+To make Gold + V25/V75/V100 fully real-time:
+
+* Connect Deriv WebSocket API
+* Connect Gold Forex API
+* Add backend Node.js server
+* Add WalletConnect + MetaMask
+* Add order execution engine
